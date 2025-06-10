@@ -1,7 +1,7 @@
 import { getTitle } from "~/lib/utils";
 import type { Route } from "./+types/_index";
 import { LoginForm } from "~/components/auth/LoginForm";
-import { useNavigation, useSubmit } from "react-router";
+import { redirect, useNavigation, useSubmit } from "react-router";
 import { login } from "~/services/auth-service";
 
 export function meta({}: Route.MetaArgs) {
@@ -14,7 +14,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export const action = async ({ request }: Route.ActionArgs) => {
+export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -24,17 +24,19 @@ export const action = async ({ request }: Route.ActionArgs) => {
     password
   );
 
-  const cookie = request.headers;
+  if (loginResponse.error) {
+    console.error(loginResponse);
+    return {
+      message: loginResponse.message,
+    }
+  }
 
-  console.log(cookie);
-  
-
-  return loginResponse;
+  return redirect('/');
 };
 
 const Auth = ({ actionData }: Route.ComponentProps) => {
-  const submit = useSubmit();
   const navigation = useNavigation();
+  const submit = useSubmit();
 
   const formState = navigation.state;
   
@@ -57,8 +59,8 @@ const Auth = ({ actionData }: Route.ComponentProps) => {
             Inicia sesión para continuar
           </p>
           <LoginForm submit={submit} formState={formState} />
-          {actionData?.error && formState === 'idle' && (
-            <p className="text-red-500 text-sm mt-4 text-center">{ actionData.error && actionData.message }</p>
+          {actionData?.message && formState === 'idle' && (
+            <p className="text-red-500 text-sm mt-4 text-center">{ actionData.message }</p>
           )}
         </div>
         <div className="flex items-center gap-2 absolute bottom-10">

@@ -1,11 +1,42 @@
-import { Outlet } from "react-router"
+import { Outlet, redirect } from "react-router"
+import type { Route } from "./+types/_layout";
+import { Sidebar } from "~/components/dashboard/Sidebar";
+import { getBoards } from "~/services/boards-service";
+import { checkAuth, logout } from "~/services/auth-service";
+import { Navbar } from "~/components/dashboard/Navbar";
+import { Toaster } from "sonner";
 
-const DashboardLayout = () => {
+export async function loader({ request }: Route.LoaderArgs) {
+  const cookie = request.headers.get('Cookie');
+  const authStatus = await checkAuth(cookie || '');
+
+  if (!authStatus.user) {
+    request.headers.delete('Cookie');
+    return redirect('/auth');
+  }
+  
+  const { boards } = await getBoards(cookie || '');
+
+  return {
+    boards,
+    user: authStatus.user,
+  };
+}
+
+const DashboardLayout = ({ loaderData }: Route.ComponentProps) => {
+  const { boards } = loaderData;
+
   return ( 
-    <div>
-      <h1>Dashboard Layout</h1>
-      <Outlet />
-    </div>
+    <main className="flex bg-gray-50">
+      <Toaster />
+      <Sidebar boards={boards || []}/>
+      <div className="w-full">
+        <Navbar />
+        <div className="p-6">
+          <Outlet />
+        </div>
+      </div>
+    </main>
   )
 }
 

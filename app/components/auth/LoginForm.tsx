@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { type SubmitFunction } from "react-router";
+import { Form, type SubmitFunction } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -43,18 +43,14 @@ export const LoginForm = ({
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    submit(formData, {
+    submit(data, {
       method: "post",
     });
   };
 
   return (
     <ShadForm {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
+      <Form method="post" onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
         <FormField
           control={form.control}
           name="email"
@@ -88,7 +84,7 @@ export const LoginForm = ({
         <Button type="submit" className="w-full" disabled={formState === "submitting"}>
           {formState === "submitting" ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>
-      </form>
+      </Form>
     </ShadForm>
   );
 };

@@ -1,17 +1,24 @@
-import { redirect } from "react-router"
+import { useLoaderData, useRouteLoaderData } from "react-router";
+import type { Route } from "./+types/_index";
 
-export function loader() {
-  const user = undefined;
+export function meta() {
+  return [
+    {
+      title: 'Inicio | Flowee',
+    }
+  ]
+}
 
-  if (!user) {
-    return redirect("/auth")
-  }
+export async function clientAction({}: Route.ClientActionArgs) {
+  alert('logout');
   return null;
 }
 
 const Home = () => {
+  const { user } = useRouteLoaderData('routes/dashboard/_layout')
+
   return (
-    <div>Home</div>
+    <div>Home, {user?.name}</div>
   )
 }
 
