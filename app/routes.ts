@@ -12,7 +12,10 @@ export default [
     route('autoasignaciones', 'routes/dashboard/autoasignaciones.tsx'),
     route('centro-de-asignaciones', 'routes/dashboard/centro-de-asignaciones.tsx'),
     route('tablero/:slug', 'routes/dashboard/board.tsx'),
-    route('usuarios', 'routes/dashboard/users.tsx'),
+
+    // ? Rutas para usuarios;
+    route('usuarios', 'routes/dashboard/users/_index.tsx'),
+    route('usuarios/:nickname', 'routes/dashboard/users/user.tsx'),
 
     // ? Ruta para cerrar sesión;
     route('logout', 'routes/dashboard/logout.tsx'),

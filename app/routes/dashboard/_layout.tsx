@@ -4,7 +4,8 @@ import { Sidebar } from "~/components/dashboard/Sidebar";
 import { getBoards } from "~/services/boards-service";
 import { checkAuth, logout } from "~/services/auth-service";
 import { Navbar } from "~/components/dashboard/Navbar";
-import { Toaster } from "sonner";
+import { toast, Toaster } from "sonner";
+import { useEffect } from "react";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const cookie = request.headers.get('Cookie');
@@ -26,13 +27,17 @@ export async function loader({ request }: Route.LoaderArgs) {
 const DashboardLayout = ({ loaderData }: Route.ComponentProps) => {
   const { boards } = loaderData;
 
+  useEffect(() => {
+    if (!boards) toast.error('No se han encontrado tableros');
+  }, [boards]);
+
   return ( 
     <main className="flex bg-gray-50">
       <Toaster />
       <Sidebar boards={boards || []}/>
-      <div className="w-full">
+      <div className="w-full flex flex-col">
         <Navbar />
-        <div className="p-6">
+        <div className="p-6 h-full">
           <Outlet />
         </div>
       </div>

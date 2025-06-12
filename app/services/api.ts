@@ -22,7 +22,7 @@ const createRequest = async (method: string, endpoint: string, body = {}, header
   } catch (error) {
     console.error(new Error('Ha ocurrido un error al intentar hacer fetching a la API:', { cause: error }));
     return {
-      message: 'Error al obtener los tableros. Intenta nuevamente. Si el problema persiste, contacta al administrador.',
+      message: 'Error al procesar la solicitud. Intenta nuevamente. Si el problema persiste, contacta al administrador.',
       error: 'Internal server error',
       statusCode: 500,
     };

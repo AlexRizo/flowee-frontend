@@ -1,4 +1,5 @@
-import { Pencil, Trash } from "lucide-react"
+import { Eye, Pencil, Trash } from "lucide-react"
+import { Link } from "react-router"
 import { Button } from "~/components/ui/button"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 import { Roles, type User } from "~/services/interfaces/users-service.interface"
@@ -31,29 +32,26 @@ export const UsersTable = ({ users = [] }: { users: User[] }) => {
       <TableCaption>Listado de usuarios.</TableCaption>
       <TableHeader>
         <TableRow className="border-gray-300">
-          <TableHead className="w-[100px]">#</TableHead>
+          <TableHead className="w-[100px] text-center">N°</TableHead>
           <TableHead>Usuario</TableHead>
           <TableHead>Nombre</TableHead>
           <TableHead>Correo</TableHead>
           <TableHead>Roles</TableHead>
-          <TableHead className="text-right">Acciones</TableHead>
+          <TableHead className="text-center">Acciones</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map((user, index) => (
-          <TableRow key={user.id}>
-            <TableCell className="font-medium">{index + 1}</TableCell>
+          <TableRow key={user.id} className="border-gray-200">
+            <TableCell className="font-medium text-center">{index + 1}</TableCell>
             <TableCell>@{user.nickname}</TableCell>
             <TableCell>{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>{setRoles(user.roles)}</TableCell>
-          <TableCell className="text-right space-x-2">
-            <Button variant="secondary" size="sm">
-              <Pencil size={16} strokeWidth={1.5}/>
-            </Button>
-            <Button variant="destructive" size="sm">
-              <Trash size={16} strokeWidth={1.5}/>
-            </Button>
+          <TableCell className="items-center justify-center flex">
+            <Link to={`/usuarios/${user.nickname}`} className="bg-blue-500 text-white p-1.5 rounded">
+              <Eye size={16} strokeWidth={1.5}/>
+            </Link>
           </TableCell>
           </TableRow>
         ))}

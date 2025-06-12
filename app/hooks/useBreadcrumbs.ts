@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useLocation } from "react-router"
 
-export const useBreadcrums = () => {
+export const useBreadcrumbs = () => {
   const { pathname } = useLocation()
   const [breadcrumbs, setBreadcrumbs] = useState<{ segments: string[], breadcrumbsPaths: string[] }>({ segments: [], breadcrumbsPaths: [] })
 

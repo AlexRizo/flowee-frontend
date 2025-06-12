@@ -11,6 +11,7 @@ export const getBoards = async (cookie?: string) => {
         statusCode: res.statusCode,
       };
     }
+    
 
     return { boards: res.boards };
   });

@@ -1,10 +1,10 @@
 import { ChevronRight, Home } from "lucide-react"
 import { Fragment } from "react"
 import { Link } from "react-router"
-import { useBreadcrums } from "~/hooks/useBreadcrums"
+import { useBreadcrumbs } from "~/hooks/useBreadcrumbs"
 
-export const Breadcrums = () => {
-  const { breadcrumbs } = useBreadcrums()
+export const Breadcrumbs = () => {
+  const { breadcrumbs } = useBreadcrumbs()
 
   return (
     <div className="flex items-center gap-1.5">

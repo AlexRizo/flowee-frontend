@@ -1,11 +1,13 @@
 import { UsersTable } from "~/components/dashboard/users/UsersTable";
-import type { Route } from "./+types/users";
-import { getUsers } from "~/services/users-service";
+import type { Route } from "./+types/_index";
+import { createUser, getUsers } from "~/services/users-service";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateUserModal } from "~/components/dashboard/users/CreateUserModal";
 import { useSubmit } from "react-router";
+import type { Roles } from "~/services/interfaces/users-service.interface";
+import { PageLoader } from "~/components/dashboard/PageLoader";
 
 export function meta() {
   return [
@@ -30,14 +32,23 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const user = {
-    name: formData.get("name"),
-    nickname: formData.get("nickname"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-    roles: formData.get("roles"),
+    name: formData.get("name") as string,
+    nickname: formData.get("nickname") as string,
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+    roles: formData.get("roles")?.toString().split(",") as Roles[],
   };
 
-  console.log(user);
+  const createResponse = await createUser(user);
+
+  return {
+    message: createResponse.message,
+    error: createResponse.error,
+  };
+}
+
+export function HydrateFallback() {
+  return <PageLoader />;
 }
 
 const Users = ({ loaderData }: Route.ComponentProps) => {
@@ -50,7 +61,7 @@ const Users = ({ loaderData }: Route.ComponentProps) => {
         <h1 className="text-2xl font-bold">Usuarios</h1>
         <CreateUserModal submit={submit}>
           <Button>
-            <Plus size={16} strokeWidth={1.5}/>
+            <Plus size={16} strokeWidth={1.5} />
             Nuevo usuario
           </Button>
         </CreateUserModal>

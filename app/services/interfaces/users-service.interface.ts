@@ -1,11 +1,20 @@
+export interface CreateUser {
+  name: string;
+  nickname: string;
+  email: string;
+  password: string;
+  roles: Roles[];
+}
+
 export interface User {
   id: string;
   name: string;
   nickname: string;
   email: string;
   roles: Roles[];
-  createdAt: string;
-  updatedAt: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UsersResponse {
@@ -13,6 +22,13 @@ export interface UsersResponse {
   error?: string;
   statusCode?: number;
   message?: string | string[];
+}
+
+export interface UserResponse {
+  user?: User;
+  error?: string;
+  statusCode?: number;
+  message?: string;
 }
 
 export enum Roles {
@@ -24,3 +40,41 @@ export enum Roles {
   PUBLISHER_MANAGER = 'publisher_manager',
   READER = 'reader',
 }
+
+export interface CreateUserResponse {
+  user?: User;
+  error?: string;
+  statusCode?: number;
+  message: string | string[];
+}
+
+export const roles = [
+  {
+    label: "Administrador",
+    value: Roles.ADMIN,
+  },
+  {
+    label: "Super administrador",
+    value: Roles.SUPER_ADMIN,
+  },
+  {
+    label: "Publicador",
+    value: Roles.PUBLISHER,
+  },
+  {
+    label: "Diseñador",
+    value: Roles.DESIGNER,
+  },
+  {
+    label: "Gestor de diseño",
+    value: Roles.DESIGN_MANAGER,
+  },
+  {
+    label: "Gestor de publicaciones",
+    value: Roles.PUBLISHER_MANAGER,
+  },
+  {
+    label: "Lector",
+    value: Roles.READER,
+  },
+];

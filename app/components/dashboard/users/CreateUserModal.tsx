@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "~/components/ui/button";
 import {
@@ -12,9 +12,8 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import {
-  Form,
+  Form as ShadForm,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,10 +21,18 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { MultipleSelect } from "../MultipleSelect";
-import { Roles } from "~/services/interfaces/users-service.interface";
+import { roles, Roles } from "~/services/interfaces/users-service.interface";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { SubmitFunction } from "react-router";
+import {
+  Form,
+  useActionData,
+  useNavigation,
+  type SubmitFunction,
+} from "react-router";
+import { InfoTooltip } from "~/components/InfoTooltip";
+import { Alert } from "~/components/Alert";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z
@@ -48,13 +55,10 @@ const formSchema = z.object({
   password: z
     .string()
     .min(6, { message: "La contraseña debe tener al menos 6 caracteres" })
-    .regex(
-      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{6,}$/,
-      {
-        message:
-          "La contraseña debe tener una letra mayúscula, una letra minúscula, un número y un carácter especial",
-      }
-    )
+    .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{6,}$/, {
+      message:
+        "La contraseña debe tener una letra mayúscula, una letra minúscula, un número y un carácter especial",
+    })
     .max(50, { message: "La contraseña no puede tener más de 50 caracteres" }),
   roles: z
     .array(z.nativeEnum(Roles, { message: "Los roles no son válidos" }), {
@@ -87,49 +91,46 @@ export const CreateUserModal = ({
     });
   };
 
-  const roles = [
-    {
-      label: "Administrador",
-      value: Roles.ADMIN,
-    },
-    {
-      label: "Super administrador",
-      value: Roles.SUPER_ADMIN,
-    },
-    {
-      label: "Publicador",
-      value: Roles.PUBLISHER,
-    },
-    {
-      label: "Diseñador",
-      value: Roles.DESIGNER,
-    },
-    {
-      label: "Gestor de diseño",
-      value: Roles.DESIGN_MANAGER,
-    },
-    {
-      label: "Gestor de publicaciones",
-      value: Roles.PUBLISHER_MANAGER,
-    },
-    {
-      label: "Lector",
-      value: Roles.READER,
-    },
-  ];
+  const { message, error } = useActionData<{
+    message: string;
+    error: boolean;
+  }>() || { message: null, error: false };
+
+  const [ reseted, setReseted ] = useState(false);
+  
+  const { state } = useNavigation();
+  const [open, setOpen] = useState(false);
+
+  const resetForm = () => {
+    setReseted(true);
+    form.reset();
+  };
+
+  useEffect(() => {
+    setReseted(false);
+  }, [state]);
+
+  useEffect(() => {
+    if (!error) {
+      setOpen(false);
+    }
+  }, [error]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] border-gray-300">
+      <DialogContent
+        className="sm:max-w-[425px] border-gray-300"
+        onCloseAutoFocus={() => resetForm()}
+      >
         <DialogHeader>
           <DialogTitle>Nuevo usuario</DialogTitle>
           <DialogDescription>
             Crea un nuevo usuario para tu organización.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <ShadForm {...form}>
+          <Form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -178,32 +179,13 @@ export const CreateUserModal = ({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contraseña</FormLabel>
+                  <FormLabel>
+                    Contraseña
+                    <InfoTooltip text="La contraseña debe contener al menos 6 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial." />
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Abc123+?-" {...field} maxLength={50} />
                   </FormControl>
-                  <FormDescription className="text-xs">
-                    Debe contener:
-                    <span className="flex flex-col">
-                      <span className='before:content-["-"]'>
-                        {" "}
-                        Al menos 6 caracteres.
-                      </span>
-                      <span className='before:content-["-"]'>
-                        {" "}
-                        Una letra mayúscula.
-                      </span>
-                      <span className='before:content-["-"]'>
-                        {" "}
-                        Una letra minúscula.
-                      </span>
-                      <span className='before:content-["-"]'> Un número.</span>
-                      <span className='before:content-["-"]'>
-                        {" "}
-                        Un carácter especial.
-                      </span>
-                    </span>
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -225,16 +207,32 @@ export const CreateUserModal = ({
                 </FormItem>
               )}
             />
+            {(error && state === "idle" && !reseted) && (
+              <Alert
+                title="No se ha podido crear el usuario"
+                content={message}
+                variant="destructive"
+              />
+            )}
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline" onClick={() => form.reset()}>
-                  Cancel
+                <Button variant="outline" disabled={state === "submitting"}>
+                  Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit" disabled={state === "submitting"}>
+                {state === "submitting" ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin-clockwise repeat-infinite" />
+                    <span >Creando...</span>
+                  </>
+                ) : (
+                  "Crear usuario"
+                )}
+              </Button>
             </DialogFooter>
-          </form>
-        </Form>
+          </Form>
+        </ShadForm>
       </DialogContent>
     </Dialog>
   );

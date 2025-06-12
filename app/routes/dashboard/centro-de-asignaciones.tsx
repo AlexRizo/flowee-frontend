@@ -1,3 +1,4 @@
+import { PageLoader } from "~/components/dashboard/PageLoader"
 import { getTitle } from "~/lib/utils"
 
 export function meta() {
@@ -10,7 +11,7 @@ export function meta() {
 
 const centroDeAsignaciones = () => {
   return (
-    <div>centroDeAsignaciones</div>
+    <PageLoader />
   )
 }
 
