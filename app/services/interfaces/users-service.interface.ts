@@ -1,10 +1,4 @@
-export interface CreateUser {
-  name: string;
-  nickname: string;
-  email: string;
-  password: string;
-  roles: Roles[];
-}
+import type { Board } from "./boards-service.interface";
 
 export interface User {
   id: string;
@@ -15,6 +9,24 @@ export interface User {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+  boards?: Board[];
+}
+
+export interface UpdateUser {
+  name?: string;
+  nickname?: string;
+  email?: string;
+  roles?: Roles[];
+  isActive?: boolean;
+  boards?: Board[];
+}
+
+export interface CreateUser {
+  name: string;
+  nickname: string;
+  email: string;
+  password: string;
+  roles: Roles[];
 }
 
 export interface UsersResponse {
@@ -46,6 +58,13 @@ export interface CreateUserResponse {
   error?: string;
   statusCode?: number;
   message: string | string[];
+}
+
+export interface UpdateUserResponse {
+  user?: User;
+  message: string | string[];
+  error?: string;
+  statusCode?: number;
 }
 
 export const roles = [

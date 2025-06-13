@@ -12,7 +12,6 @@ export const getBoards = async (cookie?: string) => {
       };
     }
     
-
     return { boards: res.boards };
   });
 }

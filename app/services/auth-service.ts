@@ -45,7 +45,7 @@ export const logout = async () => {
         statusCode: res.statusCode,
       };
     }
-    console.log(res);
+    
     return redirect('/auth');
   });
 };

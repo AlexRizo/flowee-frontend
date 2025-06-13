@@ -1,12 +1,13 @@
-import { getUser } from "~/services/users-service";
+import { getUser, updateUser } from "~/services/users-service";
 import type { Route } from "./+types/user";
 import { Badge } from "~/components/ui/badge";
 import { User2 } from "lucide-react";
 import { getTitle } from "~/lib/utils";
-import { Form } from "~/components/ui/form";
 import { EditUserForm } from "~/components/dashboard/users/EditUserForm";
-import type { User } from "~/services/interfaces/users-service.interface";
+import type { UpdateUserResponse, User } from "~/services/interfaces/users-service.interface";
 import { UserBoards } from "~/components/dashboard/users/UserBoards";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 export function meta({ params }: Route.MetaArgs) {
   return [
@@ -20,22 +21,43 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const userResponse = await getUser(nickname, cookie);
 
-  console.log(userResponse);
-  
   return { user: userResponse.user };
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const intent = formData.get("intent");
-  const boards = formData.get("boards");
-  console.log(intent, boards);
+  const userToUpdate = {
+    userId: formData.get("userId") as string,
+    name: formData.get("name") as string,
+    nickname: formData.get("nickname") as string,
+    email: formData.get("email") as string,
+    roles: JSON.parse(formData.get("roles") as string),
+    boards: JSON.parse(formData.get("boards") as string),
+  };
+
+  let updateUserResponse: UpdateUserResponse | undefined;
+  
+  console.log(userToUpdate);
+  
+  const { userId, ...userData } = userToUpdate;
+  updateUserResponse = await updateUser(userId, userData);
+
+  if (updateUserResponse) {
+    const { message, user } = updateUserResponse;
+    if (updateUserResponse.error) {
+      toast.error(message);
+    } else {
+      toast.success(message);
+      return {
+        updatedUser: user,
+      }
+    }
+  }
 }
 
-const User = ({ loaderData }: Route.ComponentProps) => {
-
+const User = ({ loaderData, actionData }: Route.ComponentProps) => {
   const { user } = loaderData;
-
+  
   return (
     <section>
       <article className="flex items-center gap-4">
@@ -54,28 +76,28 @@ const User = ({ loaderData }: Route.ComponentProps) => {
         </div>
       </article>
 
-    <div className="flex gap-4 mt-10 w-full justify-between">
-      <div className="border border-gray-200 rounded p-6 space-y-6 w-full">
-        <div className="flex flex-col">
-          <h2 className="text-2xl font-semibold">Información personal</h2>
-          <p className="text-sm text-gray-500">Información básica del usuario</p>
+      <div className="flex gap-4 mt-10 w-full justify-between">
+        <div className="border border-gray-200 rounded p-6 space-y-6 w-full">
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold">Información personal</h2>
+            <p className="text-sm text-gray-500">Información básica del usuario</p>
+          </div>
+
+          <EditUserForm user={ user } />
         </div>
 
-        <EditUserForm user={ user } />
+        <div className="border border-gray-200 rounded p-6 space-y-6 w-full">
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold">Sistema</h2>
+            <p className="text-sm text-gray-500">Accesos del usuario</p>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Tableros</h3>
+            <UserBoards boards={user?.boards || []} />
+          </div>
+        </div>
       </div>
-
-      <div className="border border-gray-200 rounded p-6 space-y-6 w-full">
-        <div className="flex flex-col">
-          <h2 className="text-2xl font-semibold">Sistema</h2>
-          <p className="text-sm text-gray-500">Accesos del usuario</p>
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Tableros</h3>
-          <UserBoards boards={user?.boards || []} />
-        </div>
-      </div>
-    </div>
     </section>
   )
 }

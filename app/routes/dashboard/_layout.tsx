@@ -6,6 +6,8 @@ import { checkAuth, logout } from "~/services/auth-service";
 import { Navbar } from "~/components/dashboard/Navbar";
 import { toast, Toaster } from "sonner";
 import { useEffect } from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "~/services/queryClient";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const cookie = request.headers.get('Cookie');
@@ -27,21 +29,19 @@ export async function loader({ request }: Route.LoaderArgs) {
 const DashboardLayout = ({ loaderData }: Route.ComponentProps) => {
   const { boards } = loaderData;
 
-  useEffect(() => {
-    if (!boards) toast.error('No se han encontrado tableros');
-  }, [boards]);
-
   return ( 
-    <main className="flex bg-gray-50">
-      <Toaster />
-      <Sidebar boards={boards || []}/>
-      <div className="w-full flex flex-col">
-        <Navbar />
-        <div className="p-6 h-full">
-          <Outlet />
+    <QueryClientProvider client={queryClient}>
+      <main className="flex bg-gray-50">
+        <Toaster />
+        <Sidebar boards={boards || []}/>
+        <div className="w-full flex flex-col">
+          <Navbar />
+          <div className="p-6 h-full">
+            <Outlet />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </QueryClientProvider>
   )
 }
 

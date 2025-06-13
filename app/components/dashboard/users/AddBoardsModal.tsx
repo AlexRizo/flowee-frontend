@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Form, useActionData, useSubmit, type SubmitFunction } from "react-router";
+import { useEffect, useState } from "react";
+import { Form, useActionData, useLoaderData, useSubmit, type SubmitFunction } from "react-router";
 import {
   Dialog,
   DialogHeader,
@@ -14,7 +14,6 @@ import {
   Form as ShadcnForm,
   FormField,
   FormItem,
-  FormLabel,
   FormControl,
   FormMessage,
 } from "~/components/ui/form";
@@ -25,43 +24,44 @@ import { Button } from "~/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Alert } from "~/components/Alert";
 import { SelecBoards } from "./SelecBoards";
-import type { Board } from "~/services/interfaces/boards-service.interface";
 import { Input } from "~/components/ui/input";
+import { getBoards } from "~/services/boards-service";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { User } from "~/services/interfaces/users-service.interface";
 
 const formSchema = z.object({
   boards: z.array(z.object({
     id: z.string(),
     name: z.string(),
-    color: z.string(),
-    slug: z.string(),
-    prefix: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
   })),
-  intent: z.string(),
 });
 
 export const AddBoardsModal = ({
   children,
-  boards,
+  selectedBoards,
 }: {
   children: React.ReactNode;
-  boards: Board[];
+  selectedBoards: {id: string, name: string}[];
 }) => {
   const [open, setOpen] = useState(false);
-  const [reseted, setReseted] = useState(false);
   const submit = useSubmit();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      boards: [],
-      intent: "add-boards",
+      boards: selectedBoards,
     },
   });
 
+  const { user } = useLoaderData<{ user: User }>();
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    submit(data, {
+    const formData = new FormData();
+    formData.append("boards", JSON.stringify(data.boards));
+    formData.append("userId", user.id);
+
+    submit(formData, {
       method: "post",
     });
   };
@@ -72,6 +72,34 @@ export const AddBoardsModal = ({
     message?: string;
   }>() || { error: undefined, state: "idle", message: undefined };
 
+  const { data:boardsQuery, isError, error:errorQuery } = useQuery({
+    queryKey: ["boards"],
+    queryFn: async () => {
+      const { boards, message } = await getBoards();
+
+      if (!boards) throw new Error(message);
+
+      return boards;
+    },
+    enabled: open,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(errorQuery?.message);
+    }
+  }, [isError]);
+
+  useEffect(() => {
+    if (state === "success") {
+      setOpen(false);
+      form.reset({
+        boards: selectedBoards,
+      });
+    }
+  }, [state]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
@@ -79,7 +107,6 @@ export const AddBoardsModal = ({
         </DialogTrigger>
       <DialogContent
         className="sm:max-w-[425px] border-gray-300"
-        onCloseAutoFocus={() => form.reset()}
       >
         <DialogHeader>
           <DialogTitle>Agregar tableros</DialogTitle>
@@ -89,13 +116,6 @@ export const AddBoardsModal = ({
         </DialogHeader>
         <ShadcnForm {...form}>
           <Form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-              control={form.control}
-              name="intent"
-              render={({ field }) => (
-                <Input type="hidden" value={field.value}/>
-              )}
-            />
             <FormField
               control={form.control}
               name="boards"
@@ -103,7 +123,7 @@ export const AddBoardsModal = ({
                 <FormItem>
                   <FormControl>
                     <SelecBoards
-                      boards={boards}
+                      boards={boardsQuery || []}
                       selectedBoards={field.value}
                       setSelectedBoards={field.onChange}
                     />
@@ -112,7 +132,7 @@ export const AddBoardsModal = ({
                 </FormItem>
               )}
             />
-            {error && state === "idle" && !reseted && (
+            {error && state === "idle" && (
               <Alert
                 title="No se han podido agregar los tableros"
                 content={message}
@@ -132,7 +152,7 @@ export const AddBoardsModal = ({
                     <span>Creando...</span>
                   </>
                 ) : (
-                  "Crear usuario"
+                  "Agregar tableros"
                 )}
               </Button>
             </DialogFooter>

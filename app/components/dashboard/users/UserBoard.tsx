@@ -8,7 +8,7 @@ export const UserBoard = ({
   return (
     <div
       role="button"
-      className="rounded-xs bg-gray-300 w-full min-h-36 flex flex-col items-center justify-center gap-2 cursor-pointer hover:scale-105 transition-transform"
+      className="rounded-sm bg-gray-300 w-full min-h-26 flex flex-col items-center justify-center gap-2 cursor-pointer hover:scale-105 transition-transform shadow"
       style={{ backgroundColor: color }}
     >
       {children}

@@ -2,6 +2,8 @@ import { api, getErrorMessage } from "./api";
 import type {
   CreateUser,
   CreateUserResponse,
+  UpdateUser,
+  UpdateUserResponse,
   UserResponse,
   UsersResponse,
 } from "./interfaces/users-service.interface";
@@ -33,7 +35,6 @@ export const getUser = async (nickname: string, cookie: string) => {
 
 export const createUser = async (data: CreateUser) => {
   return await api.post("users", data).then((res: CreateUserResponse) => {
-    console.log(res);
     if (res.error) {
       return {
         message: getErrorMessage(res.message),
@@ -44,6 +45,22 @@ export const createUser = async (data: CreateUser) => {
 
     return {
       user: res.user,
+      message: res.message,
+    };
+  });
+};
+
+export const updateUser = async (userId: string, userData: UpdateUser) => {
+  return await api.patch(`users/${userId}`, { ...userData }).then((res: UpdateUserResponse) => {
+    if (res.error) {
+      return {
+        message: getErrorMessage(res.message),
+        error: res.error,
+        statusCode: res.statusCode,
+      };
+    } 
+
+    return {
       message: res.message,
     };
   });
