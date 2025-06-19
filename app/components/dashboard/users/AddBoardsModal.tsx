@@ -24,7 +24,6 @@ import { Button } from "~/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Alert } from "~/components/Alert";
 import { SelecBoards } from "./SelecBoards";
-import { Input } from "~/components/ui/input";
 import { getBoards } from "~/services/boards-service";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -58,7 +57,10 @@ export const AddBoardsModal = ({
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     const formData = new FormData();
-    formData.append("boards", JSON.stringify(data.boards));
+
+    const boards = data.boards.map((board) => board.id);
+
+    formData.append("boards", JSON.stringify(boards));
     formData.append("userId", user.id);
 
     submit(formData, {

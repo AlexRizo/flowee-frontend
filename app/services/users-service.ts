@@ -51,17 +51,36 @@ export const createUser = async (data: CreateUser) => {
 };
 
 export const updateUser = async (userId: string, userData: UpdateUser) => {
-  return await api.patch(`users/${userId}`, { ...userData }).then((res: UpdateUserResponse) => {
-    if (res.error) {
-      return {
-        message: getErrorMessage(res.message),
-        error: res.error,
-        statusCode: res.statusCode,
-      };
-    } 
+  let isActive = undefined;
 
-    return {
-      message: res.message,
-    };
-  });
+  if (userData.isActive) {
+    switch (userData.isActive) {
+      case "true":
+        isActive = true;
+        break;
+      case "false":
+        isActive = false;
+        break;
+    }
+  }
+  
+  return await api
+    .patch(`users/${userId}`, {
+      ...userData,
+      isActive,
+    })
+    .then((res: UpdateUserResponse) => {
+      if (res.error) {
+        return {
+          message: getErrorMessage(res.message),
+          error: res.error,
+          statusCode: res.statusCode,
+        };
+      }
+
+      return {
+        user: res.user,
+        message: res.message,
+      };
+    });
 };

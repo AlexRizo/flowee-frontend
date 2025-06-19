@@ -17,7 +17,7 @@ export interface UpdateUser {
   nickname?: string;
   email?: string;
   roles?: Roles[];
-  isActive?: boolean;
+  isActive?: string;
   boards?: Board[];
 }
 

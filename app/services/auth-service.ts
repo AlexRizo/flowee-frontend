@@ -8,6 +8,7 @@ export const login = async (
 ): Promise<LoginResponse> => {
   return await api.post('auth/login', { email, password })
   .then((res: LoginResponse) => {
+    console.log(res);
     if (res.error) {
       return {
         message: getErrorMessage(res.message),
@@ -23,7 +24,6 @@ export const checkAuth = async (cookie?: string) => {
   return await api.get('auth/check-auth', { cookie })
   .then((res: LoginResponse) => {
     if (res.error || !res.user) {
-      console.error(res);
       return {
         message: getErrorMessage(res.message),
         error: res.error,
