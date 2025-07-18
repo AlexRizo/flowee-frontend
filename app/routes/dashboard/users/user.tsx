@@ -82,11 +82,11 @@ const User = ({ loaderData }: Route.ComponentProps) => {
           <h1 className="text-2xl font-bold leading-none">{user?.name}</h1>
           <p className="text-gray-500 leading-none">{user?.email}</p>
           <div className="space-x-2 flex items-center mt-3">
-            <Badge variant={user?.isActive ? "default" : "destructive"}>
-              {user?.isActive ? "Activo" : "Inactivo"}
-            </Badge>
             <Badge variant="outline" className="border-gray-300">
               <User2 size={16} />@{user?.nickname}
+            </Badge>
+            <Badge variant={user?.isActive ? "default" : "destructive"}>
+              {user?.isActive ? "Activo" : "Inactivo"}
             </Badge>
           </div>
         </div>
