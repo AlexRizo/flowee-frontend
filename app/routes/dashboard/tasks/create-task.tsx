@@ -1,0 +1,86 @@
+import { Mail } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { TaskTypeCard } from "~/components/dashboard/tasks/TaskTypeCard";
+import { Button } from "~/components/ui/button";
+
+export function meta() {
+  return [
+    {
+      title: "Crear solicitud | Flowee",
+    },
+  ];
+}
+
+const types = [
+  {
+    id: 1,
+    name: "Digital",
+    path: "digital",
+    description: "Redes sociales y CRM",
+    icon: <Mail size={80} />,
+  },
+  {
+    id: 2,
+    name: "Impresa",
+    path: "impresa",
+    description: "Espectaculares, pendones",
+    icon: <Mail size={80} />,
+  },
+  {
+    id: 3,
+    name: "Ecommerce",
+    path: "ecommerce",
+    description: "Banners, news, diseño web",
+    icon: <Mail size={80} />,
+  },
+  {
+    id: 4,
+    name: "Especial",
+    path: "especial",
+    description: "Material distinto",
+    icon: <Mail size={80} />,
+  },
+];
+
+const CreateTask = () => {
+  const [selectedType, setSelectedType] = useState<number | null>(null);
+  const navigate = useNavigate();
+
+  const handleStart = () => {
+    if (!selectedType) return;
+    navigate(
+      `/solicitudes/crear/${
+        types.find((type) => type.id === selectedType)?.path
+      }`
+    );
+  };
+
+  return (
+    <div className="flex flex-col m-auto bg-white rounded-lg px-18 py-8 w-min">
+      <h1 className="text-center text-xl font-bold mb-8">
+        Selecciona el tipo de solicitud
+      </h1>
+      <div role="grid" className="grid grid-cols-2 gap-4 w-max">
+        {types.map((type, index) => (
+          <TaskTypeCard
+            key={index}
+            {...type}
+            selected={selectedType}
+            setSelected={setSelectedType}
+          />
+        ))}
+      </div>
+      <Button
+        onClick={handleStart}
+        disabled={!selectedType}
+        size="lg"
+        className="mx-auto w-67.5 h-15 mt-8 bg-violet-700 hover:bg-violet-800 text-xl font-bold"
+      >
+        Comenzar
+      </Button>
+    </div>
+  );
+};
+
+export default CreateTask;

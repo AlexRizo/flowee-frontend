@@ -17,6 +17,15 @@ export default [
     route('usuarios', 'routes/dashboard/users/_index.tsx'),
     route('usuarios/:nickname', 'routes/dashboard/users/user.tsx'),
 
+    ...prefix('solicitudes', [
+      index('./routes/dashboard/tasks/_index.tsx'),
+      route('crear', './routes/dashboard/tasks/create-task.tsx'),
+      route('crear/digital', './routes/dashboard/tasks/digital-task.tsx'),
+      route('crear/impresa', './routes/dashboard/tasks/print-task.tsx'),
+      route('crear/ecommerce', './routes/dashboard/tasks/ecommerce-task.tsx'),
+      route('crear/especial', './routes/dashboard/tasks/special-task.tsx'),
+    ]),
+
     // ? Ruta para cerrar sesión;
     route('logout', 'routes/dashboard/logout.tsx'),
   ]),

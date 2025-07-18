@@ -2,10 +2,9 @@ import { Outlet, redirect } from "react-router"
 import type { Route } from "./+types/_layout";
 import { Sidebar } from "~/components/dashboard/Sidebar";
 import { getBoards } from "~/services/boards-service";
-import { checkAuth, logout } from "~/services/auth-service";
+import { checkAuth } from "~/services/auth-service";
 import { Navbar } from "~/components/dashboard/Navbar";
-import { toast, Toaster } from "sonner";
-import { useEffect } from "react";
+import { Toaster } from "sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "~/services/queryClient";
 
