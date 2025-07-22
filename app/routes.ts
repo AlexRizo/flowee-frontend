@@ -11,7 +11,10 @@ export default [
     index('routes/dashboard/_index.tsx'),
     route('autoasignaciones', 'routes/dashboard/autoasignaciones.tsx'),
     route('centro-de-asignaciones', 'routes/dashboard/centro-de-asignaciones.tsx'),
-    route('tablero/:slug', 'routes/dashboard/board.tsx'),
+    
+    ...prefix('tableros', [
+      route(':slug', 'routes/dashboard/boards/board.tsx'),
+    ]),
 
     // ? Rutas para usuarios;
     route('usuarios', 'routes/dashboard/users/_index.tsx'),

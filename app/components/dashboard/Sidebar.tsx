@@ -32,7 +32,7 @@ export const Sidebar = ({ boards = [] }: { boards: Board[]}) => {
         <div className="flex flex-col gap-2">
           <small className="text-gray-400">Tableros</small>
           {boards.map((board) => (
-            <SidebarMenuBoard to={`/tablero/${board.slug}`} label={board.name} key={board.id}>
+            <SidebarMenuBoard to={`/tableros/${board.slug}`} label={board.name} key={board.id}>
               <BoardIcon prefix={board.prefix} color={board.color}/>
             </SidebarMenuBoard>
           ))}
