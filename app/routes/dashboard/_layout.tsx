@@ -7,6 +7,8 @@ import { Navbar } from "~/components/dashboard/Navbar";
 import { Toaster } from "sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "~/services/queryClient";
+import { BoardProvider, useBoardContext } from "~/context/BoardContext";
+import { useEffect } from "react";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const cookie = request.headers.get('Cookie');
@@ -30,16 +32,18 @@ const DashboardLayout = ({ loaderData }: Route.ComponentProps) => {
 
   return ( 
     <QueryClientProvider client={queryClient}>
-      <main className="flex bg-gray-50">
-        <Toaster />
-        <Sidebar boards={boards || []}/>
-        <div className="w-full flex flex-col">
-          <Navbar />
-          <div className="p-6 h-full">
-            <Outlet />
+      <BoardProvider initialBoards={boards}>
+        <main className="flex bg-gray-50">
+          <Toaster />
+          <Sidebar/>
+          <div className="w-full flex flex-col">
+            <Navbar/>
+            <div className="p-6 h-full">
+              <Outlet />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </BoardProvider>
     </QueryClientProvider>
   )
 }

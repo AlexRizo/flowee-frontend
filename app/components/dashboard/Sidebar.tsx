@@ -6,7 +6,7 @@ import { SidebarMenuBoard } from "./SidebarMenuBoard"
 import { Button } from "../ui/button"
 import { Form } from "react-router"
 
-export const Sidebar = ({ boards = [] }: { boards: Board[]}) => {
+export const Sidebar = () => {
   return (
     <section className="min-w-60 h-screen bg-white border-r border-gray-200 p-4 flex flex-col">
       <header className="flex items-center gap-2">
@@ -28,15 +28,15 @@ export const Sidebar = ({ boards = [] }: { boards: Board[]}) => {
           </SidebarMenuItem>
         </div>
 
-        {/* ? Rutas dinámicas */}
-        <div className="flex flex-col gap-2">
+        {/* ? Rutas dinámicas - Deshabilitadas por el momento */}
+        {/* <div className="flex flex-col gap-2">
           <small className="text-gray-400">Tableros</small>
           {boards.map((board) => (
             <SidebarMenuBoard to={`/tableros/${board.slug}`} label={board.name} key={board.id}>
               <BoardIcon prefix={board.prefix} color={board.color}/>
             </SidebarMenuBoard>
           ))}
-        </div>
+        </div> */}
 
         {/* ? Rutas de configuración */}
         <div className="flex flex-col gap-2">
