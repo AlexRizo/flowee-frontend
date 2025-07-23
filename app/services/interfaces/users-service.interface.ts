@@ -6,6 +6,7 @@ export interface User {
   nickname: string;
   email: string;
   roles: Roles[];
+  avatar: string | null;
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;

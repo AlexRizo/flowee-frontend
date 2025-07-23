@@ -4,6 +4,7 @@ export interface LoginResponse {
     name: string;
     email: string;
     nickname: string;
+    avatar: string | null;
   };
   message?: string | string[];
   error?: string;
