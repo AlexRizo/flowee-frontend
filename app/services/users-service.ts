@@ -4,6 +4,7 @@ import type {
   CreateUserResponse,
   UpdateUser,
   UpdateUserResponse,
+  UploadAvatarResponse,
   UserResponse,
   UsersResponse,
 } from "./interfaces/users-service.interface";
@@ -63,7 +64,7 @@ export const updateUser = async (userId: string, userData: UpdateUser) => {
         break;
     }
   }
-  
+
   return await api
     .patch(`users/${userId}`, {
       ...userData,
@@ -84,3 +85,25 @@ export const updateUser = async (userId: string, userData: UpdateUser) => {
       };
     });
 };
+
+export const uploadAvatar = async (userId: string, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return await api.patch(`users/${userId}/avatar`, formData, {}, true)
+    .then(({ url, error, message, statusCode }: UploadAvatarResponse) => {
+      
+      if (error || statusCode !== 200) {
+        return {
+          message: getErrorMessage(message),
+          error: error,
+          statusCode,
+        };
+      }
+
+      return {
+        url,
+        message,
+      }
+    });
+}

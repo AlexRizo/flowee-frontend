@@ -44,7 +44,7 @@ export const Sidebar = () => {
           <SidebarMenuItem to="/usuarios" label="Usuarios">
             <Users size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
-          <SidebarMenuItem to="/configuracion" label="Configuración">
+          <SidebarMenuItem to="/perfil" label="Cuenta">
             <Settings size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
         </div>

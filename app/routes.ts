@@ -29,6 +29,9 @@ export default [
       route('crear/especial', './routes/dashboard/tasks/special-task.tsx'),
     ]),
 
+    // ? Rutas para perfil;
+    route('perfil', 'routes/dashboard/profile.tsx'),
+
     // ? Ruta para cerrar sesión;
     route('logout', 'routes/dashboard/logout.tsx'),
   ]),

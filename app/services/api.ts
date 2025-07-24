@@ -2,17 +2,24 @@ import { clientEnv } from '~/config/env';
 
 const API_URL = clientEnv.API_URL;
 
-const createRequest = async (method: string, endpoint: string, body = {}, headers = {}) => {
+interface CreateRequestOptions {
+  method: string;
+  endpoint: string;
+  body?: any;
+  headers?: Record<string, string>;
+  isFormData?: boolean;
+}
+
+const createRequest = async ({ method, endpoint, body, headers = {}, isFormData }: CreateRequestOptions) => {
   if (!API_URL) throw new Error('La URL de la API no está definida');
 
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method,
       ...((method !== 'GET' && method !== 'DELETE') && {
-        body: JSON.stringify(body)
+        body: isFormData ? body as FormData : JSON.stringify(body),
       }),
       headers: {
-        'Content-Type': 'application/json',
         ...headers,
       },  
       credentials: 'include',
@@ -31,19 +38,19 @@ const createRequest = async (method: string, endpoint: string, body = {}, header
 
 export const api = {
   get: async (endpoint: string, headers = {}) => {
-    return createRequest('GET', endpoint, undefined, headers);
+    return createRequest({ method: 'GET', endpoint, headers });
   },
 
-  post: async (endpoint: string, body = {}, headers = {}) => {
-    return createRequest('POST', endpoint, body, headers);
+  post: async (endpoint: string, body: unknown, headers = {}, isFormData = false) => {
+    return createRequest({ method: 'POST', endpoint, body, headers, isFormData });
   },
 
-  patch: async (endpoint: string, body = {}, headers = {}) => {
-    return createRequest('PATCH', endpoint, body, headers);
+  patch: async (endpoint: string, body: unknown, headers = {}, isFormData = false) => {
+    return createRequest({ method: 'PATCH', endpoint, body, headers, isFormData });
   },
 
   delete: async (endpoint: string, headers = {}) => {
-    return createRequest('DELETE', endpoint, undefined, headers);
+    return createRequest({ method: 'DELETE', endpoint, headers });
   }
 };
 

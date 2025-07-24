@@ -1,5 +1,6 @@
 import type { Board } from "./boards-service.interface";
 
+// * Interfaces de usuarios
 export interface User {
   id: string;
   name: string;
@@ -66,6 +67,13 @@ export interface UpdateUserResponse {
   message: string | string[];
   error?: string;
   statusCode?: number;
+}
+
+export interface UploadAvatarResponse {
+  url?: string;
+  statusCode?: number;
+  error?: string;
+  message: string;
 }
 
 export const roles = [

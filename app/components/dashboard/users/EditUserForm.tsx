@@ -102,7 +102,7 @@ export const EditUserForm = ({
     <ShadcnForm {...form}>
       <Form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={`space-y-4 ${!enabled && "opacity-50 pointer-events-none"}`}
+        className={`space-y-4 ${!enabled && "opacity-60 pointer-events-none"}`}
       >
         <FormField
           control={form.control}

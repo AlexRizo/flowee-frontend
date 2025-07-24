@@ -1,9 +1,7 @@
+import type { FC } from "react";
+import { Link } from "react-router"
 import { Bell, Search, Sun } from "lucide-react"
 import { Breadcrumbs } from "./Breadcrumbs"
-import { Link } from "react-router"
-import type { Board } from "~/services/interfaces/boards-service.interface";
-import type { FC } from "react";
-import { SidebarMenuBoard } from "./SidebarMenuBoard";
 import { BoardIcon } from "./BoardIcon";
 import { useBoardContext } from "~/context/BoardContext";
 import type { User } from "~/services/interfaces/users-service.interface";
@@ -32,7 +30,7 @@ export const Navbar: FC<Props> = ({ user }) => {
         <span className="text-gray-400">|</span>
         <Link to="/perfil" className="flex items-center gap-2">
           <span className="text-primary text-sm font-semibold">{ user.name }</span>
-          <img src={ user.avatar ? user.avatar : '/images/default-user.webp' } alt={`${user.name} avatar`} className="size-6 rounded-lg" />
+          <img src={ user.avatar ? user.avatar : '/images/default-user.webp' } alt={`${user.name} avatar`} className="size-6.5 rounded" />
         </Link>
       </div>
     </nav>
