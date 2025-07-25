@@ -1,10 +1,6 @@
 import { CircleAlert, ImageUp, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type FC } from "react";
-import {
-  useFetcher,
-  useNavigation,
-  type FetcherWithComponents,
-} from "react-router";
+import { type FetcherWithComponents } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -22,14 +18,14 @@ import { createFormData } from "~/helpers/formDataHelper";
 interface Props {
   children: React.ReactNode;
   fetcher: FetcherWithComponents<any>;
+  userId: string;
+  avatar: string | null;
 }
 
-export const EditAvatar: FC<Props> = ({ children, fetcher }) => {
+export const EditAvatar: FC<Props> = ({ children, fetcher, userId, avatar = null }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
-
-  const { user } = useAuthContext();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -58,7 +54,7 @@ export const EditAvatar: FC<Props> = ({ children, fetcher }) => {
 
     const formData = createFormData({
       file,
-      userId: user.id,
+      userId,
       formType: "avatar",
     });
 
@@ -98,8 +94,8 @@ export const EditAvatar: FC<Props> = ({ children, fetcher }) => {
         <DialogHeader>
           <div className="flex">
             <img
-              src={user.avatar ? user.avatar : "/images/default-user.webp"}
-              alt={`${user.name} avatar`}
+              src={avatar ? avatar : "/images/default-user.webp"}
+              alt="Avatar"
               className="size-10 rounded-full object-cover mr-2"
             />
             <article>

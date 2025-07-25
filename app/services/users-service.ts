@@ -5,6 +5,7 @@ import type {
   UpdateUser,
   UpdateUserResponse,
   UploadAvatarResponse,
+  User,
   UserResponse,
   UsersResponse,
 } from "./interfaces/users-service.interface";
@@ -31,7 +32,19 @@ export const getUser = async (nickname: string, cookie: string) => {
 
   return await api
     .get(`users/${nickname}`, { cookie })
-    .then((res: UserResponse) => res);
+    .then((res: UserResponse) => {
+      if (res.error) {
+        return {
+          message: getErrorMessage(res.message),
+          error: res.error,
+          statusCode: res.statusCode,
+        };
+      }
+      
+      return {
+        user: res as User,
+      }
+    });
 };
 
 export const createUser = async (data: CreateUser) => {

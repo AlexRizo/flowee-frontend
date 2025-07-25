@@ -4,8 +4,7 @@ import { Label } from "~/components/ui/label";
 import { Pencil, User2 } from "lucide-react";
 import { useAuthContext } from "~/context/AuthContext";
 import { useEffect, useState } from "react";
-import { EditUserForm } from "~/components/dashboard/users/EditUserForm";
-import { type UpdateUser, type User } from "~/services/interfaces/users-service.interface";
+import { type UpdateUser } from "~/services/interfaces/users-service.interface";
 import type { Route } from "./+types/profile";
 import { getBoards } from "~/services/boards-service";
 import { toast } from "sonner";
@@ -14,7 +13,8 @@ import { getFormData } from "~/helpers/formDataHelper";
 import { updateUser, uploadAvatar } from "~/services/users-service";
 import { PageLoader } from "~/components/dashboard/PageLoader";
 import { EditAvatar } from "~/components/dashboard/profile/EditAvatar";
-import { useActionData, useFetcher, useFetchers, useSearchParams } from "react-router";
+import { useFetcher } from "react-router";
+import { EditProfile } from "~/components/dashboard/profile/EditProfile";
 
 export function meta() {
   return [
@@ -57,11 +57,24 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
         message: message ?? null,
         url: url ?? null
       };
-    case "user-data":
-      formParams = ['userId', 'name', 'nickname', 'email', 'password', 'roles'];
-      const userFormData = getFormData(formData, formParams, ["roles"]);
-      const updateUserDataRes = await updateUser(userFormData.userId as string, userFormData as UpdateUser);
-      break;
+    case "profile":
+      formParams = ['name', 'nickname', 'email', 'password'];
+      const userFormData = getFormData(formData, formParams);
+
+      const userId = formData.get("userId") as string;
+      
+      const response = await updateUser(userId, userFormData as UpdateUser);
+      
+      if (response.error) {
+        toast.error(response.error, {
+          description: response.message,
+        });
+      }
+      
+      return {
+        message: response.message ?? null,
+        user: response.user ?? null,
+      };
   }
 }
 
@@ -69,7 +82,7 @@ export function HydrateFallback() {
   return <PageLoader />;
 }
 
-const Profile = ({ loaderData }: Route.ComponentProps) => {
+const Profile = ({ loaderData, actionData }: Route.ComponentProps) => {
   const { user, setUser } = useAuthContext();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -81,6 +94,10 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
       toast.success(avatarFetcher.data.message);
     }
   }, [avatarFetcher.data])
+
+  useEffect(() => {
+    console.log(actionData);
+  }, [actionData]);
   
   return (
     <section>
@@ -88,7 +105,7 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
         <div className="flex items-center justify-center size-24 relative">
           <img src={user.avatar ? user.avatar : '/images/default-user.webp'} className="rounded-full size-full object-cover"></img>
           <div className="flex items-center justify-center absolute size-full bg-white/50 opacity-0 hover:opacity-100 transition-opacity duration-300">
-            <EditAvatar fetcher={avatarFetcher}>
+            <EditAvatar fetcher={avatarFetcher} userId={user.id} avatar={user.avatar}>
               <button className="bg-gray-100 rounded-full size-10 flex items-center justify-center cursor-pointer">
                 <Pencil />
               </button>
@@ -125,7 +142,7 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
             </div>
           </div>
 
-          <EditUserForm user={user as unknown as User} enabled={isEditing} />
+          <EditProfile user={user} enabled={isEditing} />
         </div>
 
         <div className="border border-gray-200 rounded p-6 space-y-6 w-full bg-white">

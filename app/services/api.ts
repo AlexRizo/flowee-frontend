@@ -20,6 +20,7 @@ const createRequest = async ({ method, endpoint, body, headers = {}, isFormData 
         body: isFormData ? body as FormData : JSON.stringify(body),
       }),
       headers: {
+        ...(!isFormData && { 'Content-Type': 'application/json' }),
         ...headers,
       },  
       credentials: 'include',

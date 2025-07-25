@@ -25,13 +25,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const { nickname } = params;
   const cookie = request.headers.get("cookie") || "";
 
-  const userResponse = await getUser(nickname, cookie);
+  const { error, message, user } = await getUser(nickname, cookie);
 
-  if (!userResponse || userResponse.error || !userResponse.user) {
-    throw new Response(userResponse.message, { status: 404 });
+  if (error || !user) {
+    throw new Response(message, { status: 404 });
   }
 
-  return { user: userResponse.user };
+  return { user };
 }
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
@@ -79,8 +79,8 @@ const User = ({ loaderData }: Route.ComponentProps) => {
       <article className="flex items-center gap-4 border rounded border-gray-200 p-4 bg-white">
         <div role="img" className="rounded-full size-24 bg-gray-400"></div>
         <div className="flex flex-col">
-          <h1 className="text-2xl font-bold leading-none">{user?.name}</h1>
-          <p className="text-gray-500 leading-none">{user?.email}</p>
+          <h1 className="text-2xl font-bold leading-none">{user.name}</h1>
+          <p className="text-gray-500 leading-none">{user.email}</p>
           <div className="space-x-2 flex items-center mt-3">
             <Badge variant="outline" className="border-gray-300">
               <User2 size={16} />@{user?.nickname}
