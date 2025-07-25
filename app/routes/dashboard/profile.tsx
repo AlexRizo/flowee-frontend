@@ -14,8 +14,7 @@ import { getFormData } from "~/helpers/formDataHelper";
 import { updateUser, uploadAvatar } from "~/services/users-service";
 import { PageLoader } from "~/components/dashboard/PageLoader";
 import { EditAvatar } from "~/components/dashboard/profile/EditAvatar";
-import { parseFormData, type FileUpload } from "@mjackson/form-data-parser"
-import { useSearchParams } from "react-router";
+import { useActionData, useFetcher, useFetchers, useSearchParams } from "react-router";
 
 export function meta() {
   return [
@@ -45,9 +44,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     case "avatar":
       formParams = ['userId', 'file'];
       const avatarFormData = getFormData(formData, formParams);
-      const { error, message, url, statusCode } = await uploadAvatar(avatarFormData.userId as string, avatarFormData.file as File);
+      const { error, message, url } = await uploadAvatar(avatarFormData.userId as string, avatarFormData.file as File);
 
-      if (error || statusCode !== 200) {
+      if (error) {
         toast.error(error, {
           description: message,
         });
@@ -56,11 +55,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
       return {
         error: error ?? null,
         message: message ?? null,
-        url: url ?? null,
-        statusCode: statusCode ?? null,
+        url: url ?? null
       };
-
-      break;
     case "user-data":
       formParams = ['userId', 'name', 'nickname', 'email', 'password', 'roles'];
       const userFormData = getFormData(formData, formParams, ["roles"]);
@@ -74,9 +70,17 @@ export function HydrateFallback() {
 }
 
 const Profile = ({ loaderData }: Route.ComponentProps) => {
-  const { user } = useAuthContext();
-
+  const { user, setUser } = useAuthContext();
   const [isEditing, setIsEditing] = useState(false);
+
+  const avatarFetcher = useFetcher();
+
+  useEffect(() => {
+    if (avatarFetcher.data?.url) {
+      setUser({ ...user, avatar: avatarFetcher.data.url });
+      toast.success(avatarFetcher.data.message);
+    }
+  }, [avatarFetcher.data])
   
   return (
     <section>
@@ -84,7 +88,7 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
         <div className="flex items-center justify-center size-24 relative">
           <img src={user.avatar ? user.avatar : '/images/default-user.webp'} className="rounded-full size-full object-cover"></img>
           <div className="flex items-center justify-center absolute size-full bg-white/50 opacity-0 hover:opacity-100 transition-opacity duration-300">
-            <EditAvatar>
+            <EditAvatar fetcher={avatarFetcher}>
               <button className="bg-gray-100 rounded-full size-10 flex items-center justify-center cursor-pointer">
                 <Pencil />
               </button>

@@ -91,13 +91,11 @@ export const uploadAvatar = async (userId: string, file: File) => {
   formData.append('file', file);
 
   return await api.patch(`users/${userId}/avatar`, formData, {}, true)
-    .then(({ url, error, message, statusCode }: UploadAvatarResponse) => {
-      
-      if (error || statusCode !== 200) {
+    .then(({ url, error, message }: UploadAvatarResponse) => {
+      if (error) {
         return {
           message: getErrorMessage(message),
           error: error,
-          statusCode,
         };
       }
 

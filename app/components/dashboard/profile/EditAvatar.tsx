@@ -1,6 +1,10 @@
-import { ImageUp } from "lucide-react";
-import { useRef, useState } from "react";
-import { Form, useSubmit } from "react-router";
+import { CircleAlert, ImageUp, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import {
+  useFetcher,
+  useNavigation,
+  type FetcherWithComponents,
+} from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -15,14 +19,17 @@ import {
 import { useAuthContext } from "~/context/AuthContext";
 import { createFormData } from "~/helpers/formDataHelper";
 
-export const EditAvatar = ({ children }: { children: React.ReactNode }) => {
+interface Props {
+  children: React.ReactNode;
+  fetcher: FetcherWithComponents<any>;
+}
+
+export const EditAvatar: FC<Props> = ({ children, fetcher }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
 
   const { user } = useAuthContext();
-
-  const submit = useSubmit();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,14 +62,33 @@ export const EditAvatar = ({ children }: { children: React.ReactNode }) => {
       formType: "avatar",
     });
 
-    submit(formData, {
+    fetcher.submit(formData, {
       method: "post",
       encType: "multipart/form-data",
     });
   };
 
+  const [open, setOpen] = useState<boolean>(false);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) setFile(null);
+    setOpen(open);
+  };
+
+  useEffect(() => {
+    if (fetcher.data?.url) {
+      handleOpenChange(false);
+    }
+  }, [fetcher.data]);
+
+  const { state } = fetcher;
+
+  const formDisabled = useMemo(() => {
+    return !file || state !== "idle";
+  }, [file, state]);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="border-gray-200"
@@ -82,7 +108,7 @@ export const EditAvatar = ({ children }: { children: React.ReactNode }) => {
             </article>
           </div>
         </DialogHeader>
-        <Form onSubmit={handleSubmit} id="avatar-form">
+        <fetcher.Form onSubmit={handleSubmit} id="avatar-form">
           <input
             type="file"
             className="hidden"
@@ -118,15 +144,23 @@ export const EditAvatar = ({ children }: { children: React.ReactNode }) => {
               )}
             </article>
           </div>
-        </Form>
+          <small className="text-gray-600 flex items-center gap-0.5 mt-1">
+            <CircleAlert size={16} /> Tamaño máximo de 15MB.
+          </small>
+        </fetcher.Form>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" onClick={() => setFile(null)}>
-              Cancelar
-            </Button>
+            <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button type="submit" disabled={!file} form="avatar-form">
-            Guardar
+          <Button type="submit" disabled={formDisabled} form="avatar-form">
+            {state === "submitting" ? (
+              <>
+                <Loader2 className="animate-spin-clockwise repeat-infinite" />
+                <span>Subiendo</span>
+              </>
+            ) : (
+              "Guardar"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -4,14 +4,11 @@ import { Bell, Search, Sun } from "lucide-react"
 import { Breadcrumbs } from "./Breadcrumbs"
 import { BoardIcon } from "./BoardIcon";
 import { useBoardContext } from "~/context/BoardContext";
-import type { User } from "~/services/interfaces/users-service.interface";
+import { useAuthContext } from "~/context/AuthContext";
 
-interface Props {
-  user: User;
-}
-
-export const Navbar: FC<Props> = ({ user }) => {
+export const Navbar: FC = () => {
   const { boards } = useBoardContext();
+  const { user } = useAuthContext();
 
   return (
     <nav className="flex items-center justify-between w-full bg-white px-4 border-b border-gray-200 h-15 relative">
