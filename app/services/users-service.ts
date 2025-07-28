@@ -93,8 +93,8 @@ export const updateUser = async (userId: string, userData: UpdateUser) => {
       }
 
       return {
-        user: res.user,
         message: res.message,
+        user: res.user,
       };
     });
 };

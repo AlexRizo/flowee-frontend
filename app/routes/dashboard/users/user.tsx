@@ -1,7 +1,7 @@
 import { getUser, updateUser } from "~/services/users-service";
 import type { Route } from "./+types/user";
 import { Badge } from "~/components/ui/badge";
-import { Power, User2 } from "lucide-react";
+import { Pencil, Power, User2 } from "lucide-react";
 import { getTitle } from "~/lib/utils";
 import { EditUserForm } from "~/components/dashboard/users/EditUserForm";
 import type {
@@ -16,6 +16,7 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { redirect } from "react-router";
 import { ToggleUserStatus } from "~/components/dashboard/users/ToggleUserStatus";
+import { EditAvatar } from "~/components/dashboard/profile/EditAvatar";
 
 export function meta({ params }: Route.MetaArgs) {
   return [{ title: getTitle(`@${params.nickname}`) }];
@@ -34,7 +35,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { user };
 }
 
-export async function clientAction({ request, params }: Route.ClientActionArgs) {
+export async function clientAction({
+  request,
+  params,
+}: Route.ClientActionArgs) {
   const formData = await request.formData();
 
   const userToUpdate = {
@@ -44,14 +48,14 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     email: (formData.get("email") as string) || undefined,
     roles: JSON.parse(formData.get("roles") as string) || undefined,
     boards: JSON.parse(formData.get("boards") as string) || undefined,
-    isActive: formData.get("isActive") as string || undefined,
+    isActive: (formData.get("isActive") as string) || undefined,
   };
 
   let updateUserResponse: UpdateUserResponse | undefined;
 
   const { userId, ...userData } = userToUpdate;
   updateUserResponse = await updateUser(userId, userData);
-  
+
   if (updateUserResponse) {
     const { error, message, user } = updateUserResponse;
     if (error) {
@@ -77,7 +81,11 @@ const User = ({ loaderData }: Route.ComponentProps) => {
   return (
     <section>
       <article className="flex items-center gap-4 border rounded border-gray-200 p-4 bg-white">
-        <div role="img" className="rounded-full size-24 bg-gray-400"></div>
+        <img
+          src={user.avatar ? user.avatar : "/images/default-user.webp"}
+          alt="Avatar"
+          className="size-24 rounded-full object-cover"
+        />
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold leading-none">{user.name}</h1>
           <p className="text-gray-500 leading-none">{user.email}</p>
@@ -93,12 +101,12 @@ const User = ({ loaderData }: Route.ComponentProps) => {
         <div className="flex flex-col gap-2 ml-auto">
           <ToggleUserStatus id={user.id} isActive={user.isActive}>
             <Button
-            variant="outline"
-            className="border-red-500 text-red-500 hover:text-red-600"
-          >
-            <Power size={16} />
-            {user.isActive ? "Desactivar" : "Activar"}
-          </Button>
+              variant="outline"
+              className="border-red-500 text-red-500 hover:text-red-600"
+            >
+              <Power size={16} />
+              {user.isActive ? "Desactivar" : "Activar"}
+            </Button>
           </ToggleUserStatus>
         </div>
       </article>

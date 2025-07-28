@@ -7,11 +7,12 @@ interface ButtonSubmitProps {
   loadingText?: string;
   submitText?: string;
   className?: string;
+  formId?: string;
 }
 
-export const ButtonSubmit = ({ state = 'idle', loadingText = 'Creando...', submitText = 'Crear usuario', className }: ButtonSubmitProps) => {
+export const ButtonSubmit = ({ state = 'idle', loadingText = 'Creando...', submitText = 'Crear usuario', className, formId }: ButtonSubmitProps) => {
   return (
-    <Button type="submit" disabled={state === "submitting"} className={cn("w-full", className)}>
+    <Button type="submit" disabled={state === "submitting"} className={cn("w-full", className)} form={formId}>
       {state === "submitting" ? (
         <>
           <Loader2 className="w-4 h-4 animate-spin-clockwise repeat-infinite" />

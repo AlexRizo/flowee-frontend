@@ -58,10 +58,10 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
         url: url ?? null
       };
     case "profile":
-      formParams = ['name', 'nickname', 'email', 'password'];
-      const userFormData = getFormData(formData, formParams);
+      formParams = ['userId', 'name', 'nickname', 'email', 'password'];
+      const { userId, password, ...userFormData } = getFormData(formData, formParams);
 
-      const userId = formData.get("userId") as string;
+      userFormData.password =  (password === 'undefined' || password === '' || !password) ? undefined : password;
       
       const response = await updateUser(userId, userFormData as UpdateUser);
       
@@ -96,7 +96,10 @@ const Profile = ({ loaderData, actionData }: Route.ComponentProps) => {
   }, [avatarFetcher.data])
 
   useEffect(() => {
-    console.log(actionData);
+    if (actionData?.user) {
+      toast.success(actionData.message);
+      setUser({ ...user, ...actionData.user });
+    }
   }, [actionData]);
   
   return (

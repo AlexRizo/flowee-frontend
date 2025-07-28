@@ -81,8 +81,8 @@ export const LoginForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={formState === "submitting"}>
-          {formState === "submitting" ? "Iniciando sesión..." : "Iniciar sesión"}
+        <Button type="submit" className="w-full" disabled={formState !== "idle"}>
+          {formState !== "idle" ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>
       </Form>
     </ShadForm>

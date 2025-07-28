@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { FC } from "react";
+import { useMemo, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { Form, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
@@ -15,6 +15,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { createFormData } from "~/helpers/formDataHelper";
 import type { AuthUser } from "~/services/interfaces/auth-service.interface";
+import { ConfirmLogout } from "./ConfirmLogout";
+import { Button } from "~/components/ui/button";
 
 interface Props {
   user: AuthUser;
@@ -73,15 +75,24 @@ export const EditProfile: FC<Props> = ({ user, enabled }) => {
       userId: user.id,
       formType: "profile",
     });
-    
+
     submit(formData, {
       method: "PATCH",
     });
   };
 
+  const email = form.watch("email");
+  const password = form.watch("password");
+
+  const userChanged = useMemo(() => {
+    return user.email !== email ||
+      (password?.length ?? 0) > 0
+  }, [email, password]);
+  
   return (
     <ShadcnForm {...form}>
       <Form
+        id="edit-profile"
         onSubmit={form.handleSubmit(onSubmit)}
         className={`${
           !enabled && "opacity-60 pointer-events-none"
@@ -149,11 +160,20 @@ export const EditProfile: FC<Props> = ({ user, enabled }) => {
             </FormItem>
           )}
         />
-        <ButtonSubmit
-          state={state}
-          loadingText="Guardando"
-          submitText="Guardar"
-        />
+        {userChanged ? (
+          <ConfirmLogout state={state} formId="edit-profile">
+            <Button type="button" className="w-full">
+              Guardar
+            </Button>
+          </ConfirmLogout>
+        ) : (
+          <ButtonSubmit
+            state={state}
+            loadingText="Guardando"
+            submitText="Guardar"
+            formId="edit-profile"
+          />
+        )}
       </Form>
     </ShadcnForm>
   );
