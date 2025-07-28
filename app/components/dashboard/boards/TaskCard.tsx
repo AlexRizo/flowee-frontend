@@ -35,7 +35,7 @@ export const TaskCard: FC<Props> = ({
         </CardTooltip>
         <CardTooltip text={type}>
           <span className="aspect-square rounded-xl bg-gray-100">
-            <TaskTypeIcon type={type}/>
+            <TaskTypeIcon name={ type }/>
           </span>
         </CardTooltip>
 

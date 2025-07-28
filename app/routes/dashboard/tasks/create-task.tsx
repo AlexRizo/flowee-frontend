@@ -50,7 +50,7 @@ const CreateTask = () => {
   const handleStart = () => {
     if (!selectedType) return;
     navigate(
-      `/solicitudes/crear/${
+      `/solicitudes/nueva-solicitud/${
         types.find((type) => type.id === selectedType)?.path
       }`
     );

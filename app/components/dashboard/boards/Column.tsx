@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
-import type { Task } from "~/services/interfaces/boards-service.interface";
+import type { Status, Task } from "~/services/interfaces/boards-service.interface";
+import { TaskCard } from "./TaskCard";
 
 interface Props {
-  id: string;
+  id: Status;
   name: string;
   tasks: Task[];
   color: string;
@@ -65,6 +66,11 @@ export const Column = ({ id, name, tasks, color }: Props) => {
         <p className="text-sm font-semibold text-zinc-700">{name}</p>{" "}
         <small className="text-xs text-gray-400">({tasks.length || 0})</small>
       </span>
+      <div>
+        {tasks.map((task) => (
+          <TaskCard key={task.id} {...task} />
+        ))}
+      </div>
     </div>
   );
 };

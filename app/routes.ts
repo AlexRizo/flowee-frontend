@@ -22,11 +22,11 @@ export default [
 
     ...prefix('solicitudes', [
       index('./routes/dashboard/tasks/_index.tsx'),
-      route('crear', './routes/dashboard/tasks/create-task.tsx'),
-      route('crear/digital', './routes/dashboard/tasks/digital-task.tsx'),
-      route('crear/impresa', './routes/dashboard/tasks/print-task.tsx'),
-      route('crear/ecommerce', './routes/dashboard/tasks/ecommerce-task.tsx'),
-      route('crear/especial', './routes/dashboard/tasks/special-task.tsx'),
+      route('nueva-solicitud', './routes/dashboard/tasks/create-task.tsx'),
+      route('nueva-solicitud/digital', './routes/dashboard/tasks/digital-task.tsx'),
+      route('nueva-solicitud/impresa', './routes/dashboard/tasks/print-task.tsx'),
+      route('nueva-solicitud/ecommerce', './routes/dashboard/tasks/ecommerce-task.tsx'),
+      route('nueva-solicitud/especial', './routes/dashboard/tasks/special-task.tsx'),
     ]),
 
     // ? Rutas para perfil;

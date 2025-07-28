@@ -1,26 +1,22 @@
-import { useMemo, type FC } from "react";
-import type { Type } from "~/services/interfaces/boards-service.interface";
-import { DynamicIcon } from 'lucide-react/dynamic';
+import { type FC } from "react";
+import { type IconName, LucideDynamicIcon } from "~/components/LucideDynamicIcon";
 
 interface Props {
-  type: Type;
+  name: TaskType;
   size?: number;
   color?: string;
 }
 
-type IconName = 'smartphone' | 'scroll-text' | 'store' | 'sparkles';
+type Icons = 'smartphone' | 'scroll-text' | 'store' | 'sparkles';
+type TaskType = 'DIGITAL' | 'IMPRESO' | 'ECOMMERCE' | 'OTRO';
 
-const icons : Record<Type, IconName> = {
+const icons : Record<TaskType, Icons> = {
   'DIGITAL': 'smartphone',
   'IMPRESO': 'scroll-text',
   'ECOMMERCE': 'store',
   'OTRO': 'sparkles',
 }
 
-export const TaskTypeIcon: FC<Props> = ({ type, size = 16, color = 'black' }) => {
-  const icon : IconName = useMemo(() => {
-    return icons[type as keyof typeof icons];
-  }, [type]);
-
-  return <DynamicIcon name={icon} size={size} color={color} />;
+export const TaskTypeIcon: FC<Props> = ({ name, size = 16, color = 'black' }) => {
+  return <LucideDynamicIcon name={ icons[name as TaskType] as IconName } size={size} color={color} />;
 };

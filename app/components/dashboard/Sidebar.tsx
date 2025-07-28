@@ -1,8 +1,5 @@
-import type { Board } from "~/services/interfaces/boards-service.interface"
 import { SidebarMenuItem } from "./SidebarMenuItem"
-import { ClipboardList, Home, LogOut, Rocket, Settings, Users } from "lucide-react"
-import { BoardIcon } from "./BoardIcon"
-import { SidebarMenuBoard } from "./SidebarMenuBoard"
+import { CircuitBoard, Home, ListStart, LogOut, Rocket, Settings, Users } from "lucide-react"
 import { Button } from "../ui/button"
 import { Form } from "react-router"
 
@@ -21,10 +18,13 @@ export const Sidebar = () => {
             <Home size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
           <SidebarMenuItem to="/centro-de-asignaciones" label="Centro de asignaciones">
-            <ClipboardList size={16} strokeWidth={1.5}/>
+            <CircuitBoard size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
           <SidebarMenuItem to="/autoasignaciones" label="Autoasignaciones">
             <Rocket size={16} strokeWidth={1.5}/>
+          </SidebarMenuItem>
+          <SidebarMenuItem to="/solicitudes" label="Mis Solicitudes">
+            <ListStart size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
         </div>
 
