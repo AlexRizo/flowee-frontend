@@ -24,23 +24,23 @@ export const TaskCard: FC<Props> = ({
       className="flex flex-col px-2 rounded-lg bg-white border border-gray-200"
     >
       <div role="heading" className="flex py-2">
-        <span style={{ color: board.color }} className="font-semibold text-xs p-1 aspect-square rounded-xl">{ board.prefix }</span>
+        <span style={{ backgroundColor: board.color }} className="font-semibold text-xs size-5 place-objects-center rounded">{ board.prefix }</span>
         <CardTooltip text={author.name}>
-          <span><User/></span>
+          <img src={'/images/default-user.webp'} alt={'Avatar'} className="size-5 rounded" />
         </CardTooltip>
         <CardTooltip text={createdAt}>
-          <span className="aspect-square rounded-xl bg-gray-100">
-            <CalendarPlus/>
+          <span className="rounded bg-gray-200 place-objects-center size-5">
+            <CalendarPlus size={17} />
           </span>
         </CardTooltip>
         <CardTooltip text={type}>
-          <span className="aspect-square rounded-xl bg-gray-100">
-            <TaskTypeIcon name={ type }/>
+          <span className="rounded bg-gray-100 place-objects-center size-5">
+            <TaskTypeIcon name={ type } size={17} />
           </span>
         </CardTooltip>
 
-        <span className="text-xs">
-          <Flag/>
+        <span className="text-xs place-objects-center ml-auto">
+          <Flag size={17}/>
           { priority }
         </span>
       </div>

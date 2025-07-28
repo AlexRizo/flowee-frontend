@@ -7,14 +7,14 @@ interface Props {
   color?: string;
 }
 
-type Icons = 'smartphone' | 'scroll-text' | 'store' | 'sparkles';
+type Icons = 'Smartphone' | 'ScrollText' | 'Store' | 'Sparkles';
 type TaskType = 'DIGITAL' | 'IMPRESO' | 'ECOMMERCE' | 'OTRO';
 
 const icons : Record<TaskType, Icons> = {
-  'DIGITAL': 'smartphone',
-  'IMPRESO': 'scroll-text',
-  'ECOMMERCE': 'store',
-  'OTRO': 'sparkles',
+  'DIGITAL': 'Smartphone',
+  'IMPRESO': 'ScrollText',
+  'ECOMMERCE': 'Store',
+  'OTRO': 'Sparkles',
 }
 
 export const TaskTypeIcon: FC<Props> = ({ name, size = 16, color = 'black' }) => {

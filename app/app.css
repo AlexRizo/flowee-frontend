@@ -121,3 +121,7 @@ html,
 body {
   @apply bg-white;
 }
+
+.place-objects-center {
+  @apply flex items-center justify-center;
+}

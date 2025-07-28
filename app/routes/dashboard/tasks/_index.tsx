@@ -12,45 +12,47 @@ export function meta() {
   ]
 }
 
-export async function clientAction({}: Route.ClientActionArgs) {
-
-}
-
-interface Column {
-  id: Status;
-  name: string;
-  color: string;
-}
-
-const columns: Column[] = [
-  {
-    id: Status.AWAIT,
-    name: 'En espera',
-    color: 'gray',
-  },
-  {
-    id: Status.ATTENTION,
-    name: 'En atención',
-    color: 'blue',
-  },
-  {
-    id: Status.IN_PROGRESS,
-    name: 'En proceso',
-    color: 'purple',
-  },
-  {
-    id: Status.REVIEW,
-    name: 'En revisión',
-    color: 'yellow',
-  },
-  {
-    id: Status.DONE,
-    name: 'Finalizado',
-    color: 'green',
+export async function loader({}: Route.LoaderArgs) {
+  interface Column {
+    id: Status;
+    name: string;
+    color: string;
   }
-]
+  
+  const columns: Column[] = [
+    {
+      id: Status.AWAIT,
+      name: 'En espera',
+      color: 'gray',
+    },
+    {
+      id: Status.ATTENTION,
+      name: 'En atención',
+      color: 'blue',
+    },
+    {
+      id: Status.IN_PROGRESS,
+      name: 'En proceso',
+      color: 'purple',
+    },
+    {
+      id: Status.REVIEW,
+      name: 'En revisión',
+      color: 'yellow',
+    },
+    {
+      id: Status.DONE,
+      name: 'Finalizado',
+      color: 'green',
+    }
+  ]
 
-const Home = () => {
+  return { columns };
+}
+
+const Home = ({ loaderData }: Route.ComponentProps) => {
+  const { columns } = loaderData;
+
   const [tasks, setTasks] = useState<Record<Status, Task[]> | null>(null);
 
   useEffect(() => {
