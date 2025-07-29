@@ -184,7 +184,7 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
   }, []);
 
   return (
-    <div className="grid grid-cols-5 h-full gap-4">
+    <div className="grid grid-cols-5 max-h-full gap-4">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

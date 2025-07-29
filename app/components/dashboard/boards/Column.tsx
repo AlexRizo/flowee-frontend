@@ -76,21 +76,21 @@ export const Column = ({ id, name, tasks, color, activeTaskId }: Props) => {
       ref={setNodeRef}
       role="columnheader"
       id={id}
-      className={cn(columnColor, "flex flex-col rounded-lg p-3")}
+      className={cn(columnColor, "flex flex-col rounded-lg p-3 h-min max-h-[calc(100vh-10rem)] overflow-y-auto")}
     >
       <SortableContext
         items={tasksIds}
         id={id}
         strategy={verticalListSortingStrategy}
       >
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 mb-3">
           <span
             className={cn(columnPointColor, "w-1 h-3/4 rounded-full")}
           ></span>
           <p className="text-sm font-semibold text-zinc-700">{name}</p>{" "}
           <small className="text-xs text-gray-400">({tasks.length || 0})</small>
         </span>
-        <div className="flex flex-col gap-2 h-full">
+        <div className="flex flex-col gap-2">
           {tasks.map((task) => (
             <TaskCard key={task.id} {...task} activeTaskId={activeTaskId} />
           ))}
