@@ -21,7 +21,6 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { TaskCard } from "~/components/dashboard/boards/TaskCard";
 import { TaskCardOverlay } from "~/components/dashboard/boards/TaskCardOverlay";
 
 export function meta() {
@@ -185,7 +184,7 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
   }, []);
 
   return (
-    <div className="grid grid-cols-5 h-full">
+    <div className="grid grid-cols-5 h-full gap-4">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

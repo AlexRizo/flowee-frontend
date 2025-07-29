@@ -23,7 +23,7 @@ export const TaskCardOverlay: FC<Props> = ({
 }) => {
   return (
     <div
-      className="flex flex-col rounded-lg bg-white border border-violet-500 cursor-grabbing"
+      className="flex flex-col justify-between rounded-lg h-37.5 bg-white border border-violet-500 cursor-grabbing"
     >
       <header className="flex border-b border-gray-200 p-2 gap-1">
         <CardTooltip text={board.name} tooltipColor={board.color}>
