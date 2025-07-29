@@ -125,3 +125,19 @@ body {
 .place-objects-center {
   @apply flex items-center justify-center;
 }
+
+.low-flag {
+  @apply fill-blue-500 text-blue-500;
+}
+
+.normal-flag {
+  @apply fill-violet-500 text-violet-500;
+}
+
+.high-flag {
+  @apply fill-amber-500 text-amber-500;
+}
+
+.urgent-flag {
+  @apply fill-red-500 text-red-500;
+}

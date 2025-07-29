@@ -1,13 +1,22 @@
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
-import type { Status, Task } from "~/services/interfaces/boards-service.interface";
+import type {
+  Status,
+  Task,
+} from "~/services/interfaces/boards-service.interface";
 import { TaskCard } from "./TaskCard";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
 
 interface Props {
   id: Status;
   name: string;
   tasks: Task[];
   color: string;
+  activeTaskId: string;
 }
 
 const colors = {
@@ -46,7 +55,7 @@ const columnPoint = {
   amber: "bg-amber-500",
 };
 
-export const Column = ({ id, name, tasks, color }: Props) => {
+export const Column = ({ id, name, tasks, color, activeTaskId }: Props) => {
   const columnColor = useMemo(() => {
     return colors[color as keyof typeof colors];
   }, [color]);
@@ -55,22 +64,38 @@ export const Column = ({ id, name, tasks, color }: Props) => {
     return columnPoint[color as keyof typeof columnPoint];
   }, [color]);
 
+  const tasksIds = useMemo<string[]>(
+    () => tasks.map((task) => task.id),
+    [tasks]
+  );
+
+  const { setNodeRef } = useDroppable({ id });
+
   return (
     <div
+      ref={setNodeRef}
       role="columnheader"
       id={id}
       className={cn(columnColor, "flex flex-col rounded-lg p-3")}
     >
-      <span className="flex items-center gap-2">
-        <span className={cn(columnPointColor, "w-1 h-3/4 rounded-full")}></span>
-        <p className="text-sm font-semibold text-zinc-700">{name}</p>{" "}
-        <small className="text-xs text-gray-400">({tasks.length || 0})</small>
-      </span>
-      <div>
-        {tasks.map((task) => (
-          <TaskCard key={task.id} {...task} />
-        ))}
-      </div>
+      <SortableContext
+        items={tasksIds}
+        id={id}
+        strategy={verticalListSortingStrategy}
+      >
+        <span className="flex items-center gap-2">
+          <span
+            className={cn(columnPointColor, "w-1 h-3/4 rounded-full")}
+          ></span>
+          <p className="text-sm font-semibold text-zinc-700">{name}</p>{" "}
+          <small className="text-xs text-gray-400">({tasks.length || 0})</small>
+        </span>
+        <div className="flex flex-col gap-2 h-full">
+          {tasks.map((task) => (
+            <TaskCard key={task.id} {...task} activeTaskId={activeTaskId} />
+          ))}
+        </div>
+      </SortableContext>
     </div>
   );
 };

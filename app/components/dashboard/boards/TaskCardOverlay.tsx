@@ -1,18 +1,14 @@
-import { useEffect, type FC } from "react";
+import { type FC } from "react";
 import type { Task } from "~/services/interfaces/boards-service.interface";
 import { CardTooltip } from "./CardTooltip";
 import { CalendarCheck, CalendarPlus, Flag, ListEnd, User } from "lucide-react";
 import { TaskTypeIcon } from "./TaskTypeIcon";
 import { getCapitalizedTaskProperty, getTaskPriorityColor } from "~/helpers/taskHelpers";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { cn } from "~/lib/utils";
 
 interface Props extends Task {
-  activeTaskId?: string;
 }
 
-export const TaskCard: FC<Props> = ({
+export const TaskCardOverlay: FC<Props> = ({
   id,
   title,
   description,
@@ -24,23 +20,10 @@ export const TaskCard: FC<Props> = ({
   board,
   dueDate,
   createdAt,
-  activeTaskId,
 }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    cursor: 'grab',
-  }
-  
   return (
     <div
-      className={cn("flex flex-col rounded-lg bg-white border border-gray-200", activeTaskId === id && "border-dashed border-violet-500 opacity-50")}
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
+      className="flex flex-col rounded-lg bg-white border border-violet-500 cursor-grabbing"
     >
       <header className="flex border-b border-gray-200 p-2 gap-1">
         <CardTooltip text={board.name} tooltipColor={board.color}>

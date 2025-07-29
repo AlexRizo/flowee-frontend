@@ -49,7 +49,7 @@ export const tasks: Task[] = [
     title: 'Elaborar propuesta para cliente nuevo',
     description: 'Presentación para inmobiliaria sobre servicios de diseño.',
     priority: Priority.LOW,
-    type: Type.OTHER,
+    type: Type.SPECIAL,
     status: Status.AWAIT,
     author: { id: 'u1', name: 'Mariana Torres', nickname: 'Mariana', email: 'mariana@example.com', roles: [Roles.ADMIN], avatar: 'https://via.placeholder.com/150', isActive: true },
     assignedTo: { id: 'u2', name: 'Carlos Ruiz', nickname: 'Carlos', email: 'carlos@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },

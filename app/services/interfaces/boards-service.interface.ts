@@ -21,12 +21,12 @@ export enum Type {
   PRINT = 'IMPRESO',
   DIGITAL = 'DIGITAL',
   ECOMMERCE = 'ECOMMERCE',
-  OTHER = 'OTRO',
+  SPECIAL = 'ESPECIAL',
 }
 
 export enum Status {
   AWAIT = 'ESPERA',
-  ATTENTION = 'ATENCIÓN',
+  ATTENTION = 'ATENCION',
   IN_PROGRESS = 'EN_PROCESO',
   REVIEW = 'REVISION',
   DONE = 'FINALIZADO',
