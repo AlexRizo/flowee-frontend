@@ -1,4 +1,4 @@
-import { Mail } from "lucide-react";
+import { Mail, ScrollText, Smartphone, Sparkles, Store } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { TaskTypeCard } from "~/components/dashboard/tasks/TaskTypeCard";
@@ -18,28 +18,28 @@ const types = [
     name: "Digital",
     path: "digital",
     description: "Redes sociales y CRM",
-    icon: <Mail size={80} />,
+    icon: <Smartphone size={80} strokeWidth={1.5} />,
   },
   {
     id: 2,
     name: "Impresa",
     path: "impresa",
     description: "Espectaculares, pendones",
-    icon: <Mail size={80} />,
+    icon: <ScrollText size={80} strokeWidth={1.5} />,
   },
   {
     id: 3,
     name: "Ecommerce",
     path: "ecommerce",
     description: "Banners, news, diseño web",
-    icon: <Mail size={80} />,
+    icon: <Store size={80} strokeWidth={1.5} />,
   },
   {
     id: 4,
     name: "Especial",
     path: "especial",
     description: "Material distinto",
-    icon: <Mail size={80} />,
+    icon: <Sparkles size={80} strokeWidth={1.5} />,
   },
 ];
 
@@ -57,7 +57,7 @@ const CreateTask = () => {
   };
 
   return (
-    <div className="flex flex-col m-auto bg-white rounded-lg px-18 py-8 w-min">
+    <>
       <h1 className="text-center text-xl font-bold mb-8">
         Selecciona el tipo de solicitud
       </h1>
@@ -79,7 +79,7 @@ const CreateTask = () => {
       >
         Comenzar
       </Button>
-    </div>
+    </>
   );
 };
 

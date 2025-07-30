@@ -8,19 +8,12 @@ import { useEffect, useState } from "react";
 import { tasks as tasksData } from "./data";
 import {
   closestCenter,
-  closestCorners,
   DndContext,
   DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type Active,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { TaskCardOverlay } from "~/components/dashboard/boards/TaskCardOverlay";
 
 export function meta() {
@@ -168,13 +161,6 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     setOriginColumn(targetColumnId);
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   useEffect(() => {
     const tasks = tasksData.reduce((acc, task) => {
       acc[task.status] = [...(acc[task.status] || []), task];
@@ -186,18 +172,18 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
   return (
     <div className="grid grid-cols-5 max-h-full gap-4">
       <DndContext
-        sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
       >
-        {columns.map((column) => (
+        {columns.map((column, index) => (
           <Column
             key={column.id}
             {...column}
             tasks={tasks?.[column.id] || []}
             activeTaskId={active?.id || ''}
+            allowNewTask={index === 0}
           />
         ))}
         <DragOverlay>{active && <TaskCardOverlay {...active} />}</DragOverlay>

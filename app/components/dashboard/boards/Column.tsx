@@ -10,6 +10,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
+import { Link } from "react-router";
+import { Plus } from "lucide-react";
 
 interface Props {
   id: Status;
@@ -17,6 +19,7 @@ interface Props {
   tasks: Task[];
   color: string;
   activeTaskId: string;
+  allowNewTask: boolean;
 }
 
 const colors = {
@@ -55,7 +58,7 @@ const columnPoint = {
   amber: "bg-amber-500",
 };
 
-export const Column = ({ id, name, tasks, color, activeTaskId }: Props) => {
+export const Column = ({ id, name, tasks, color, activeTaskId, allowNewTask = false }: Props) => {
   const columnColor = useMemo(() => {
     return colors[color as keyof typeof colors];
   }, [color]);
@@ -76,20 +79,32 @@ export const Column = ({ id, name, tasks, color, activeTaskId }: Props) => {
       ref={setNodeRef}
       role="columnheader"
       id={id}
-      className={cn(columnColor, "flex flex-col rounded-lg p-3 h-min max-h-[calc(100vh-10rem)] overflow-y-auto")}
+      className={cn(
+        columnColor,
+        "flex flex-col rounded-lg p-3 h-min max-h-[calc(100vh-10rem)] [scrollbar-width:none] overflow-y-auto"
+      )}
     >
       <SortableContext
         items={tasksIds}
         id={id}
         strategy={verticalListSortingStrategy}
       >
-        <span className="flex items-center gap-2 mb-3">
+        <header className="flex items-center gap-2 h-10">
           <span
-            className={cn(columnPointColor, "w-1 h-3/4 rounded-full")}
+            className={cn(columnPointColor, "w-1 h-3.5 rounded-full")}
           ></span>
           <p className="text-sm font-semibold text-zinc-700">{name}</p>{" "}
           <small className="text-xs text-gray-400">({tasks.length || 0})</small>
-        </span>
+          {allowNewTask && (
+            <Link
+              to={`/solicitudes/nueva-solicitud`}
+              className="ml-auto text-xs bg-violet-700 text-white font-semibold p-1 rounded flex items-center gap-0.5"
+          >
+              <Plus size={14} />
+              Nueva
+            </Link>
+          )}
+        </header>
         <div className="flex flex-col gap-2">
           {tasks.map((task) => (
             <TaskCard key={task.id} {...task} activeTaskId={activeTaskId} />
