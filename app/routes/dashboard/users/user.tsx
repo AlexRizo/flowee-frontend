@@ -1,7 +1,7 @@
 import { getUser, updateUser } from "~/services/users-service";
 import type { Route } from "./+types/user";
 import { Badge } from "~/components/ui/badge";
-import { Pencil, Power, User2 } from "lucide-react";
+import { Power, User2 } from "lucide-react";
 import { getTitle } from "~/lib/utils";
 import { EditUserForm } from "~/components/dashboard/users/EditUserForm";
 import type {
@@ -16,7 +16,6 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { redirect } from "react-router";
 import { ToggleUserStatus } from "~/components/dashboard/users/ToggleUserStatus";
-import { EditAvatar } from "~/components/dashboard/profile/EditAvatar";
 
 export function meta({ params }: Route.MetaArgs) {
   return [{ title: getTitle(`@${params.nickname}`) }];

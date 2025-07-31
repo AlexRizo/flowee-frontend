@@ -81,7 +81,7 @@ export const Column = ({ id, name, tasks, color, activeTaskId, allowNewTask = fa
       id={id}
       className={cn(
         columnColor,
-        "flex flex-col rounded-lg p-3 h-min max-h-[calc(100vh-10rem)] [scrollbar-width:none] overflow-y-auto"
+        "flex flex-col rounded-lg p-3 h-min"
       )}
     >
       <SortableContext
@@ -105,7 +105,7 @@ export const Column = ({ id, name, tasks, color, activeTaskId, allowNewTask = fa
             </Link>
           )}
         </header>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 max-h-[calc(100vh-10rem)] [scrollbar-width:none] overflow-y-auto">
           {tasks.map((task) => (
             <TaskCard key={task.id} {...task} activeTaskId={activeTaskId} />
           ))}
