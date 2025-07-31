@@ -1,4 +1,4 @@
-import { Priority } from "~/services/interfaces/boards-service.interface";
+import { Priority } from "~/services/interfaces/tasks-service.interface";
 
 export const getCapitalizedTaskProperty = (property: string) => {
   const propertyTransformed = property.toLowerCase();

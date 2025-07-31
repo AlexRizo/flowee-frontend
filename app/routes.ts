@@ -21,14 +21,14 @@ export default [
     route('usuarios/:nickname', 'routes/dashboard/users/user.tsx'),
 
     ...prefix('solicitudes', [
-      index('./routes/dashboard/tasks/_index.tsx'),
+      index('routes/dashboard/tasks/_index.tsx'),
       
       layout('routes/dashboard/tasks/layouts/create-task-layout.tsx', [
-        route('nueva-solicitud', './routes/dashboard/tasks/create-task.tsx'),
-        route('nueva-solicitud/digital', './routes/dashboard/tasks/digital-task.tsx'),
-        route('nueva-solicitud/impresa', './routes/dashboard/tasks/print-task.tsx'),
-        route('nueva-solicitud/ecommerce', './routes/dashboard/tasks/ecommerce-task.tsx'),
-        route('nueva-solicitud/especial', './routes/dashboard/tasks/special-task.tsx'),
+        route('nueva-solicitud', 'routes/dashboard/tasks/create-task.tsx'),
+        route('nueva-solicitud/digital', 'routes/dashboard/tasks/digital-task.tsx'),
+        route('nueva-solicitud/impresa', 'routes/dashboard/tasks/print-task.tsx'),
+        route('nueva-solicitud/ecommerce', 'routes/dashboard/tasks/ecommerce-task.tsx'),
+        route('nueva-solicitud/especial', 'routes/dashboard/tasks/special-task.tsx'),
       ]),
     ]),
 

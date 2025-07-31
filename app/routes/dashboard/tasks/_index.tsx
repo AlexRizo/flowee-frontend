@@ -1,11 +1,10 @@
 import {
   Status,
   type Task,
-} from "~/services/interfaces/boards-service.interface";
+} from "~/services/interfaces/tasks-service.interface";
 import type { Route } from "../tasks/+types/_index";
 import { Column } from "~/components/dashboard/boards/Column";
 import { useEffect, useState } from "react";
-import { tasks as tasksData } from "./data";
 import {
   closestCenter,
   DndContext,
@@ -15,6 +14,11 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { TaskCardOverlay } from "~/components/dashboard/boards/TaskCardOverlay";
+import { useBoardContext } from "~/context/BoardContext";
+import { useMutation } from "@tanstack/react-query";
+import { columns } from "./data";
+import { getTasksByBoard } from "~/services/tasks-service";
+import { toast } from "sonner";
 
 export function meta() {
   return [
@@ -24,51 +28,18 @@ export function meta() {
   ];
 }
 
-interface Column {
-  id: Status;
-  name: string;
-  color: string;
-}
-
 export async function loader({}: Route.LoaderArgs) {
-  const columns: Column[] = [
-    {
-      id: Status.AWAIT,
-      name: "En espera",
-      color: "gray",
-    },
-    {
-      id: Status.ATTENTION,
-      name: "En atención",
-      color: "blue",
-    },
-    {
-      id: Status.IN_PROGRESS,
-      name: "En proceso",
-      color: "purple",
-    },
-    {
-      id: Status.REVIEW,
-      name: "En revisión",
-      color: "yellow",
-    },
-    {
-      id: Status.DONE,
-      name: "Finalizado",
-      color: "green",
-    },
-  ];
 
-  return { columns };
 }
 
 type Tasks = Record<Status, Task[]>;
 
 const Home = ({ loaderData }: Route.ComponentProps) => {
-  const { columns } = loaderData;
   const [tasks, setTasks] = useState<Tasks | null>(null);
   const [active, setActive] = useState<Task | null>(null);
   const [originColumn, setOriginColumn] = useState<Status | null>(null);
+
+  const { currentBoard } = useBoardContext();
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -161,13 +132,30 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     setOriginColumn(targetColumnId);
   };
 
+  const { mutate: getTasksMutation, isPending } = useMutation({
+    mutationFn: async (term: string): Promise<void> => {
+      const { error, message, tasks, statusCode } = await getTasksByBoard(term);
+      
+      if (error || !tasks) throw new Error(message, { cause: `Error ${statusCode}: ${error}` });
+
+      const tasksByStatus = tasks.reduce((acc, task) => {
+        acc[task.status as Status] = [...(acc[task.status as Status] || []), task];
+        return acc;
+      }, {} as Record<Status, Task[]>);
+
+      setTasks(tasksByStatus);
+    },
+    onError: ({ message, cause }) => {
+      toast.error(cause as string, {
+        description: message,
+      })
+    }
+  });
+
   useEffect(() => {
-    const tasks = tasksData.reduce((acc, task) => {
-      acc[task.status] = [...(acc[task.status] || []), task];
-      return acc;
-    }, {} as Record<Status, Task[]>);
-    setTasks(tasks);
-  }, []);
+    if (!currentBoard) return;
+    getTasksMutation(currentBoard.id)
+  }, [currentBoard]);
 
   return (
     <div className="grid grid-cols-5 max-h-full gap-4">

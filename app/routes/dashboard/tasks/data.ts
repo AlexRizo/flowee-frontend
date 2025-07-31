@@ -1,75 +1,35 @@
-import { Priority, Status, Type, type Task } from "~/services/interfaces/boards-service.interface";
-import { Roles } from "~/services/interfaces/users-service.interface";
+import { Status } from "~/services/interfaces/tasks-service.interface";
 
-export const tasks: Task[] = [
+interface Column {
+  id: Status;
+  name: string;
+  color: string;
+}
+
+export const columns: Column[] = [
   {
-    id: '1',
-    title: 'Diseño de folleto para evento',
-    description: 'Crear folleto digital para el evento de lanzamiento.',
-    priority: Priority.HIGH,
-    type: Type.DIGITAL,
-    status: Status.IN_PROGRESS,
-    author: { id: 'u1', name: 'Mariana Torres', nickname: 'Mariana', email: 'mariana@example.com', roles: [Roles.ADMIN], avatar: 'https://via.placeholder.com/150', isActive: true },
-    assignedTo: { id: 'u2', name: 'Carlos Ruiz', nickname: 'Carlos', email: 'carlos@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    board: { id: 'b1', name: 'Marketing', slug: 'marketing', prefix: 'MK', color: 'blue', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-    dueDate: '2025-08-05',
-    createdAt: '2025-07-20',
-    updatedAt: '2025-07-27',
+    id: Status.AWAIT,
+    name: "En espera",
+    color: "gray",
   },
   {
-    id: '2',
-    title: 'Revisión de catálogos impresos',
-    description: 'Verificar errores en los catálogos antes de impresión.',
-    priority: Priority.NORMAL,
-    type: Type.PRINT,
-    status: Status.REVIEW,
-    author: { id: 'u3', name: 'Laura Gómez', nickname: 'Laura', email: 'laura@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    assignedTo: { id: 'u3', name: 'Laura Gómez', nickname: 'Laura', email: 'laura@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    board: { id: 'b2', name: 'Editorial', slug: 'editorial', prefix: 'ED', color: 'green', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-    dueDate: '2025-08-01',
-    createdAt: '2025-07-22',
-    updatedAt: '2025-07-27',
+    id: Status.ATTENTION,
+    name: "En atención",
+    color: "blue",
   },
   {
-    id: '3',
-    title: 'Integración con pasarela de pago',
-    description: 'Configurar e integrar Stripe en sitio de ecommerce.',
-    priority: Priority.URGENT,
-    type: Type.ECOMMERCE,
-    status: Status.ATTENTION,
-    author: { id: 'u4', name: 'Pedro Hernández', nickname: 'Pedro', email: 'pedro@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    assignedTo: { id: 'u5', name: 'Ana López', nickname: 'Ana', email: 'ana@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    board: { id: 'b3', name: 'Ecommerce Dev', slug: 'ecommerce-dev', prefix: 'EC', color: 'purple', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-    dueDate: '2025-07-30',
-    createdAt: '2025-07-25',
-    updatedAt: '2025-07-27',
+    id: Status.IN_PROGRESS,
+    name: "En proceso",
+    color: "purple",
   },
   {
-    id: '4',
-    title: 'Elaborar propuesta para cliente nuevo',
-    description: 'Presentación para inmobiliaria sobre servicios de diseño.',
-    priority: Priority.LOW,
-    type: Type.SPECIAL,
-    status: Status.AWAIT,
-    author: { id: 'u1', name: 'Mariana Torres', nickname: 'Mariana', email: 'mariana@example.com', roles: [Roles.ADMIN], avatar: 'https://via.placeholder.com/150', isActive: true },
-    assignedTo: { id: 'u2', name: 'Carlos Ruiz', nickname: 'Carlos', email: 'carlos@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    board: { id: 'b4', name: 'Clientes Potenciales', slug: 'clientes-potenciales', prefix: 'CL', color: 'red', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-    dueDate: '2025-08-10',
-    createdAt: '2025-07-26',
-    updatedAt: '2025-07-27',
+    id: Status.REVIEW,
+    name: "En revisión",
+    color: "yellow",
   },
   {
-    id: '5',
-    title: 'Entrega final de campaña',
-    description: 'Subir materiales aprobados para la campaña de redes.',
-    priority: Priority.HIGH,
-    type: Type.DIGITAL,
-    status: Status.DONE,
-    author: { id: 'u5', name: 'Ana López', nickname: 'Ana', email: 'ana@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    assignedTo: { id: 'u5', name: 'Ana López', nickname: 'Ana', email: 'ana@example.com', roles: [Roles.DESIGNER], avatar: 'https://via.placeholder.com/150', isActive: true },
-    board: { id: 'b1', name: 'Marketing', slug: 'marketing', prefix: 'MK', color: 'blue', createdAt: '2025-01-01', updatedAt: '2025-01-01' },
-    dueDate: '2025-07-27',
-    createdAt: '2025-07-19',
-    updatedAt: '2025-07-27',
+    id: Status.DONE,
+    name: "Finalizado",
+    color: "green",
   },
 ];

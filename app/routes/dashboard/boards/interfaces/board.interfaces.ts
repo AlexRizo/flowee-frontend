@@ -1,4 +1,4 @@
-import type { Status, Task } from "~/services/interfaces/boards-service.interface";
+import type { Status } from "~/services/interfaces/tasks-service.interface";
 
 export interface Column {
   id: Status;

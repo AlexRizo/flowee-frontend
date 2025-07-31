@@ -25,7 +25,7 @@ const board = ({ params }: Route.ComponentProps) => {
 
   return <div role="grid" className="grid grid-cols-5 h-min max-h-full gap-4">
     {columns.map((column) => (
-      <Column key={column.id} { ...column } tasks={[]} />
+      <Column key={column.id} { ...column } tasks={[]} activeTaskId={""} allowNewTask={false} />
     ))}
   </div>;
 };

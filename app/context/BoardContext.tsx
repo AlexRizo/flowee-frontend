@@ -5,7 +5,7 @@ interface BoardContextType {
   boards: Board[];
   currentBoard: Board | null;
   setBoards: (boards: Board[]) => void;
-  setCurrentBoard: (slug: string) => void;
+  setCurrentBoard: (id: string) => void;
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined);
@@ -23,8 +23,8 @@ export const BoardProvider = ({children, initialBoards = []}: BoardProviderProps
     setBoardsState(boards);
   }
 
-  const setCurrentBoard = (slug: string): void => {
-    const board = boards.find(b => b.slug === slug) ?? null;
+  const setCurrentBoard = (id: string): void => {
+    const board = boards.find(b => b.id === id) ?? null;
     setCurrentBoardState(board);
   }
 

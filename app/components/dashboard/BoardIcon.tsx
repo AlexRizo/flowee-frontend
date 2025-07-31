@@ -1,14 +1,27 @@
-export const BoardIcon = ({
-  prefix,
-  color,
-}: {
+import type { FC, MouseEventHandler } from "react";
+import { cn } from "~/lib/utils";
+
+interface Props {
   prefix: string;
   color: string;
+  onClick: MouseEventHandler<HTMLButtonElement>;
+  active: boolean;
+}
+
+export const BoardIcon: FC<Props> = ({
+  prefix,
+  color,
+  onClick,
+  active,
 }) => {
   return (
     <button
-      className="text-white rounded-full size-7.5 flex items-center justify-center text-xs font-semibold border-2 border-gray-300 cursor-pointer"
+      className={cn(
+        "text-white rounded-full size-7.5 flex items-center justify-center text-xs font-semibold border-2 cursor-pointer",
+        active ? "border-purple-500 animate-heartbeat"  : "border-gray-200"
+      )}
       style={{ backgroundColor: color }}
+      onClick={onClick}
     >
       {prefix}
     </button>

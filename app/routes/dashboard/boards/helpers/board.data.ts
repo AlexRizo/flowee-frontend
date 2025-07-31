@@ -1,4 +1,4 @@
-import { Status } from "~/services/interfaces/boards-service.interface";
+import { Status } from "~/services/interfaces/tasks-service.interface";
 import type { Column } from "../interfaces/board.interfaces";
 
 export const columns: Column[] = [

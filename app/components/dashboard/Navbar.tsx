@@ -7,7 +7,7 @@ import { useBoardContext } from "~/context/BoardContext";
 import { useAuthContext } from "~/context/AuthContext";
 
 export const Navbar: FC = () => {
-  const { boards } = useBoardContext();
+  const { boards, setCurrentBoard, currentBoard } = useBoardContext();
   const { user } = useAuthContext();
 
   return (
@@ -16,8 +16,8 @@ export const Navbar: FC = () => {
         <Breadcrumbs />
       </div>
       <div className="flex gap-1 p-1 rounded-full border border-gray-200 absolute left-1/2 -translate-x-1/2">
-        {boards.map((board) => (
-          <BoardIcon key={board.id} prefix={board.prefix} color={board.color}/>
+        {boards.map(({id, prefix, color}) => (
+          <BoardIcon key={ id } prefix={prefix} color={color} onClick={() => setCurrentBoard(id)} active={currentBoard?.id === id} />
         ))}
       </div>
       <div className="flex items-center gap-2">
