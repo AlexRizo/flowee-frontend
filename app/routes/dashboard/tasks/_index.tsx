@@ -35,7 +35,7 @@ export async function loader({}: Route.LoaderArgs) {
 type Tasks = Record<Status, Task[]>;
 
 const Home = ({ loaderData }: Route.ComponentProps) => {
-  const [tasks, setTasks] = useState<Tasks | null>(null);
+  const [tasks, setTasks] = useState<Tasks | null>();
   const [active, setActive] = useState<Task | null>(null);
   const [originColumn, setOriginColumn] = useState<Status | null>(null);
 
@@ -113,6 +113,7 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     if (!targetColumnId || targetColumnId === originColumn) return;
 
     // Ya está en la columna actual
+    console.log({targetColumnId, tasks})
     if (tasks[targetColumnId].some((t) => t.id === active.id)) return;
 
     // Mover temporalmente la tarea
