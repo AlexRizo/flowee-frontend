@@ -3,7 +3,7 @@ import { cn } from "~/lib/utils";
 import type {
   Status,
   Task,
-} from "~/services/interfaces/boards-service.interface";
+} from "~/services/interfaces/tasks-service.interface";
 import { TaskCard } from "./TaskCard";
 import {
   SortableContext,

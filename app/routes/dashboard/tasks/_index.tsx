@@ -19,6 +19,7 @@ import { useMutation } from "@tanstack/react-query";
 import { columns } from "./data";
 import { getTasksByBoard } from "~/services/tasks-service";
 import { toast } from "sonner";
+import { useTaskContext } from "~/context/TaskContext";
 
 export function meta() {
   return [
@@ -28,16 +29,20 @@ export function meta() {
   ];
 }
 
-export async function loader({}: Route.LoaderArgs) {
-
-}
-
-type Tasks = Record<Status, Task[]>;
+export async function loader({}: Route.LoaderArgs) {}
 
 const Home = ({ loaderData }: Route.ComponentProps) => {
-  const [tasks, setTasks] = useState<Tasks | null>();
-  const [active, setActive] = useState<Task | null>(null);
-  const [originColumn, setOriginColumn] = useState<Status | null>(null);
+  const {
+    tasks,
+    setTasks,
+    resetTasks,
+    activeTask,
+    setActiveTask,
+    updateTaskStatus,
+    originColumn,
+    setOriginColumn,
+    setTemporaryTasks,
+  } = useTaskContext();
 
   const { currentBoard } = useBoardContext();
 
@@ -45,117 +50,92 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     const { active, over } = event;
     if (!over || !tasks) return;
 
-    const fromColumn = Object.keys(tasks).find((status) =>
+    const taskObjectKeys = Object.keys(tasks);
+
+    const fromColumn = taskObjectKeys.find((status) =>
       tasks[status as Status].some((task) => task.id === active.id)
     ) as Status;
 
     const allTaskIds = Object.values(tasks)
       .flat()
       .map((t) => t.id);
-    const allColumnIds = Object.keys(tasks);
+    const allColumnIds = taskObjectKeys;
 
     let toColumn: Status | null = null;
 
-    if (allTaskIds.includes(over.id as string)) {
-      toColumn = Object.keys(tasks).find((status) =>
+    if (allTaskIds.includes(over.id)) {
+      toColumn = taskObjectKeys.find((status) =>
         tasks[status as Status].some((task) => task.id === over.id)
       ) as Status;
     } else if (allColumnIds.includes(over.id as string)) {
       toColumn = over.id as Status;
     }
 
-    if (!fromColumn || !toColumn || fromColumn === toColumn) {
+    if (!toColumn || !fromColumn || fromColumn === toColumn) {
+      setActiveTask(null);
       setOriginColumn(null);
-      setActive(null);
       return;
     }
 
-    const movingTask = tasks[fromColumn].find((task) => task.id === active.id);
-    if (!movingTask) return;
+    const movedTask = tasks[fromColumn].find(task => task.id === active.id);
+    if (!movedTask) return;
 
-    setTasks((prev) => {
-      const updated: Tasks = {
-        ...prev!,
-        [fromColumn]: prev![fromColumn].filter((task) => task.id !== active.id),
-        [toColumn]: [...prev![toColumn], { ...movingTask, status: toColumn }],
-      };
-      
-      setOriginColumn(null);
-      setActive(null);
-      
-      return updated;
-    });
+    updateTaskStatus(movedTask, toColumn);
   };
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const task = tasks?.[
+
+    const task = tasks[
       active.data.current?.sortable.containerId as Status
     ].find((task) => task.id === active.id);
     if (task) {
       setOriginColumn(task.status);
-      setActive(task);
+      setActiveTask(task);
     }
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    if (!tasks || !active) return;
+    if (!tasks || !activeTask) return;
 
     const { over } = event;
     if (!over) return;
-
+  
     const overId = over.id;
+  
     const overColumn = columns.find(
       (c) => c.id === overId || tasks[c.id]?.some((t) => t.id === overId)
     );
+
     const targetColumnId = overColumn?.id;
 
     if (!targetColumnId || targetColumnId === originColumn) return;
 
-    // Ya está en la columna actual
-    console.log({targetColumnId, tasks})
-    if (tasks[targetColumnId].some((t) => t.id === active.id)) return;
+    if (tasks[targetColumnId].some((t) => t.id === activeTask.id)) return;
 
-    // Mover temporalmente la tarea
-    setTasks((prev) => {
-      if (!prev || !originColumn || !active) return prev;
-
-      return {
-        ...prev,
-        [originColumn]: prev[originColumn].filter((t) => t.id !== active.id),
-        [targetColumnId]: [
-          ...prev[targetColumnId],
-          { ...active, status: targetColumnId },
-        ],
-      };
-    });
-
-    setOriginColumn(targetColumnId);
+    setTemporaryTasks(targetColumnId);
   };
 
   const { mutate: getTasksMutation, isPending } = useMutation({
     mutationFn: async (term: string): Promise<void> => {
       const { error, message, tasks, statusCode } = await getTasksByBoard(term);
-      
-      if (error || !tasks) throw new Error(message, { cause: `Error ${statusCode}: ${error}` });
 
-      const tasksByStatus = tasks.reduce((acc, task) => {
-        acc[task.status as Status] = [...(acc[task.status as Status] || []), task];
-        return acc;
-      }, {} as Record<Status, Task[]>);
+      if (error || !tasks)
+        throw new Error(message, { cause: `Error ${statusCode}: ${error}` });
 
-      setTasks(tasksByStatus);
+      setTasks(tasks);
     },
+    onMutate: () => resetTasks(),
     onError: ({ message, cause }) => {
       toast.error(cause as string, {
         description: message,
-      })
-    }
+      });
+    },
   });
 
   useEffect(() => {
     if (!currentBoard) return;
-    getTasksMutation(currentBoard.id)
+    getTasksMutation(currentBoard.id);
   }, [currentBoard]);
 
   return (
@@ -170,12 +150,14 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
           <Column
             key={column.id}
             {...column}
-            tasks={tasks?.[column.id] || []}
-            activeTaskId={active?.id || ''}
+            tasks={tasks[column.id]}
+            activeTaskId={activeTask?.id || ""}
             allowNewTask={index === 0}
           />
         ))}
-        <DragOverlay>{active && <TaskCardOverlay {...active} />}</DragOverlay>
+        <DragOverlay>
+          {activeTask && <TaskCardOverlay {...activeTask} />}
+        </DragOverlay>
       </DndContext>
     </div>
   );

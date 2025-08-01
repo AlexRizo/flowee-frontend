@@ -28,7 +28,7 @@ export const columns: Column[] = [
     color: "yellow",
   },
   {
-    id: Status.DONE,
+    id: Status.DONE,  
     name: "Finalizado",
     color: "green",
   },

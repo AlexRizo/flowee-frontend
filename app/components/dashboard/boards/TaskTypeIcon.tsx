@@ -8,13 +8,13 @@ interface Props {
 }
 
 type Icons = 'Smartphone' | 'ScrollText' | 'Store' | 'Sparkles';
-type TaskType = 'DIGITAL' | 'IMPRESO' | 'ECOMMERCE' | 'ESPECIAL';
+type TaskType = 'DIGITAL' | 'PRINT' | 'ECOMMERCE' | 'SPECIAL';
 
 const icons : Record<TaskType, Icons> = {
   'DIGITAL': 'Smartphone',
-  'IMPRESO': 'ScrollText',
+  'PRINT': 'ScrollText',
   'ECOMMERCE': 'Store',
-  'ESPECIAL': 'Sparkles',
+  'SPECIAL': 'Sparkles',
 }
 
 export const TaskTypeIcon: FC<Props> = ({ name, size = 16, color = 'black' }) => {

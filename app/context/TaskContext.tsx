@@ -1,23 +1,27 @@
-import { createContext, useContext, useEffect, useState, type FC } from "react";
+import { createContext, useContext, useState, type FC } from "react";
 import {
   Status,
   type Task,
 } from "~/services/interfaces/tasks-service.interface";
 
 interface Tasks {
-  await: Task[];
-  attention: Task[];
-  inProgress: Task[];
-  review: Task[];
-  done: Task[];
+  AWAIT: Task[];
+  ATTENTION: Task[];
+  IN_PROGRESS: Task[];
+  REVIEW: Task[];
+  DONE: Task[];
 }
-
-type TaskStatus = "await" | "attention" | "inProgress" | "review" | "done";
 
 interface TaskContextType {
   tasks: Tasks;
   setTasks: (tasks: Task[]) => void;
+  setTemporaryTasks: (targetColumnId: Status) => void;
+  activeTask: Task | null;
+  setActiveTask: (task: Task | null) => void;
   updateTaskStatus: (task: Task, status: Status) => void;
+  resetTasks: () => void;
+  originColumn: Status | null;
+  setOriginColumn: (column: Status | null) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -26,74 +30,88 @@ interface TaskProviderProps {
   children: React.ReactNode;
 }
 
-export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
-  const [tasks, setTasks] = useState<Tasks>({
-    await: [],
-    attention: [],
-    inProgress: [],
-    review: [],
-    done: [],
-  });
+const initialTasksState: Tasks = {
+  AWAIT: [],
+  ATTENTION: [],
+  IN_PROGRESS: [],
+  REVIEW: [],
+  DONE: [],
+};
 
-  const getTaskStatus = (taskStatus: Status): TaskStatus => {
-    switch (taskStatus) {
-      case Status.AWAIT:
-        return "await";
-      case Status.ATTENTION:
-        return "attention";
-      case Status.IN_PROGRESS:
-        return "inProgress";
-      case Status.REVIEW:
-        return "review";
-      case Status.DONE:
-        return "done";
-      default:
-        return "await";
-    }
-  };
+export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
+  const [tasks, setTasks] = useState<Tasks>(initialTasksState);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [originColumn, setOriginColumn] = useState<Status | null>(null);
 
   const updateTaskStatus = (task: Task, status: Status) => {
-    const findTask = tasks[getTaskStatus(task.status)].find(
-      (t) => t.id === task.id
-    );
-
-    if (!findTask) return;
+    if (!originColumn) return;
 
     setTasks((prev) => {
       return {
         ...prev,
-        [getTaskStatus(task.status)]: prev[getTaskStatus(task.status)].filter(
-          (t) => t.id !== task.id
-        ),
-        [getTaskStatus(status)]: [...prev[getTaskStatus(status)], findTask],
+        [originColumn]: prev[originColumn].filter((t) => t.id !== task.id),
+        [status]: [...prev[status], { ...task, status }],
       };
     });
+
+    // ? Reset state
+    setOriginColumn(null);
+    setActiveTask(null);
+  };
+
+  const resetTasks = () => {
+    setTasks(initialTasksState);
   };
 
   const handleSetTasks = (tasksArr: Task[]) => {
-    const orderedTasks = tasksArr.reduce(
-      (acc, task) => {
-        acc[getTaskStatus(task.status)] = [
-          ...acc[getTaskStatus(task.status)],
-          task,
-        ];
-        return acc;
-      },
-      {
-        await: [],
-        attention: [],
-        inProgress: [],
-        review: [],
-        done: [],
-      } as Tasks
-    );
+    const orderedTasks = tasksArr.reduce((acc, task) => {
+      acc[task.status] = [...acc[task.status], task];
+      return acc;
+    }, {
+      ...initialTasksState
+    });
 
     setTasks(orderedTasks);
   };
 
+  const handleSetTemporaryTasks = (
+    targetColumnId: Status
+  ) => {
+    setTasks((prev) => {
+      if (!prev || !originColumn || !activeTask) return prev;
+
+      return {
+        ...prev,
+        [originColumn]: prev[originColumn].filter(
+          (t) => t.id !== activeTask.id
+        ),
+        [targetColumnId]: [
+          ...prev[targetColumnId],
+          { ...activeTask, status: targetColumnId },
+        ],
+      };
+    });
+
+    setOriginColumn(targetColumnId);
+  };
+
+  const handleSetActiveTask = (task: Task | null) => {
+    setActiveTask(task);
+  };
+
   return (
     <TaskContext.Provider
-      value={{ tasks, setTasks: handleSetTasks, updateTaskStatus }}
+      value={{
+        tasks,
+        setTasks: handleSetTasks,
+        updateTaskStatus,
+        resetTasks,
+        activeTask,
+        setActiveTask: handleSetActiveTask,
+        originColumn,
+        setOriginColumn,
+        setTemporaryTasks: handleSetTemporaryTasks,
+      }}
     >
       {children}
     </TaskContext.Provider>
