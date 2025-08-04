@@ -131,6 +131,7 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
         description: message,
       });
     },
+    retry: false,
   });
 
   useEffect(() => {

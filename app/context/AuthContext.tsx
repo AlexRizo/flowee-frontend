@@ -4,7 +4,7 @@ import type { AuthUser } from "~/services/interfaces/auth-service.interface";
 import type { Roles } from "~/services/interfaces/users-service.interface";
 
 interface User extends AuthUser {
-  highestRole: Roles;
+  highestRole?: Roles;
 }
 
 interface AuthContextType {

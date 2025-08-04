@@ -11,6 +11,8 @@ export const getTasksByBoard = async (boardTerm: string) => {
         statusCode: response.statusCode,
       };
     }
+
+    console.log(response);
     
     return { tasks: response as Task[] };
   });

@@ -8,7 +8,6 @@ export const login = async (
 ): Promise<LoginResponse> => {
   return await api.post('auth/login', { email, password })
   .then((res: LoginResponse) => {
-    console.log(res);
     if (res.error) {
       return {
         message: getErrorMessage(res.message),
@@ -36,7 +35,9 @@ export const checkAuth = async (cookie?: string) => {
 };
 
 export const logout = async () => {
-  return await api.post('auth/logout')
+  return await api.post('auth/logout', {}, {
+    withCredentials: true,
+  })
   .then((res: LoginResponse) => {
     if (res.error) {
       return {

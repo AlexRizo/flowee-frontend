@@ -1,0 +1,25 @@
+import { io, Socket } from "socket.io-client";
+import { clientEnv } from "~/config/env";
+
+let socket: Socket | null = null;
+
+const socketUrl = clientEnv.SOCKET_URL;
+
+export const getSocket = () => {
+  if (!socketUrl) throw new Error("Socket URL is not defined:" + socketUrl);
+
+  if (!socket) {
+    socket = io(socketUrl, {
+      withCredentials: true,
+    });
+  }
+
+  return socket;
+};
+
+export const disconnectSocket = () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+};

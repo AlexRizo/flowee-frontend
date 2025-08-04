@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { FormControl, FormMessage } from "~/components/ui/form";
 import { Form, FormLabel, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Priority } from "~/services/interfaces/boards-service.interface";
+import { Priority } from "~/services/interfaces/tasks-service.interface";
 
 export function meta() {
   return [
