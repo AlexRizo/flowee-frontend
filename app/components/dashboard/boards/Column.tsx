@@ -9,17 +9,20 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useDroppable } from "@dnd-kit/core";
+import { DragOverlay, useDroppable } from "@dnd-kit/core";
 import { Link } from "react-router";
 import { Plus } from "lucide-react";
+import { TaskCardOverlay } from "./TaskCardOverlay";
+import { BlankCard } from "./BlankCard";
 
 interface Props {
   id: Status;
   name: string;
   tasks: Task[];
   color: string;
-  activeTaskId: string;
+  activeTask: Task | null;
   allowNewTask: boolean;
+  over: any;
 }
 
 const colors = {
@@ -58,7 +61,7 @@ const columnPoint = {
   amber: "bg-amber-500",
 };
 
-export const Column = ({ id, name, tasks, color, activeTaskId, allowNewTask = false }: Props) => {
+export const Column = ({ id, name, tasks, color, activeTask, allowNewTask = false, over }: Props) => {
   const columnColor = useMemo(() => {
     return colors[color as keyof typeof colors];
   }, [color]);
@@ -99,7 +102,7 @@ export const Column = ({ id, name, tasks, color, activeTaskId, allowNewTask = fa
             <Link
               to={`/solicitudes/nueva-solicitud`}
               className="ml-auto text-xs bg-violet-700 text-white font-semibold p-1 rounded flex items-center gap-0.5"
-          >
+            >
               <Plus size={14} />
               Nueva
             </Link>
@@ -107,8 +110,9 @@ export const Column = ({ id, name, tasks, color, activeTaskId, allowNewTask = fa
         </header>
         <div className="flex flex-col gap-2 max-h-[calc(100vh-10rem)] [scrollbar-width:none] overflow-y-auto">
           {tasks.map((task) => (
-            <TaskCard key={task.id} {...task} activeTaskId={activeTaskId} />
+            <TaskCard key={task.id} {...task} activeTaskId={activeTask?.id} />
           ))}
+          {over?.active && over.column === id && <BlankCard />}
         </div>
       </SortableContext>
     </div>

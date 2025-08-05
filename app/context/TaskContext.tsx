@@ -15,7 +15,6 @@ interface Tasks {
 interface TaskContextType {
   tasks: Tasks;
   setTasks: (tasks: Task[]) => void;
-  setTemporaryTasks: (targetColumnId: Status) => void;
   activeTask: Task | null;
   setActiveTask: (task: Task | null) => void;
   updateTaskStatus: (task: Task, status: Status) => void;
@@ -74,27 +73,6 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
     setTasks(orderedTasks);
   };
 
-  const handleSetTemporaryTasks = (
-    targetColumnId: Status
-  ) => {
-    setTasks((prev) => {
-      if (!prev || !originColumn || !activeTask) return prev;
-
-      return {
-        ...prev,
-        [originColumn]: prev[originColumn].filter(
-          (t) => t.id !== activeTask.id
-        ),
-        [targetColumnId]: [
-          ...prev[targetColumnId],
-          { ...activeTask, status: targetColumnId },
-        ],
-      };
-    });
-
-    setOriginColumn(targetColumnId);
-  };
-
   const handleSetActiveTask = (task: Task | null) => {
     setActiveTask(task);
   };
@@ -110,7 +88,6 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
         setActiveTask: handleSetActiveTask,
         originColumn,
         setOriginColumn,
-        setTemporaryTasks: handleSetTemporaryTasks,
       }}
     >
       {children}

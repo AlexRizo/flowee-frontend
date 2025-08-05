@@ -12,8 +12,6 @@ export const getTasksByBoard = async (boardTerm: string) => {
       };
     }
 
-    console.log(response);
-    
     return { tasks: response as Task[] };
   });
 }

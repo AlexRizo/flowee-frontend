@@ -36,17 +36,17 @@ const DashboardLayout = ({ loaderData }: Route.ComponentProps) => {
       <AuthProvider authUser={user}>
         <SocketProvider>
           <BoardProvider initialBoards={boards}>
-          <main className="flex bg-gray-50">
-            <Toaster />
-            <Sidebar/>
-            <div className="w-full flex flex-col">
-              <Navbar />
-              <div className="p-6 h-full">
-                <Outlet />
+            <main className="flex bg-gray-50">
+              <Toaster />
+              <Sidebar/>
+              <div className="w-full flex flex-col">
+                <Navbar />
+                <div className="p-6 h-full">
+                  <Outlet />
+                </div>
               </div>
-            </div>
-          </main>
-        </BoardProvider>
+            </main>
+          </BoardProvider>
         </SocketProvider>
       </AuthProvider>
     </QueryClientProvider>

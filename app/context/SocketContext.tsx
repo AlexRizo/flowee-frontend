@@ -14,7 +14,7 @@ export const SocketProvider: FC<SocketProviderProps> = ({ children }) => {
   useEffect(() => {
     const s = getSocket();
     setSocket(s);
-    console.log("disconnecting socket", s);
+    console.log("connected socket", s);
 
     return () => {
       disconnectSocket();

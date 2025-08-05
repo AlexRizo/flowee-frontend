@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import type { Task } from "~/services/interfaces/boards-service.interface";
+import type { Task } from "~/services/interfaces/tasks-service.interface";
 import { CardTooltip } from "./CardTooltip";
 import { CalendarCheck, CalendarPlus, Flag, ListEnd, User } from "lucide-react";
 import { TaskTypeIcon } from "./TaskTypeIcon";

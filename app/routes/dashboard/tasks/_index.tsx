@@ -20,6 +20,7 @@ import { columns } from "./data";
 import { getTasksByBoard } from "~/services/tasks-service";
 import { toast } from "sonner";
 import { useTaskContext } from "~/context/TaskContext";
+import { getSocket } from "~/lib/socket";
 
 export function meta() {
   return [
@@ -33,7 +34,7 @@ export async function loader({}: Route.LoaderArgs) {}
 
 const Home = ({ loaderData }: Route.ComponentProps) => {
   const {
-    tasks,
+    tasks: tasksState,
     setTasks,
     resetTasks,
     activeTask,
@@ -41,52 +42,56 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     updateTaskStatus,
     originColumn,
     setOriginColumn,
-    setTemporaryTasks,
   } = useTaskContext();
+  const socket = getSocket();
 
   const { currentBoard } = useBoardContext();
 
+  const [overState, setOverState] = useState<{active: boolean, column: Status} | null>(null);
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over || !tasks) return;
-
-    const taskObjectKeys = Object.keys(tasks);
-
-    const fromColumn = taskObjectKeys.find((status) =>
-      tasks[status as Status].some((task) => task.id === active.id)
-    ) as Status;
-
-    const allTaskIds = Object.values(tasks)
-      .flat()
-      .map((t) => t.id);
+    if (!over || !tasksState) return;
+    
+    const taskObjectKeys = Object.keys(tasksState);
+    
+    const fromColumn = originColumn;
+    
+    const allTaskIds = Object.values(tasksState)
+    .flat()
+    .map((t) => t.id);
     const allColumnIds = taskObjectKeys;
-
+  
     let toColumn: Status | null = null;
-
+    
     if (allTaskIds.includes(over.id)) {
       toColumn = taskObjectKeys.find((status) =>
-        tasks[status as Status].some((task) => task.id === over.id)
+        tasksState[status as Status].some((task) => task.id === over.id)
       ) as Status;
     } else if (allColumnIds.includes(over.id as string)) {
       toColumn = over.id as Status;
     }
-
+    
     if (!toColumn || !fromColumn || fromColumn === toColumn) {
       setActiveTask(null);
       setOriginColumn(null);
+      setOverState(null);
       return;
     }
 
-    const movedTask = tasks[fromColumn].find(task => task.id === active.id);
+    const movedTask = tasksState[fromColumn].find(task => task.id === active.id);
     if (!movedTask) return;
 
+    setOverState(null);
+
     updateTaskStatus(movedTask, toColumn);
+    socket.emit('task-status-update', {taskId: movedTask.id, status: toColumn})
   };
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
 
-    const task = tasks[
+    const task = tasksState[
       active.data.current?.sortable.containerId as Status
     ].find((task) => task.id === active.id);
     if (task) {
@@ -95,8 +100,9 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     }
   };
 
+
   const handleDragOver = (event: DragOverEvent) => {
-    if (!tasks || !activeTask) return;
+    if (!tasksState || !activeTask) return;
 
     const { over } = event;
     if (!over) return;
@@ -104,16 +110,19 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     const overId = over.id;
   
     const overColumn = columns.find(
-      (c) => c.id === overId || tasks[c.id]?.some((t) => t.id === overId)
+      (c) => c.id === overId || tasksState[c.id]?.some((t) => t.id === overId)
     );
 
     const targetColumnId = overColumn?.id;
 
-    if (!targetColumnId || targetColumnId === originColumn) return;
+    if (!targetColumnId || targetColumnId === originColumn) {
+      setOverState(null);
+      return;
+    }
 
-    if (tasks[targetColumnId].some((t) => t.id === activeTask.id)) return;
+    if (tasksState[targetColumnId].some((t) => t.id === activeTask.id)) return;
 
-    setTemporaryTasks(targetColumnId);
+    setOverState({active: true, column: targetColumnId});
   };
 
   const { mutate: getTasksMutation, isPending } = useMutation({
@@ -137,6 +146,7 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
   useEffect(() => {
     if (!currentBoard) return;
     getTasksMutation(currentBoard.id);
+
   }, [currentBoard]);
 
   return (
@@ -151,9 +161,10 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
           <Column
             key={column.id}
             {...column}
-            tasks={tasks[column.id]}
-            activeTaskId={activeTask?.id || ""}
+            tasks={tasksState[column.id]}
+            activeTask={activeTask}
             allowNewTask={index === 0}
+            over={overState}
           />
         ))}
         <DragOverlay>
