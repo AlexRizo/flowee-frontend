@@ -1,8 +1,6 @@
 import {
   Status,
-  type Task,
 } from "~/services/interfaces/tasks-service.interface";
-import type { Route } from "../tasks/+types/_index";
 import { Column } from "~/components/dashboard/boards/Column";
 import { useEffect, useState } from "react";
 import {
@@ -20,7 +18,8 @@ import { columns } from "./data";
 import { getTasksByBoard } from "~/services/tasks-service";
 import { toast } from "sonner";
 import { useTaskContext } from "~/context/TaskContext";
-import { getSocket } from "~/lib/socket";
+import { useSocket } from "~/context/SocketContext";
+import { PageLoader } from "~/components/dashboard/PageLoader";
 
 export function meta() {
   return [
@@ -30,9 +29,9 @@ export function meta() {
   ];
 }
 
-export async function loader({}: Route.LoaderArgs) {}
-
-const Home = ({ loaderData }: Route.ComponentProps) => {
+const Home = () => {
+  const { tasksSocket } = useSocket();
+    
   const {
     tasks: tasksState,
     setTasks,
@@ -40,90 +39,12 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     activeTask,
     setActiveTask,
     updateTaskStatus,
+    updateTaskFromServer,
     originColumn,
     setOriginColumn,
   } = useTaskContext();
-  const socket = getSocket();
 
   const { currentBoard } = useBoardContext();
-
-  const [overState, setOverState] = useState<{active: boolean, column: Status} | null>(null);
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || !tasksState) return;
-    
-    const taskObjectKeys = Object.keys(tasksState);
-    
-    const fromColumn = originColumn;
-    
-    const allTaskIds = Object.values(tasksState)
-    .flat()
-    .map((t) => t.id);
-    const allColumnIds = taskObjectKeys;
-  
-    let toColumn: Status | null = null;
-    
-    if (allTaskIds.includes(over.id)) {
-      toColumn = taskObjectKeys.find((status) =>
-        tasksState[status as Status].some((task) => task.id === over.id)
-      ) as Status;
-    } else if (allColumnIds.includes(over.id as string)) {
-      toColumn = over.id as Status;
-    }
-    
-    if (!toColumn || !fromColumn || fromColumn === toColumn) {
-      setActiveTask(null);
-      setOriginColumn(null);
-      setOverState(null);
-      return;
-    }
-
-    const movedTask = tasksState[fromColumn].find(task => task.id === active.id);
-    if (!movedTask) return;
-
-    setOverState(null);
-
-    updateTaskStatus(movedTask, toColumn);
-    socket.emit('task-status-update', {taskId: movedTask.id, status: toColumn})
-  };
-
-  const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event;
-
-    const task = tasksState[
-      active.data.current?.sortable.containerId as Status
-    ].find((task) => task.id === active.id);
-    if (task) {
-      setOriginColumn(task.status);
-      setActiveTask(task);
-    }
-  };
-
-
-  const handleDragOver = (event: DragOverEvent) => {
-    if (!tasksState || !activeTask) return;
-
-    const { over } = event;
-    if (!over) return;
-  
-    const overId = over.id;
-  
-    const overColumn = columns.find(
-      (c) => c.id === overId || tasksState[c.id]?.some((t) => t.id === overId)
-    );
-
-    const targetColumnId = overColumn?.id;
-
-    if (!targetColumnId || targetColumnId === originColumn) {
-      setOverState(null);
-      return;
-    }
-
-    if (tasksState[targetColumnId].some((t) => t.id === activeTask.id)) return;
-
-    setOverState({active: true, column: targetColumnId});
-  };
 
   const { mutate: getTasksMutation, isPending } = useMutation({
     mutationFn: async (term: string): Promise<void> => {
@@ -143,11 +64,117 @@ const Home = ({ loaderData }: Route.ComponentProps) => {
     retry: false,
   });
 
+  const [overState, setOverState] = useState<{
+    active: boolean;
+    column: Status;
+  } | null>(null);
+
   useEffect(() => {
     if (!currentBoard) return;
     getTasksMutation(currentBoard.id);
 
+    if (!tasksSocket) return;
+    tasksSocket.emit("join-board", { boardId: currentBoard.id });
+
+    return () => {
+      tasksSocket.emit("leave-board", { boardId: currentBoard.id });
+    };
   }, [currentBoard]);
+
+  useEffect(() => {
+    if (!tasksSocket) return;
+    tasksSocket.on("task-status-updated", ({ taskId, status }) => {
+      console.log('actualizando tarea', taskId, status);
+      updateTaskFromServer(taskId, status);
+    });
+
+    return () => {
+      tasksSocket.off("task-status-updated");
+    };
+  }, [tasksState, updateTaskFromServer, tasksSocket]);
+  
+  if (!tasksSocket) return <PageLoader message="Generando tableros..."/>;
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || !tasksState) return;
+
+    const taskObjectKeys = Object.keys(tasksState);
+
+    const fromColumn = originColumn;
+
+    const allTaskIds = Object.values(tasksState)
+      .flat()
+      .map((t) => t.id);
+    const allColumnIds = taskObjectKeys;
+
+    let toColumn: Status | null = null;
+
+    if (allTaskIds.includes(over.id)) {
+      toColumn = taskObjectKeys.find((status) =>
+        tasksState[status as Status].some((task) => task.id === over.id)
+      ) as Status;
+    } else if (allColumnIds.includes(over.id as string)) {
+      toColumn = over.id as Status;
+    }
+
+    if (!toColumn || !fromColumn || fromColumn === toColumn) {
+      setActiveTask(null);
+      setOriginColumn(null);
+      setOverState(null);
+      return;
+    }
+
+    const movedTask = tasksState[fromColumn].find(
+      (task) => task.id === active.id
+    );
+    if (!movedTask) return;
+
+    setOverState(null);
+
+    updateTaskStatus(movedTask.id, toColumn);
+    tasksSocket.emit("task-status-update", {
+      taskId: movedTask.id,
+      status: toColumn,
+      boardId: currentBoard!.id,
+    });
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+
+    const task = tasksState[
+      active.data.current?.sortable.containerId as Status
+    ].find((task) => task.id === active.id);
+    if (task) {
+      setOriginColumn(task.status);
+      setActiveTask(task);
+    }
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    if (!tasksState || !activeTask) return;
+
+    const { over } = event;
+    if (!over) return;
+
+    const overId = over.id;
+
+    const overColumn = columns.find(
+      (c) => c.id === overId || tasksState[c.id]?.some((t) => t.id === overId)
+    );
+
+    const targetColumnId = overColumn?.id;
+
+    if (!targetColumnId || targetColumnId === originColumn) {
+      setOverState(null);
+      return;
+    }
+
+    if (tasksState[targetColumnId].some((t) => t.id === activeTask.id)) return;
+
+    setOverState({ active: true, column: targetColumnId });
+  };
 
   return (
     <div className="grid grid-cols-5 max-h-full gap-4">

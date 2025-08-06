@@ -9,10 +9,9 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { DragOverlay, useDroppable } from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
 import { Link } from "react-router";
 import { Plus } from "lucide-react";
-import { TaskCardOverlay } from "./TaskCardOverlay";
 import { BlankCard } from "./BlankCard";
 
 interface Props {

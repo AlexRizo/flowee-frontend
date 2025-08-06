@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type FC } from "react";
+import { createContext, useContext, useEffect, useState, type FC } from "react";
 import {
   Status,
   type Task,
@@ -17,7 +17,8 @@ interface TaskContextType {
   setTasks: (tasks: Task[]) => void;
   activeTask: Task | null;
   setActiveTask: (task: Task | null) => void;
-  updateTaskStatus: (task: Task, status: Status) => void;
+  updateTaskStatus: (taskId: string, status: Status) => void;
+  updateTaskFromServer: (taskId: string, newStatus: Status) => void;
   resetTasks: () => void;
   originColumn: Status | null;
   setOriginColumn: (column: Status | null) => void;
@@ -42,13 +43,16 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [originColumn, setOriginColumn] = useState<Status | null>(null);
 
-  const updateTaskStatus = (task: Task, status: Status) => {
-    if (!originColumn) return;
+  const updateTaskStatus = (taskId: string, status: Status) => {
+    if (!originColumn || !taskId) return;
+
+    const task = tasks[originColumn].find((t) => t.id === taskId);
+    // console.log({task, originColumn})
 
     setTasks((prev) => {
       return {
         ...prev,
-        [originColumn]: prev[originColumn].filter((t) => t.id !== task.id),
+        [originColumn]: prev[originColumn].filter((t) => t.id !== taskId),
         [status]: [...prev[status], { ...task, status }],
       };
     });
@@ -58,6 +62,22 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
     setActiveTask(null);
   };
 
+  const updateTaskFromServer = (taskId: string, newStatus: Status) => {
+    const findOrigin = Object.keys(tasks).find((key) => tasks[key as Status].find((t) => t.id === taskId)) as Status;
+
+    if (!findOrigin) return;
+
+    const task = tasks[findOrigin].find((t) => t.id === taskId);
+
+    setTasks((prev) => {
+      return {
+        ...prev,
+        [findOrigin]: prev[findOrigin].filter((t) => t.id !== taskId),
+        [newStatus]: [...prev[newStatus], { ...task, status: newStatus }],
+      };
+    });
+  }
+  
   const resetTasks = () => {
     setTasks(initialTasksState);
   };
@@ -83,6 +103,7 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
         tasks,
         setTasks: handleSetTasks,
         updateTaskStatus,
+        updateTaskFromServer,
         resetTasks,
         activeTask,
         setActiveTask: handleSetActiveTask,

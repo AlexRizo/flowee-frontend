@@ -3,7 +3,7 @@ import type { Task } from "~/services/interfaces/tasks-service.interface";
 import { CardTooltip } from "./CardTooltip";
 import { CalendarCheck, CalendarPlus, Flag, ListEnd, User } from "lucide-react";
 import { TaskTypeIcon } from "./TaskTypeIcon";
-import { getCapitalizedTaskProperty, getTaskPriorityColor } from "~/helpers/taskHelpers";
+import { getTaskDate, getTaskPriority, getTaskPriorityColor } from "~/helpers/taskHelpers";
 
 interface Props extends Task {
 }
@@ -20,36 +20,37 @@ export const TaskCardOverlay: FC<Props> = ({
   board,
   dueDate,
   createdAt,
+  
 }) => {
   return (
     <div
       className="flex flex-col justify-between rounded-lg h-37.5 bg-white border border-violet-500 cursor-grabbing -rotate-2"
     >
       <header className="flex border-b border-gray-200 p-2 gap-1">
-        <CardTooltip text={board.name} tooltipColor={board.color}>
+        <CardTooltip text={''} tooltipColor={board.color}>
           <span
             className="font-semibold text-white"
           >
             {board.prefix}
           </span>
         </CardTooltip>
-        <CardTooltip text={author.name}>
+        <CardTooltip text={''}>
           <img
             src={"/images/default-user.webp"}
             alt={"Avatar"}
             className="size-5 rounded"
           />
         </CardTooltip>
-        <CardTooltip text={createdAt}>
+        <CardTooltip text={''}>
           <CalendarPlus size={17} />
         </CardTooltip>
-        <CardTooltip text={getCapitalizedTaskProperty(type)}>
+        <CardTooltip text={''}>
           <TaskTypeIcon name={type} size={17} />
         </CardTooltip>
 
         <span className="text-xs place-objects-center ml-auto gap-0.5">
           <Flag size={14} className={getTaskPriorityColor(priority)} />
-          { getCapitalizedTaskProperty(priority) }
+          { getTaskPriority(priority) }
         </span>
       </header>
 
@@ -59,7 +60,7 @@ export const TaskCardOverlay: FC<Props> = ({
       </div>
       
       <footer className="flex p-2 border-t border-gray-200 gap-1">
-        <CardTooltip text={assignedTo.name}>
+        <CardTooltip text={''}>
           <img
             src={"/images/default-user.webp"}
             alt={"Avatar"}
@@ -72,7 +73,7 @@ export const TaskCardOverlay: FC<Props> = ({
         </span>
         <span className="place-objects-center gap-1 text-xs ml-auto">
           <CalendarCheck size={17} />
-          {dueDate}
+          {getTaskDate(dueDate, 'dd/MM hh:mm aaaa')}
         </span>
       </footer>
     </div>

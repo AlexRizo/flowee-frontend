@@ -3,8 +3,10 @@ import { CardTooltip } from "./CardTooltip";
 import { CalendarCheck, CalendarPlus, Flag, ListEnd } from "lucide-react";
 import { TaskTypeIcon } from "./TaskTypeIcon";
 import {
-  getCapitalizedTaskProperty,
+  getTaskDate,
+  getTaskPriority,
   getTaskPriorityColor,
+  getTaskType,
 } from "~/helpers/taskHelpers";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -60,16 +62,16 @@ export const TaskCard: FC<Props> = ({
                 className="size-5 rounded"
               />
             </CardTooltip>
-            <CardTooltip text={createdAt}>
+            <CardTooltip text={`Creada: ${ getTaskDate(createdAt) }`}>
               <CalendarPlus size={17} />
             </CardTooltip>
-            <CardTooltip text={getCapitalizedTaskProperty(type)}>
+            <CardTooltip text={getTaskType(type)}>
               <TaskTypeIcon name={type} size={17} />
             </CardTooltip>
 
             <span className="text-xs place-objects-center ml-auto gap-0.5">
               <Flag size={14} className={getTaskPriorityColor(priority)} />
-              {getCapitalizedTaskProperty(priority)}
+              {getTaskPriority(priority)}
             </span>
           </header>
 
@@ -92,7 +94,7 @@ export const TaskCard: FC<Props> = ({
             </span>
             <span className="place-objects-center gap-1 text-xs ml-auto">
               <CalendarCheck size={17} />
-              {dueDate}
+              {getTaskDate(dueDate, 'dd/MM hh:mm aaaa')}
             </span>
           </footer>
         </div>
