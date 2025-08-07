@@ -27,12 +27,6 @@ const schema = z.object({
 
 export const GeneralInfo: FC = () => {
   const { handleSetSpecialTask, step, nextStep } = useCreateTaskContext();
-
-  useEffect(() => {
-    if (step === 1) {
-      nextStep();
-    }
-  }, [])
   
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {

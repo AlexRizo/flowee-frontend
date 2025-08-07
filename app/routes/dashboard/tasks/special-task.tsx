@@ -1,16 +1,7 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { SubmitButton } from "~/components/dashboard/tasks/create-task/SubmitButton";
-import { DateTimePicker } from "~/components/DateTimePicker";
-import { SingleSelect } from "~/components/SingleSelect";
-import { Button } from "~/components/ui/button";
-import { FormControl, FormMessage } from "~/components/ui/form";
-import { Form, FormLabel, FormField, FormItem } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
+import { Description } from "~/components/dashboard/tasks/create-task/specal-task/Description";
+import { GeneralInfo } from "~/components/dashboard/tasks/create-task/specal-task/GeneralInfo";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
-import { Priority } from "~/services/interfaces/tasks-service.interface";
 
 export function meta() {
   return [
@@ -23,11 +14,21 @@ export function meta() {
 const SpecialTask = () => {
   const { handleSetSpecialTask, step, nextStep } = useCreateTaskContext();
   
-  return (
-    <>
-
-    </>
-  );
+  useEffect(() => {
+    if (step === 1) {
+      nextStep();
+    }
+  }, [])
+  
+  return (step === 1 || step === 2) ? (
+    <GeneralInfo />
+  ) : step === 3 ? (
+    <Description />
+  ) : step === 4 ? (
+    <></>
+  ) : step === 5 ? (
+    <></>
+  ) : null
 };
 
 export default SpecialTask;

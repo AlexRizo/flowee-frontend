@@ -17,7 +17,7 @@ interface TaskBase {
 }
 
 interface SpecialTask extends TaskBase {
-  idea: string;
+  // idea: string;
   sizes: string;
   legals: string;
 }

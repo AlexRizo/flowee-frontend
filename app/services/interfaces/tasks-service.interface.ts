@@ -32,7 +32,7 @@ export interface RestErrorResponse {
 }
 
 export interface SpecialTask {
-  idea: string;
+  // idea: string;
   sizes: string;
   legals: string;
 }
