@@ -1,11 +1,15 @@
 import { Outlet } from "react-router";
+import { CreateTaskProvider } from "~/context/CreateTaskContext";
+import { CreateTaskCard } from "~/components/dashboard/tasks/create-task/CreateTaskCard";
 
 const CreateTaskLayout = () => {
   return (
-    <div className="place-objects-center flex-col m-auto bg-white rounded-lg px-18 py-8 w-[650px] shadow-sm">
-      <Outlet/>
-    </div>
-  )
-}
+    <CreateTaskProvider>
+      <CreateTaskCard>
+        <Outlet />
+      </CreateTaskCard>
+    </CreateTaskProvider>
+  );
+};
 
 export default CreateTaskLayout;

@@ -1,8 +1,9 @@
-import { Mail, ScrollText, Smartphone, Sparkles, Store } from "lucide-react";
+import { ScrollText, Smartphone, Sparkles, Store } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { TaskTypeCard } from "~/components/dashboard/tasks/TaskTypeCard";
 import { Button } from "~/components/ui/button";
+import { useCreateTaskContext } from "~/context/CreateTaskContext";
 
 export function meta() {
   return [
@@ -44,15 +45,18 @@ const types = [
 ];
 
 const CreateTask = () => {
+  const { nextStep } = useCreateTaskContext();
+
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const handleStart = () => {
     if (!selectedType) return;
+    nextStep();
     navigate(
       `/solicitudes/nueva-solicitud/${
         types.find((type) => type.id === selectedType)?.path
-      }`
+      }`,
     );
   };
 
