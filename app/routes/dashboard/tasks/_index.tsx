@@ -30,7 +30,7 @@ export function meta() {
 }
 
 const Home = () => {
-  const { tasksSocket } = useSocket();
+  const socket = useSocket();
     
   const {
     tasks: tasksState,
@@ -73,27 +73,27 @@ const Home = () => {
     if (!currentBoard) return;
     getTasksMutation(currentBoard.id);
 
-    if (!tasksSocket) return;
-    tasksSocket.emit("join-board", { boardId: currentBoard.id });
+    if (!socket) return;
+    socket.emit("join-board", { boardId: currentBoard.id });
 
     return () => {
-      tasksSocket.emit("leave-board", { boardId: currentBoard.id });
+      socket.emit("leave-board", { boardId: currentBoard.id });
     };
   }, [currentBoard]);
 
   useEffect(() => {
-    if (!tasksSocket) return;
-    tasksSocket.on("task-status-updated", ({ taskId, status }) => {
+    if (!socket) return;
+    socket.on("task-status-updated", ({ taskId, status }) => {
       console.log('actualizando tarea', taskId, status);
       updateTaskFromServer(taskId, status);
     });
 
     return () => {
-      tasksSocket.off("task-status-updated");
+      socket.off("task-status-updated");
     };
-  }, [tasksState, updateTaskFromServer, tasksSocket]);
+  }, [tasksState, updateTaskFromServer, socket]);
   
-  if (!tasksSocket) return <PageLoader message="Generando tableros..."/>;
+  if (!socket) return <PageLoader message="Generando tableros..."/>;
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -133,7 +133,7 @@ const Home = () => {
     setOverState(null);
 
     updateTaskStatus(movedTask.id, toColumn);
-    tasksSocket.emit("task-status-update", {
+    socket.emit("task-status-update", {
       taskId: movedTask.id,
       status: toColumn,
       boardId: currentBoard!.id,

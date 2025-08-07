@@ -9,18 +9,12 @@ interface Props extends Task {
 }
 
 export const TaskCardOverlay: FC<Props> = ({
-  id,
   title,
   description,
   priority,
   type,
-  status,
-  author,
-  assignedTo,
   board,
   dueDate,
-  createdAt,
-  
 }) => {
   return (
     <div

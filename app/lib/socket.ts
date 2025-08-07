@@ -7,9 +7,9 @@ const socketUrl = clientEnv.SOCKET_URL;
 
 if (!socketUrl) throw new Error("Socket URL is not defined:" + socketUrl);
 
-export const getSocket = (namespace: string) => {
+export const getSocket = () => {
   if (!socket) {
-    socket = io(`${socketUrl}/${namespace}`, {
+    socket = io(socketUrl, {
       withCredentials: true,
     });
   }
