@@ -1,45 +1,87 @@
-import React, { useEffect, useRef, useState, type FC } from "react";
+import React, { useRef, useState, type FC } from "react";
 import { useFormContext, type Control } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
-import { Clipboard, File, FileWarning, Paperclip, Trash, UploadIcon, X } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { File, FileWarning, Trash, UploadIcon } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 interface Props {
   control: Control<any>;
   label?: string;
   maxSize?: number;
-  accept?: string;
+  mimeTypes?: string[];
   multiple?: boolean;
 }
+
+const ACCEPTED_FILES = [
+  // Imágenes
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+  "image/bmp",
+  "image/tiff",
+  // Documentos
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.oasis.opendocument.text",
+  "text/plain",
+  "text/rtf",
+];
 
 export const FileUpload: FC<Props> = ({
   control,
   label = "Archivos",
   maxSize = 5,
-  accept = "image/*, application/pdf",
+  mimeTypes = ACCEPTED_FILES.join(", "),
   multiple = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [invalidFiles, setInvalidFiles] = useState<string[]>([]);
-  const { clearErrors, setValue } = useFormContext();
+  const [invalidFiles, setInvalidFiles] = useState<
+    { razon: string; file: string }[]
+  >([]);
+  const { clearErrors, setValue, setError } = useFormContext();
 
   const [maxFileSize] = useState(maxSize * 1024 * 1024);
 
-  const handleAddFiles = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleAddFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     handleClearErrors();
 
-    const searchInvalidFilesSize = files.filter((file) => file.size > maxFileSize);
-    
+    const searchInvalidFilesSize = files.filter(
+      (file) => file.size > maxFileSize
+    );
+
     if (searchInvalidFilesSize.length > 0) {
-      setInvalidFiles(searchInvalidFilesSize.map((file) => file.name));
-      setSelectedFiles(files);
-      control.setError("files", { message: `El tamaño máximo por archivo es de ${maxSize}Mb` })
-      return;
+      setInvalidFiles((prev) => [
+        ...prev,
+        ...searchInvalidFilesSize.map((file) => {
+          return {
+            razon: "Archivo demasiado grande",
+            file: file.name,
+          };
+        }),
+      ]);
+    }
+
+    const searchInvalidFilesType = files.filter(
+      (file) => !mimeTypes.includes(file.type)
+    );
+
+    if (searchInvalidFilesType.length > 0) {
+      setInvalidFiles((prev) => [
+        ...prev,
+        ...searchInvalidFilesType.map((file) => {
+          return {
+            razon: "Archivo no permitido",
+            file: file.name,
+          };
+        }),
+      ]);
     }
 
     setSelectedFiles(files);
@@ -50,16 +92,16 @@ export const FileUpload: FC<Props> = ({
     setInvalidFiles([]);
     setSelectedFiles([]);
     clearErrors("files");
-  }
+  };
 
   const handleRemoveFile = (file: File) => {
-    const newFiles = selectedFiles.filter(f => f.name !== file.name);
+    const newFiles = selectedFiles.filter((f) => f.name !== file.name);
     setSelectedFiles(newFiles);
     setValue("files", newFiles);
     if (newFiles.length <= 5) {
       clearErrors("files");
     }
-  }
+  };
 
   return (
     <>
@@ -72,7 +114,7 @@ export const FileUpload: FC<Props> = ({
               <Input
                 type="file"
                 multiple={multiple}
-                accept={accept}
+                accept="image/*, application/pdf"
                 className="hidden"
                 name={name}
                 onBlur={onBlur}
@@ -88,26 +130,26 @@ export const FileUpload: FC<Props> = ({
               <UploadIcon size={24} className="text-gray-500" />
               <p className="text-sm text-gray-500">{label}</p>
             </div>
-            <div className="max-h-41 overflow-y-auto flex flex-col gap-1">
+            <div
+              className={cn(
+                "max-h-41 overflow-y-auto hidden flex-col gap-1",
+                selectedFiles.length > 0 && "flex"
+              )}
+            >
               {selectedFiles?.map((file, index) => (
-                <span
+                <FileItem
                   key={file.name}
-                  className="place-objects-center bg-gray-50 hover:bg-gray-100 transition-colors gap-2 w-full justify-start cursor-pointer py-1 px-2 rounded-md"
-                >
-                  {invalidFiles.includes(file.name) ? <FileWarning size={16} className="text-red-600" /> : <File size={16} />}
-                  <small className="truncate">
-                    {file.name.length > 25
-                      ? file.name.slice(0, 25) + "..."
-                      : file.name}{" "}
-                    {invalidFiles.includes(file.name) && (
-                      <span className="text-red-600">
-                        {" "}
-                        (Archivo demasiado grande)
-                      </span>
-                    )}
-                  </small>
-                  <Trash size={20} className="ml-auto" onClick={() => handleRemoveFile(file)} />
-                </span>
+                  file={file}
+                  onRemove={() => handleRemoveFile(file)}
+                  isInvalid={invalidFiles.some(
+                    (invalidFile) => invalidFile.file === file.name
+                  )}
+                  razon={
+                    invalidFiles.find(
+                      (invalidFile) => invalidFile.file === file.name
+                    )?.razon || ""
+                  }
+                />
               ))}
             </div>
             <FormMessage />
@@ -115,5 +157,32 @@ export const FileUpload: FC<Props> = ({
         )}
       />
     </>
+  );
+};
+
+const FileItem = ({
+  file,
+  onRemove,
+  isInvalid,
+  razon,
+}: {
+  file: File;
+  onRemove: () => void;
+  isInvalid: boolean;
+  razon: string;
+}) => {
+  return (
+    <span className="place-objects-center bg-gray-50 hover:bg-gray-100 transition-colors gap-2 w-full justify-start cursor-pointer py-1 px-2 rounded-md">
+      {isInvalid ? (
+        <FileWarning size={16} className="text-red-600" />
+      ) : (
+        <File size={16} />
+      )}
+      <small className="truncate">
+        {isInvalid ? file.name.slice(0, 25) + "..." : file.name}{" "}
+        {isInvalid && <span className="text-red-600"> ({razon})</span>}
+      </small>
+      <Trash size={20} className="ml-auto" onClick={onRemove} />
+    </span>
   );
 };

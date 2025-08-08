@@ -15,27 +15,60 @@ import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import { Textarea } from "~/components/ui/textarea";
 import { FileUpload } from "~/components/FileUpload";
 
+const MAX_FILE_SIZE = 50;
+const ACCEPTED_FILES = [
+  // ? Imágenes
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+  "image/bmp",
+  "image/tiff",
+];
+
 const schema = z.object({
-  description: z.string().min(1, { message: "La descripción es requerida" }),
+  sizes: z
+    .string()
+    .min(1, { message: "Las medidas son requeridas" })
+    .max(100, { message: "Máximo 100 caracteres" }),
   files: z
-    .array(z.instanceof(File), { message: "Los archivos son requeridos" })
+    .array(z.instanceof(File))
     .min(1, { message: "Debes subir al menos un archivo" })
-    .max(5, { message: "Solo puedes subir 5 archivos" }),
+    .max(5, { message: "Solo puedes subir 5 archivos" })
+    .refine(
+      (files) =>
+        files.every((file) => file.size <= MAX_FILE_SIZE * 1024 * 1024),
+      {
+        message: `Los archivos son demasiado grandes, el tamaño máximo es de ${MAX_FILE_SIZE}MB`,
+      }
+    )
+    .refine(
+      (files) => files.every((file) => ACCEPTED_FILES.includes(file.type)),
+      {
+        message:
+          "Los archivos no son válidos. Solo se permiten imágenes y documentos",
+      }
+    ),
 });
 
-export const Description: FC = () => {
+export const TecnicalDetails: FC = () => {
   const { handleSetSpecialTask, nextStep } = useCreateTaskContext();
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
-      description: "",
-      files: undefined,
+      sizes: "",
+      files: [],
     },
     resolver: zodResolver(schema),
   });
 
   const onSubmit = (data: z.infer<typeof schema>): void => {
-    handleSetSpecialTask(data);
+    handleSetSpecialTask({
+      sizes: data.sizes,
+      referenceFiles: data.files,
+    });
     nextStep();
   };
 
@@ -47,13 +80,10 @@ export const Description: FC = () => {
       >
         <FormField
           control={form.control}
-          name="description"
+          name="sizes"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel>
-                ¿Qué necesitas? Describe tu idea y sube lo que creas útil como
-                referencia(?).
-              </FormLabel>
+              <FormLabel>Agrega las medidas*</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Escribe aquí..."
@@ -71,7 +101,7 @@ export const Description: FC = () => {
           control={form.control}
           label="Arrastra los archivos de referencia aquí"
           multiple={true}
-          maxSize={50}
+          maxSize={MAX_FILE_SIZE}
         />
 
         <SubmitButton status="idle" className="mt-auto" />

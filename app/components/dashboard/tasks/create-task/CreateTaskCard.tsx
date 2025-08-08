@@ -11,11 +11,13 @@ export const CreateTaskCard = ({ children }: { children: React.ReactNode }) => {
   }, [])
   
   return (
-    <div className="flex flex-col m-auto bg-white rounded-lg px-18 py-8 w-[650px] h-[725px] shadow-sm relative">
-      <span className="absolute -top-3.5 -translate-x-1/2 left-1/2 text-lg text-accent bg-violet-700 size-7.5 rounded-full place-objects-center">
+    <div role='dialog' className='relative'>
+      <span role='heading' className="absolute -top-3.5 -translate-x-1/2 left-1/2 text-lg text-accent bg-violet-700 size-7.5 rounded-full place-objects-center">
         { step }
       </span>
-      { children }
+      <div role='contentinfo' className="flex flex-col m-auto bg-white rounded-lg px-18 py-8 w-[650px] h-[725px] overflow-y-auto shadow-sm">
+        { children }
+      </div>
     </div>
   )
 }

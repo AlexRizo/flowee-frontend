@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { Description } from "~/components/dashboard/tasks/create-task/specal-task/Description";
-import { GeneralInfo } from "~/components/dashboard/tasks/create-task/specal-task/GeneralInfo";
+import { Description } from "~/components/dashboard/tasks/create-task/special-task/Description";
+import { GeneralInfo } from "~/components/dashboard/tasks/create-task/special-task/GeneralInfo";
+import { TecnicalDetails } from "~/components/dashboard/tasks/create-task/special-task/TecnicalDetails";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 
 export function meta() {
@@ -12,7 +13,7 @@ export function meta() {
 }
 
 const SpecialTask = () => {
-  const { handleSetSpecialTask, step, nextStep } = useCreateTaskContext();
+  const { step, nextStep } = useCreateTaskContext();
   
   useEffect(() => {
     if (step === 1) {
@@ -25,7 +26,7 @@ const SpecialTask = () => {
   ) : step === 3 ? (
     <Description />
   ) : step === 4 ? (
-    <></>
+    <TecnicalDetails />
   ) : step === 5 ? (
     <></>
   ) : null

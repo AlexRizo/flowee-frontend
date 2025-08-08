@@ -57,7 +57,7 @@ export const GeneralInfo: FC = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-2 size-full mt-10 flex flex-col items-center"
+          className="space-y-3 size-full mt-10 flex flex-col items-center"
         >
           <FormField
             control={form.control}
