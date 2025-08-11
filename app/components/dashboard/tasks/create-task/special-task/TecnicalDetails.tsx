@@ -33,6 +33,10 @@ const schema = z.object({
     .string()
     .min(1, { message: "Las medidas son requeridas" })
     .max(100, { message: "Máximo 100 caracteres" }),
+  legals: z
+    .string()
+    .max(500, { message: "Máximo 500 caracteres" })
+    .optional(),
   files: z
     .array(z.instanceof(File))
     .min(1, { message: "Debes subir al menos un archivo" })
@@ -54,20 +58,22 @@ const schema = z.object({
 });
 
 export const TecnicalDetails: FC = () => {
-  const { handleSetSpecialTask, nextStep } = useCreateTaskContext();
+  const { handleSetSpecialTask, nextStep, specialTask } = useCreateTaskContext();
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
-      sizes: "",
-      files: [],
+      sizes: specialTask.sizes,
+      files: specialTask.includeFiles,
+      legals: specialTask.legals,
     },
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: z.infer<typeof schema>): void => {
+  const onSubmit = ({ files, sizes, legals }: z.infer<typeof schema>): void => {
     handleSetSpecialTask({
-      sizes: data.sizes,
-      referenceFiles: data.files,
+      sizes,
+      legals,
+      includeFiles: files,
     });
     nextStep();
   };
@@ -76,7 +82,7 @@ export const TecnicalDetails: FC = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-2 size-full mt-10 flex flex-col items-center"
+        className="space-y-3 size-full mt-10 flex flex-col items-center"
       >
         <FormField
           control={form.control}
@@ -87,9 +93,26 @@ export const TecnicalDetails: FC = () => {
               <FormControl>
                 <Textarea
                   placeholder="Escribe aquí..."
-                  maxLength={1000}
-                  className="resize-none field-sizing-fixed"
-                  rows={8}
+                  maxLength={100}
+                  className="resize-none"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="legals"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Si tu solicitud lleva legales, ponlos en este apartado</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Escribe aquí..."
+                  maxLength={500}
+                  className="resize-none"
                   {...field}
                 />
               </FormControl>
@@ -98,8 +121,9 @@ export const TecnicalDetails: FC = () => {
           )}
         />
         <FileUpload
+          initialFiles={specialTask.includeFiles}
           control={form.control}
-          label="Arrastra los archivos de referencia aquí"
+          label="Arrastra los archivos para incluir en el diseño aquí"
           multiple={true}
           maxSize={MAX_FILE_SIZE}
         />

@@ -84,7 +84,6 @@ const Home = () => {
   useEffect(() => {
     if (!socket) return;
     socket.on("task-status-updated", ({ taskId, status }) => {
-      console.log('actualizando tarea', taskId, status);
       updateTaskFromServer(taskId, status);
     });
 

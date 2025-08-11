@@ -58,12 +58,12 @@ const schema = z.object({
 });
 
 export const Description: FC = () => {
-  const { handleSetSpecialTask, nextStep } = useCreateTaskContext();
+  const { handleSetSpecialTask, nextStep, specialTask } = useCreateTaskContext();
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
-      description: "",
-      files: [],
+      description: specialTask.description,
+      files: specialTask.referenceFiles,
     },
     resolver: zodResolver(schema),
   });
@@ -86,7 +86,7 @@ export const Description: FC = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-2 size-full mt-10 flex flex-col items-center"
+        className="space-y-3 size-full mt-10 flex flex-col items-center"
       >
         <FormField
           control={form.control}
@@ -111,8 +111,10 @@ export const Description: FC = () => {
           )}
         />
         <FileUpload
+          initialFiles={specialTask.referenceFiles}
           control={form.control}
-          label="Arrastra los archivos de referencia aquí"
+          label="Archivos de referencia"
+          description="Arrastra los archivos de referencia aquí"
           multiple={true}
           maxSize={MAX_FILE_SIZE}
         />

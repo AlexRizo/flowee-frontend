@@ -1,9 +1,30 @@
-import { createContext, useContext, useEffect, useState, type FC } from "react";
-import type {
+import { createContext, useContext, useState, type FC } from "react";
+import {
   Priority,
   Status,
   Type,
 } from "~/services/interfaces/tasks-service.interface";
+
+const taskBase: TaskBase = {
+  id: '',
+  title: '',
+  description: '',
+  priority: Priority.LOW,
+  status: Status.AWAIT,
+  type: Type.SPECIAL,
+  boardId: '',
+  dueDate: undefined,
+  referenceFiles: [],
+  includeFiles: [],
+}
+
+const initialSpecialTask: SpecialTask = {
+  ...taskBase,
+  sizes: '',
+  legals: '',
+}
+
+
 
 interface TaskBase {
   id: string;
@@ -13,7 +34,7 @@ interface TaskBase {
   status: Status.AWAIT;
   type: Type;
   boardId: string;
-  dueDate: Date;
+  dueDate: Date | undefined;
   referenceFiles: File[];
   includeFiles: File[];
 }
@@ -33,13 +54,14 @@ interface EcommerceTask extends TaskBase {}
 type Steps = 1 | 2 | 3 | 4 | 5;
 
 interface CreateContextType {
-  specialTask: SpecialTask | {};
+  specialTask: SpecialTask;
   digitalTask: DigitalTask | null;
   printTask: PrintTask | null;
   ecommerceTask: EcommerceTask | null;
   step: Steps;
   nextStep: () => void;
   previousStep: () => void;
+  handleSetStep: (step: Steps) => void;
   handleSetSpecialTask: (data: Partial<SpecialTask>) => void;
   handleReset: () => void;
 }
@@ -53,7 +75,7 @@ interface CreateTaskProviderProps {
 export const CreateTaskProvider: FC<CreateTaskProviderProps> = ({
   children,
 }) => {
-  const [specialTask, setSpecialTask] = useState<SpecialTask | {}>({});
+  const [specialTask, setSpecialTask] = useState<SpecialTask>(initialSpecialTask);
   const [digitalTask, setDigitalTask] = useState<DigitalTask | null>(null);
   const [printTask, setPrintTask] = useState<PrintTask | null>(null);
   const [ecommerceTask, setEcommerceTask] = useState<EcommerceTask | null>(null);
@@ -61,7 +83,7 @@ export const CreateTaskProvider: FC<CreateTaskProviderProps> = ({
 
   const handleSetSpecialTask = (data: Partial<SpecialTask>): void => {
     setSpecialTask(prev => {
-      if (!prev) return {};
+      if (!prev) return initialSpecialTask;
 
       return {
         ...prev,
@@ -80,17 +102,19 @@ export const CreateTaskProvider: FC<CreateTaskProviderProps> = ({
     setStep(prev => prev - 1 as Steps);
   }
 
+  const handleSetStep = (step: Steps): void => {
+    if (step < 1 || step > 5) return;
+    
+    setStep(step);
+  }
+
   const handleReset = (): void => {
-    setSpecialTask({});
+    setSpecialTask(initialSpecialTask);
     setDigitalTask(null);
     setPrintTask(null);
     setEcommerceTask(null);
     setStep(1);
   }
-
-  useEffect(() => {
-    console.log(specialTask);
-  }, [specialTask]);
   
   return (
     <CreateTaskContext.Provider
@@ -101,6 +125,7 @@ export const CreateTaskProvider: FC<CreateTaskProviderProps> = ({
           printTask,
           ecommerceTask,
           handleSetSpecialTask,
+          handleSetStep,
           nextStep,
           previousStep,
           step,

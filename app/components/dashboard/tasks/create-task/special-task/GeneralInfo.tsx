@@ -26,13 +26,13 @@ const schema = z.object({
 })
 
 export const GeneralInfo: FC = () => {
-  const { handleSetSpecialTask, step, nextStep } = useCreateTaskContext();
+  const { handleSetSpecialTask, nextStep, specialTask } = useCreateTaskContext();
   
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
-      title: "",
-      dueDate: undefined,
-      priority: Priority.LOW,
+      title: specialTask.title,
+      dueDate: specialTask.dueDate,
+      priority: specialTask.priority,
     },
     resolver: zodResolver(schema),
   })

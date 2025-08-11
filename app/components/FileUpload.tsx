@@ -1,6 +1,6 @@
 import React, { useRef, useState, type FC } from "react";
 import { useFormContext, type Control } from "react-hook-form";
-import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { File, FileWarning, Trash, UploadIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
@@ -8,9 +8,11 @@ import { cn } from "~/lib/utils";
 interface Props {
   control: Control<any>;
   label?: string;
+  description?: string;
   maxSize?: number;
   mimeTypes?: string[];
   multiple?: boolean;
+  initialFiles?: File[];
 }
 
 const ACCEPTED_FILES = [
@@ -33,14 +35,16 @@ const ACCEPTED_FILES = [
 ];
 
 export const FileUpload: FC<Props> = ({
+  initialFiles = [],
   control,
   label = "Archivos",
+  description = "Arrastra los archivos aquí",
   maxSize = 5,
   mimeTypes = ACCEPTED_FILES.join(", "),
   multiple = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>(initialFiles);
   const [invalidFiles, setInvalidFiles] = useState<
     { razon: string; file: string }[]
   >([]);
@@ -110,6 +114,7 @@ export const FileUpload: FC<Props> = ({
         name="files"
         render={({ field: { name, onBlur, disabled } }) => (
           <FormItem className="w-full">
+            <FormLabel>{ label }</FormLabel>
             <FormControl>
               <Input
                 type="file"
@@ -128,7 +133,7 @@ export const FileUpload: FC<Props> = ({
               onClick={() => inputRef.current?.click()}
             >
               <UploadIcon size={24} className="text-gray-500" />
-              <p className="text-sm text-gray-500">{label}</p>
+              <p className="text-sm text-gray-500">{ description }</p>
             </div>
             <div
               className={cn(
