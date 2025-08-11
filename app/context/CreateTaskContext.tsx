@@ -6,7 +6,6 @@ import {
 } from "~/services/interfaces/tasks-service.interface";
 
 const taskBase: TaskBase = {
-  id: '',
   title: '',
   description: '',
   priority: Priority.LOW,
@@ -27,7 +26,6 @@ const initialSpecialTask: SpecialTask = {
 
 
 interface TaskBase {
-  id: string;
   title: string;
   description: string;
   priority: Priority;

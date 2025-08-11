@@ -5,6 +5,7 @@ import { GeneralInfo } from "~/components/dashboard/tasks/create-task/special-ta
 import { TecnicalDetails } from "~/components/dashboard/tasks/create-task/special-task/TecnicalDetails";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import type { Route } from "./+types/special-task";
+import { getFormData } from "~/helpers/formDataHelper";
 
 export function meta() {
   return [
@@ -16,7 +17,11 @@ export function meta() {
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+  const formParams = Array.from(formData.keys());
+
+  console.log( formParams )
+  
+  const data = getFormData(formData, formParams);
 
   console.log( data )
 }

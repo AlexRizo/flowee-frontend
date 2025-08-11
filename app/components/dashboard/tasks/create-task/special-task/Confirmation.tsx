@@ -3,6 +3,7 @@ import { SquarePen } from "lucide-react";
 import { SubmitButton } from "../SubmitButton";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import { useSubmit } from "react-router";
+import { createFormData } from "~/helpers/formDataHelper";
 
 const Step: FC<{label: string, onClick: () => void}> = ({label, onClick}) => {
   return (
@@ -19,9 +20,9 @@ export const Confirmation: FC = () => {
   const submit = useSubmit();
 
   const handleCreateTask = () => {
-    if (!specialTask) return;
+    const formData = createFormData(specialTask);
 
-    submit(specialTask as any, {
+    submit(formData, {
       method: 'post',
       encType: 'multipart/form-data',
     })
