@@ -4,6 +4,7 @@ import { SubmitButton } from "../SubmitButton";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import { useSubmit } from "react-router";
 import { createFormData } from "~/helpers/formDataHelper";
+import { useAuthContext } from "~/context/AuthContext";
 
 const Step: FC<{label: string, onClick: () => void}> = ({label, onClick}) => {
   return (
@@ -16,11 +17,25 @@ const Step: FC<{label: string, onClick: () => void}> = ({label, onClick}) => {
 
 export const Confirmation: FC = () => {
   const { handleSetStep, specialTask } = useCreateTaskContext();
+  const { user } = useAuthContext();
 
   const submit = useSubmit();
 
   const handleCreateTask = () => {
-    const formData = createFormData(specialTask);
+    const { referenceFiles, includeFiles, ...taskData } = specialTask;
+
+    const formData = createFormData({
+      ...taskData,
+      authorId: user.id,
+    });
+
+    for (const file of referenceFiles) {
+      formData.append('referenceFiles[]', file);
+    }
+
+    for (const file of includeFiles) {
+      formData.append('includeFiles[]', file);
+    }
 
     submit(formData, {
       method: 'post',

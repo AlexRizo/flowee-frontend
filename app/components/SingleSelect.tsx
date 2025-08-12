@@ -32,7 +32,7 @@ export const SingleSelect: FC<Props> = ({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="w-full">
           <FormLabel>{label}</FormLabel>
           <Select
             onValueChange={field.onChange}

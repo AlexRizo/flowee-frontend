@@ -6,6 +6,8 @@ import { TecnicalDetails } from "~/components/dashboard/tasks/create-task/specia
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import type { Route } from "./+types/special-task";
 import { getFormData } from "~/helpers/formDataHelper";
+import { createSpecialTask } from "~/services/tasks-service";
+import { toast } from "sonner";
 
 export function meta() {
   return [
@@ -19,11 +21,13 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const formParams = Array.from(formData.keys());
 
-  console.log( formParams )
-  
-  const data = getFormData(formData, formParams);
+  const { referenceFiles, includeFiles, ...taskData } = getFormData(formData, formParams);
 
-  console.log( data )
+  const response = await createSpecialTask(taskData);
+  
+  if (response.error) {
+    toast.error(response.message);
+  }
 }
 
 const SpecialTask = () => {

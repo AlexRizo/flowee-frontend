@@ -60,3 +60,10 @@ export interface Task {
   printTask?: PrintTask;
   ecommerceTask?: EcommerceTask;
 }
+
+export interface CreateSpecialTaskResponse {
+  message: string;
+  error?: string;
+  statusCode: number;
+  task: Task | null;
+}

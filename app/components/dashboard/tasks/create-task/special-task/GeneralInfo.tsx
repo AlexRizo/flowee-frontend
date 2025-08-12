@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitButton } from "../SubmitButton";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import { Priority } from "~/services/interfaces/tasks-service.interface";
+import { useBoardContext } from "~/context/BoardContext";
 
 const schema = z.object({
   title: z.string().min(1, { message: "El nombre de la solicitud es requerido" }),
@@ -23,16 +24,21 @@ const schema = z.object({
     required_error: "La fecha de entrega es requerida",
   }).min(new Date(), { message: "La fecha de entrega debe ser mayor a la fecha actual" }),
   priority: z.nativeEnum(Priority, { message: "La prioridad es requerida" }),
+  boardId: z.string({
+    required_error: "El tablero es requerido",
+  }).min(1, { message: "El tablero es requerido" }),
 })
 
 export const GeneralInfo: FC = () => {
   const { handleSetSpecialTask, nextStep, specialTask } = useCreateTaskContext();
+  const { boards, currentBoard } = useBoardContext();
   
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       title: specialTask.title,
       dueDate: specialTask.dueDate,
       priority: specialTask.priority,
+      boardId: specialTask.boardId ?? currentBoard?.id ?? '',
     },
     resolver: zodResolver(schema),
   })
@@ -41,6 +47,7 @@ export const GeneralInfo: FC = () => {
     handleSetSpecialTask(data);
     nextStep();
   };
+  
   
   return (
     <>
@@ -74,6 +81,13 @@ export const GeneralInfo: FC = () => {
                 <FormMessage />
               </FormItem>
             )}
+          />
+          <SingleSelect
+            control={form.control}
+            name="boardId"
+            label="Tablero*"
+            options={boards.map((board) => ({ label: board.name, value: board.id }))}
+            className="w-full"
           />
           <div className="flex gap-1.5 items-start w-full">
             <DateTimePicker

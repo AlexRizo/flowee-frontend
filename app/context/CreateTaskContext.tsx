@@ -11,7 +11,7 @@ const taskBase: TaskBase = {
   priority: Priority.LOW,
   status: Status.AWAIT,
   type: Type.SPECIAL,
-  boardId: '',
+  boardId: undefined,
   dueDate: undefined,
   referenceFiles: [],
   includeFiles: [],
@@ -31,8 +31,8 @@ interface TaskBase {
   priority: Priority;
   status: Status.AWAIT;
   type: Type;
-  boardId: string;
-  dueDate: Date | undefined;
+  boardId?: string;
+  dueDate?: Date;
   referenceFiles: File[];
   includeFiles: File[];
 }

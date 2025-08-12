@@ -5,6 +5,10 @@ export const getFormData = (formData: FormData, keys: string[], jsonKeys: string
   keys.forEach((key) => {
     const value = originalData.get(key);
     if (value !== undefined && value !== null) {
+      if (key.includes('[]')) {
+        data[key.replace('[]', '')] = originalData.getAll(key);
+        return;
+      }
       if (jsonKeys.includes(key)) {
         data[key] = JSON.parse(value as string);
       } else {
