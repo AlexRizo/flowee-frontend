@@ -8,6 +8,7 @@ import type { Route } from "./+types/special-task";
 import { getFormData } from "~/helpers/formDataHelper";
 import { createSpecialTask } from "~/services/tasks-service";
 import { toast } from "sonner";
+import { useNavigation } from "react-router";
 
 export function meta() {
   return [
@@ -19,11 +20,8 @@ export function meta() {
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const formParams = Array.from(formData.keys());
 
-  const { referenceFiles, includeFiles, ...taskData } = getFormData(formData, formParams);
-
-  const response = await createSpecialTask(taskData);
+  const response = await createSpecialTask(formData);
   
   if (response.error) {
     toast.error(response.message);
@@ -31,11 +29,11 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 }
 
 const SpecialTask = () => {
-  const { step, nextStep } = useCreateTaskContext();
+  const { step, handleSetStep } = useCreateTaskContext();
   
   useEffect(() => {
-    if (step === 1) {
-      nextStep();
+    if (step !== 2) {
+      handleSetStep(2);
     }
   }, [])
   

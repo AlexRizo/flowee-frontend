@@ -110,7 +110,7 @@ export const GeneralInfo: FC = () => {
               className="w-40"
             />
           </div>
-          <SubmitButton status="idle" className="mt-auto" />
+          <SubmitButton className="mt-auto" />
         </form>
       </Form>
     </>

@@ -30,6 +30,7 @@ export default [
           route('nueva-solicitud/impresa', 'routes/dashboard/tasks/print-task.tsx'),
           route('nueva-solicitud/ecommerce', 'routes/dashboard/tasks/ecommerce-task.tsx'),
           route('nueva-solicitud/especial', 'routes/dashboard/tasks/special-task.tsx'),
+          route('solicitud-enviada', 'routes/dashboard/tasks/task-done.tsx'),
         ]),
       ]),
     ]),

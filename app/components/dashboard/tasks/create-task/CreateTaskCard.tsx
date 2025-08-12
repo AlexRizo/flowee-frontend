@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react'
+import { useNavigation } from 'react-router';
 import { useCreateTaskContext } from '~/context/CreateTaskContext';
 
 export const CreateTaskCard = ({ children }: { children: React.ReactNode }) => {
   const { step, handleReset } = useCreateTaskContext();
+
+  const { state } = useNavigation();
 
   useEffect(() => {
     return () => {
@@ -11,7 +14,7 @@ export const CreateTaskCard = ({ children }: { children: React.ReactNode }) => {
   }, [])
   
   return (
-    <div role='dialog' className='relative'>
+    <div role='dialog' className={`relative ${ state !== 'idle' ? 'opacity-50' : '' }`}>
       <span role='heading' className="absolute -top-3.5 -translate-x-1/2 left-1/2 text-lg text-accent bg-violet-700 size-7.5 rounded-full place-objects-center">
         { step }
       </span>

@@ -1,5 +1,5 @@
 import { ScrollText, Smartphone, Sparkles, Store } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { TaskTypeCard } from "~/components/dashboard/tasks/TaskTypeCard";
 import { Button } from "~/components/ui/button";
@@ -45,10 +45,14 @@ const types = [
 ];
 
 const CreateTask = () => {
-  const { nextStep } = useCreateTaskContext();
+  const { nextStep, handleSetStep } = useCreateTaskContext();
 
   const [selectedType, setSelectedType] = useState<number | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    handleSetStep(1);
+  }, [])
 
   const handleStart = () => {
     if (!selectedType) return;
@@ -65,7 +69,7 @@ const CreateTask = () => {
       <h1 className="text-center text-xl font-bold mb-8">
         Selecciona el tipo de solicitud
       </h1>
-      <div role="grid" className="grid grid-cols-2 gap-4 w-max">
+      <div role="grid" className="grid grid-cols-2 gap-4 w-max mx-auto">
         {types.map((type, index) => (
           <TaskTypeCard
             key={index}

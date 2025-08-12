@@ -119,7 +119,7 @@ export const Description: FC = () => {
           maxSize={MAX_FILE_SIZE}
         />
 
-        <SubmitButton status="idle" className="mt-auto" />
+        <SubmitButton className="mt-auto" />
         </form>
       </Form>
     </>

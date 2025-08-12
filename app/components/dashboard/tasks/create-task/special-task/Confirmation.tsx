@@ -30,11 +30,11 @@ export const Confirmation: FC = () => {
     });
 
     for (const file of referenceFiles) {
-      formData.append('referenceFiles[]', file);
+      formData.append('referenceFiles', file);
     }
 
     for (const file of includeFiles) {
-      formData.append('includeFiles[]', file);
+      formData.append('includeFiles', file);
     }
 
     submit(formData, {
@@ -63,7 +63,7 @@ export const Confirmation: FC = () => {
           <Step label="Legales" onClick={() => handleSetStep(4)} />
           <Step label="Materiales" onClick={() => handleSetStep(4)} />
         </nav>
-        <SubmitButton status="idle" className="mt-auto" label="Crear" onClick={handleCreateTask} />
+        <SubmitButton className="mt-auto" label="Ingresar solicitud" loadingLabel="Ingresando solicitud..." onClick={handleCreateTask} />
       </div>
     </>
   );

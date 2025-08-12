@@ -21,9 +21,9 @@ export const getTasksByBoard = async (boardTerm: string) => {
     });
 };
 
-export const createSpecialTask = async (task: any) => {
+export const createSpecialTask = async (task: FormData) => {
   return await api
-    .post("tasks/special", task)
+    .post("tasks/special", task, {}, true)
     .then((response: CreateSpecialTaskResponse) => {
       if (response.error) {
         return {
@@ -36,3 +36,7 @@ export const createSpecialTask = async (task: any) => {
       return { task: response.task as Task, message: response.message };
     });
 };
+
+// export const createTaskFiles = async (taskId: string, referenceFiles: File[], includeFiles: File[]) => {
+//   return await api.post(``)
+// }
