@@ -24,19 +24,26 @@ export const getTasksByBoard = async (boardTerm: string) => {
 export const createSpecialTask = async (task: FormData) => {
   return await api
     .post("tasks/special", task, {}, true)
-    .then((response: CreateSpecialTaskResponse) => {
-      if (response.error) {
+    .then(
+      ({
+        task,
+        filesResponse,
+        message,
+        error,
+        statusCode,
+      }: CreateSpecialTaskResponse) => {
+        if (error) {
+          return {
+            message: getErrorMessage(message),
+            error: error,
+            statusCode: statusCode,
+          };
+        }
+
         return {
-          message: getErrorMessage(response.message),
-          error: response.error,
-          statusCode: response.statusCode,
+          task: task as Task,
+          filesResponse: filesResponse as { message: string },
         };
       }
-
-      return { task: response.task as Task, message: response.message };
-    });
+    );
 };
-
-// export const createTaskFiles = async (taskId: string, referenceFiles: File[], includeFiles: File[]) => {
-//   return await api.post(``)
-// }

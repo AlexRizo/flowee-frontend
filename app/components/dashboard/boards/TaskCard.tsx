@@ -81,7 +81,7 @@ export const TaskCard: FC<Props> = ({
           </div>
 
           <footer className="flex p-2 border-t border-gray-200 gap-1">
-            <CardTooltip text={assignedTo.name}>
+            <CardTooltip text={assignedTo?.name || "Sin asignar"}>
               <img
                 src={"/images/default-user.webp"}
                 alt={"Avatar"}

@@ -45,6 +45,7 @@ export async function clientAction({
     name: (formData.get("name") as string) || undefined,
     nickname: (formData.get("nickname") as string) || undefined,
     email: (formData.get("email") as string) || undefined,
+    password: (formData.get("password") as string) || undefined,
     roles: JSON.parse(formData.get("roles") as string) || undefined,
     boards: JSON.parse(formData.get("boards") as string) || undefined,
     isActive: (formData.get("isActive") as string) || undefined,

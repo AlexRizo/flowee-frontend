@@ -50,7 +50,7 @@ export interface Task {
   type: Type;
   status: Status;
   author: User;
-  assignedTo: User;
+  assignedTo?: User;
   board: Board;
   dueDate: string;
   createdAt: string;
@@ -66,4 +66,7 @@ export interface CreateSpecialTaskResponse {
   error?: string;
   statusCode: number;
   task: Task | null;
+  filesResponse?: {
+    message: string;
+  }
 }

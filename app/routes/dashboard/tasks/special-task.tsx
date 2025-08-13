@@ -8,7 +8,7 @@ import type { Route } from "./+types/special-task";
 import { getFormData } from "~/helpers/formDataHelper";
 import { createSpecialTask } from "~/services/tasks-service";
 import { toast } from "sonner";
-import { useNavigation } from "react-router";
+import { useNavigate, useNavigation } from "react-router";
 
 export function meta() {
   return [
@@ -21,21 +21,32 @@ export function meta() {
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
 
-  const response = await createSpecialTask(formData);
+  const { error, message, filesResponse, task } = await createSpecialTask(formData);
   
-  if (response.error) {
-    toast.error(response.message);
+  if (error) {
+    toast.error(message);
+    return { error, message };
+  } else {
+    return { filesResponse, task };
   }
+
 }
 
-const SpecialTask = () => {
+const SpecialTask = ({ actionData }: Route.ComponentProps) => {
   const { step, handleSetStep } = useCreateTaskContext();
+  const navigate = useNavigate();
   
   useEffect(() => {
     if (step !== 2) {
       handleSetStep(2);
     }
   }, [])
+
+  useEffect(() => {
+    if (actionData?.task) {
+      // navigate("/solicitudes/solicitud-enviada")
+    }
+  }, [actionData]);
   
   return (step === 1 || step === 2) ? (
     <GeneralInfo />
