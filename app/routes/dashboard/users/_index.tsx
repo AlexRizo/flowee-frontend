@@ -5,9 +5,11 @@ import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateUserModal } from "~/components/dashboard/users/CreateUserModal";
-import { useSubmit } from "react-router";
-import type { Roles } from "~/services/interfaces/users-service.interface";
+import { Navigate, useSubmit } from "react-router";
+import { Roles } from "~/services/interfaces/users-service.interface";
 import { PageLoader } from "~/components/dashboard/PageLoader";
+import { useAuthContext } from "~/context/AuthContext";
+import { useEffect } from "react";
 
 export function meta() {
   return [
@@ -52,8 +54,15 @@ export function HydrateFallback() {
 }
 
 const Users = ({ loaderData }: Route.ComponentProps) => {
+  const { protectedRoute } = useAuthContext();
+
   const { users } = loaderData;
   const submit = useSubmit();
+
+
+  if (!protectedRoute([Roles.ADMIN, Roles.SUPER_ADMIN])) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <section>
