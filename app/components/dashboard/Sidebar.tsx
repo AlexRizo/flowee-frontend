@@ -2,6 +2,8 @@ import { SidebarMenuItem } from "./SidebarMenuItem"
 import { CircuitBoard, Home, ListStart, LogOut, Rocket, Settings, Users } from "lucide-react"
 import { Button } from "../ui/button"
 import { Form } from "react-router"
+import { ProtectedItem } from "./auth/ProtectedItem"
+import { Roles } from "~/services/interfaces/users-service.interface"
 
 export const Sidebar = () => {
   return (
@@ -17,12 +19,16 @@ export const Sidebar = () => {
           <SidebarMenuItem to="/" label="Dashboard">
             <Home size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
-          <SidebarMenuItem to="/centro-de-asignaciones" label="Centro de asignaciones">
-            <CircuitBoard size={16} strokeWidth={1.5}/>
-          </SidebarMenuItem>
-          <SidebarMenuItem to="/autoasignaciones" label="Autoasignaciones">
-            <Rocket size={16} strokeWidth={1.5}/>
-          </SidebarMenuItem>
+          <ProtectedItem allowedRoles={[Roles.ADMIN, Roles.SUPER_ADMIN, Roles.PUBLISHER_MANAGER, Roles.DESIGN_MANAGER]}>
+            <SidebarMenuItem to="/centro-de-asignaciones" label="Centro de asignaciones">
+              <CircuitBoard size={16} strokeWidth={1.5}/>
+            </SidebarMenuItem>
+          </ProtectedItem>
+          <ProtectedItem allowedRoles={[Roles.ADMIN, Roles.SUPER_ADMIN, Roles.PUBLISHER_MANAGER, Roles.DESIGN_MANAGER]}>
+            <SidebarMenuItem to="/autoasignaciones" label="Autoasignaciones">
+              <Rocket size={16} strokeWidth={1.5}/>
+            </SidebarMenuItem>
+          </ProtectedItem>
           <SidebarMenuItem to="/solicitudes" label="Mis Solicitudes">
             <ListStart size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
@@ -41,9 +47,11 @@ export const Sidebar = () => {
         {/* ? Rutas de configuración */}
         <div className="flex flex-col gap-2">
           <small className="text-gray-400">Configuración</small>
-          <SidebarMenuItem to="/usuarios" label="Usuarios">
-            <Users size={16} strokeWidth={1.5}/>
-          </SidebarMenuItem>
+          <ProtectedItem allowedRoles={[Roles.ADMIN, Roles.SUPER_ADMIN]}>
+            <SidebarMenuItem to="/usuarios" label="Usuarios">
+              <Users size={16} strokeWidth={1.5}/>
+            </SidebarMenuItem>
+          </ProtectedItem>
           <SidebarMenuItem to="/perfil" label="Cuenta">
             <Settings size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>

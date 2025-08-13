@@ -19,7 +19,7 @@ export const Navbar: FC = () => {
       <div
         className={cn(
           "flex gap-1 p-1 rounded-full border border-gray-200 absolute left-1/2 -translate-x-1/2 transition-opacity",
-          !allow && "opacity-60 pointer-events-none"
+          !allow && "opacity-60 pointer-events-none", !boards.length && "hidden"
         )}
       >
         {boards.map(({ id, prefix, color }) => (
