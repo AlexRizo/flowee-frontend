@@ -76,8 +76,8 @@ export const TaskCard: FC<Props> = ({
           </header>
 
           <div role="definition" className="p-2">
-            <h3 className="text-xs font-semibold">{title}</h3>
-            <p className="text-xs">{description}</p>
+            <h3 className="text-xs font-semibold">{title.length > 40 ? title.slice(0, 40) + '...' : title}</h3>
+            <p className="text-xs">{description.length > 80 ? description.slice(0, 80) + '...' : description}</p>
           </div>
 
           <footer className="flex p-2 border-t border-gray-200 gap-1">
