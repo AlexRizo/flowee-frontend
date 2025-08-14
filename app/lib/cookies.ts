@@ -1,11 +1,7 @@
-import { createCookie, redirect } from "react-router";
+import { parse } from "cookie";
 
-export const getCookie = async (request: Request) => {
-  const cookie = request.headers.get("Cookie")
+export const getCookie = (request: Request) => {
+  const { access_token } = parse(request.headers.get("Cookie") || '');
 
-  if (!cookie) {
-    throw new Error("No se encontró la cookie")
-  }
-
-  return cookie
+  return access_token
 }

@@ -16,6 +16,7 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { redirect } from "react-router";
 import { ToggleUserStatus } from "~/components/dashboard/users/ToggleUserStatus";
+import { getCookie } from "~/lib/cookies";
 
 export function meta({ params }: Route.MetaArgs) {
   return [{ title: getTitle(`@${params.nickname}`) }];
@@ -23,9 +24,8 @@ export function meta({ params }: Route.MetaArgs) {
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { nickname } = params;
-  const cookie = request.headers.get("cookie") || "";
 
-  const { error, message, user } = await getUser(nickname, cookie);
+  const { error, message, user } = await getUser(nickname, getCookie(request) || '');
 
   if (error || !user) {
     throw new Response(message, { status: 404 });

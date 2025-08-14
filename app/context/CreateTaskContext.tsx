@@ -56,6 +56,8 @@ interface CreateContextType {
   digitalTask: DigitalTask | null;
   printTask: PrintTask | null;
   ecommerceTask: EcommerceTask | null;
+  isReset: boolean;
+  setIsReset: (isReset: boolean) => void;
   step: Steps;
   nextStep: () => void;
   previousStep: () => void;
@@ -78,6 +80,7 @@ export const CreateTaskProvider: FC<CreateTaskProviderProps> = ({
   const [printTask, setPrintTask] = useState<PrintTask | null>(null);
   const [ecommerceTask, setEcommerceTask] = useState<EcommerceTask | null>(null);
   const [step, setStep] = useState<Steps>(1);
+  const [isReset, setIsReset] = useState<boolean>(true);
 
   const handleSetSpecialTask = (data: Partial<SpecialTask>): void => {
     setSpecialTask(prev => {
@@ -122,6 +125,8 @@ export const CreateTaskProvider: FC<CreateTaskProviderProps> = ({
           digitalTask,
           printTask,
           ecommerceTask,
+          isReset,
+          setIsReset,
           handleSetSpecialTask,
           handleSetStep,
           nextStep,

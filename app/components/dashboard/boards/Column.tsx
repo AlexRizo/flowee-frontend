@@ -13,6 +13,8 @@ import { useDroppable } from "@dnd-kit/core";
 import { Link } from "react-router";
 import { Plus } from "lucide-react";
 import { BlankCard } from "./BlankCard";
+import { ProtectedItem } from "../auth/ProtectedItem";
+import { Roles } from "~/services/interfaces/users-service.interface";
 
 interface Props {
   id: Status;
@@ -60,7 +62,15 @@ const columnPoint = {
   amber: "bg-amber-500",
 };
 
-export const Column = ({ id, name, tasks, color, activeTask, allowNewTask = false, over }: Props) => {
+export const Column = ({
+  id,
+  name,
+  tasks,
+  color,
+  activeTask,
+  allowNewTask = false,
+  over,
+}: Props) => {
   const columnColor = useMemo(() => {
     return colors[color as keyof typeof colors];
   }, [color]);
@@ -81,10 +91,7 @@ export const Column = ({ id, name, tasks, color, activeTask, allowNewTask = fals
       ref={setNodeRef}
       role="columnheader"
       id={id}
-      className={cn(
-        columnColor,
-        "flex flex-col rounded-lg p-3 h-min"
-      )}
+      className={cn(columnColor, "flex flex-col rounded-lg p-3 h-min")}
     >
       <SortableContext
         items={tasksIds}
@@ -98,13 +105,23 @@ export const Column = ({ id, name, tasks, color, activeTask, allowNewTask = fals
           <p className="text-sm font-semibold text-zinc-700">{name}</p>{" "}
           <small className="text-xs text-gray-400">({tasks.length || 0})</small>
           {allowNewTask && (
-            <Link
-              to={`/solicitudes/nueva-solicitud`}
-              className="ml-auto text-xs bg-violet-700 text-white font-semibold p-1 rounded flex items-center gap-0.5"
+            <ProtectedItem
+              allowedRoles={[
+                Roles.SUPER_ADMIN,
+                Roles.ADMIN,
+                Roles.DESIGN_MANAGER,
+                Roles.PUBLISHER_MANAGER,
+                Roles.PUBLISHER,
+              ]}
             >
-              <Plus size={14} />
-              Nueva
-            </Link>
+              <Link
+                to={`/solicitudes/nueva-solicitud`}
+                className="ml-auto text-xs bg-violet-700 text-white font-semibold p-1 rounded flex items-center gap-0.5"
+              >
+                <Plus size={14} />
+                Nueva
+              </Link>
+            </ProtectedItem>
           )}
         </header>
         <div className="flex flex-col gap-2 max-h-[calc(100vh-10rem)] [scrollbar-width:none] overflow-y-auto">

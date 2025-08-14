@@ -10,23 +10,27 @@ import { queryClient } from "~/services/queryClient";
 import { BoardProvider } from "~/context/BoardContext";
 import { AuthProvider } from "~/context/AuthContext";
 import { SocketProvider } from "~/context/SocketContext";
+import { getCookie } from "~/lib/cookies";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const cookie = request.headers.get('Cookie');
-  const authStatus = await checkAuth(cookie || '');
+  const access_token = getCookie(request);
+  
+  const authStatus = await checkAuth(access_token);
 
   if (!authStatus.user) {
     request.headers.delete('Cookie');
     return redirect('/auth');
   }
   
-  const { boards } = await getBoards(cookie || '');
+  const { boards } = await getBoards(access_token || '');
 
   return {
     boards,
     user: authStatus.user,
   };
 }
+
+export const shouldRevalidate = () => false;
 
 const DashboardLayout = ({ loaderData }: Route.ComponentProps) => {
   const { boards, user } = loaderData;

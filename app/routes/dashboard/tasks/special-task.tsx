@@ -5,10 +5,10 @@ import { GeneralInfo } from "~/components/dashboard/tasks/create-task/special-ta
 import { TecnicalDetails } from "~/components/dashboard/tasks/create-task/special-task/TecnicalDetails";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import type { Route } from "./+types/special-task";
-import { getFormData } from "~/helpers/formDataHelper";
 import { createSpecialTask } from "~/services/tasks-service";
 import { toast } from "sonner";
-import { useNavigate, useNavigation } from "react-router";
+import { useNavigate } from "react-router";
+import { useSocket } from "~/context/SocketContext";
 
 export function meta() {
   return [
@@ -33,7 +33,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 }
 
 const SpecialTask = ({ actionData }: Route.ComponentProps) => {
-  const { step, handleSetStep } = useCreateTaskContext();
+  const { step, handleSetStep, setIsReset } = useCreateTaskContext();
+  const socket = useSocket();
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -43,8 +44,10 @@ const SpecialTask = ({ actionData }: Route.ComponentProps) => {
   }, [])
 
   useEffect(() => {
-    if (actionData?.task) {
-      // navigate("/solicitudes/solicitud-enviada")
+    if (actionData?.task && socket) {
+      socket.emit('task-created', actionData.task);
+      setIsReset(false);
+      navigate("/solicitudes/solicitud-enviada")
     }
   }, [actionData]);
   

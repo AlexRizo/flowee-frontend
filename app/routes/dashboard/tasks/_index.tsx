@@ -1,6 +1,4 @@
-import {
-  Status,
-} from "~/services/interfaces/tasks-service.interface";
+import { Status, type Task } from "~/services/interfaces/tasks-service.interface";
 import { Column } from "~/components/dashboard/boards/Column";
 import { useEffect, useState } from "react";
 import {
@@ -20,6 +18,8 @@ import { toast } from "sonner";
 import { useTaskContext } from "~/context/TaskContext";
 import { useSocket } from "~/context/SocketContext";
 import { PageLoader } from "~/components/dashboard/PageLoader";
+import { useAuthContext } from "~/context/AuthContext";
+import { Roles } from "~/services/interfaces/users-service.interface";
 
 export function meta() {
   return [
@@ -31,11 +31,12 @@ export function meta() {
 
 const Home = () => {
   const socket = useSocket();
-    
+
   const {
     tasks: tasksState,
     setTasks,
     resetTasks,
+    addTask,
     activeTask,
     setActiveTask,
     updateTaskStatus,
@@ -45,6 +46,7 @@ const Home = () => {
   } = useTaskContext();
 
   const { currentBoard } = useBoardContext();
+  const { user } = useAuthContext();
 
   const { mutate: getTasksMutation, isPending } = useMutation({
     mutationFn: async (term: string): Promise<void> => {
@@ -73,8 +75,8 @@ const Home = () => {
     if (!currentBoard) return;
     getTasksMutation(currentBoard.id);
 
-    if (!socket) return;
-    socket.emit("join-board", { boardId: currentBoard.id });
+    if (!socket || !user) return;
+    socket.emit("join-board", { boardId: currentBoard.id, role: user.highestRole });
 
     return () => {
       socket.emit("leave-board", { boardId: currentBoard.id });
@@ -87,12 +89,18 @@ const Home = () => {
       updateTaskFromServer(taskId, status);
     });
 
+    socket.on('unassigned-task-created', (task: Task) => {
+      console.log('unassigned-task-created', task);
+      addTask(task);
+    })
+
     return () => {
       socket.off("task-status-updated");
+      socket.off('unassigned-task-created');
     };
   }, [tasksState, updateTaskFromServer, socket]);
-  
-  if (!socket) return <PageLoader message="Generando tableros..."/>;
+
+  if (!socket) return <PageLoader message="Generando tableros..." />;
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

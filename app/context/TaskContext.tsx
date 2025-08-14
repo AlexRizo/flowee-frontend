@@ -15,6 +15,7 @@ interface Tasks {
 interface TaskContextType {
   tasks: Tasks;
   setTasks: (tasks: Task[]) => void;
+  addTask: (task: Task) => void;
   activeTask: Task | null;
   setActiveTask: (task: Task | null) => void;
   updateTaskStatus: (taskId: string, status: Status) => void;
@@ -93,6 +94,13 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
     setTasks(orderedTasks);
   };
 
+  const handleAddTask = (task: Task) => {
+    setTasks(prev => ({
+      ...prev,
+      AWAIT: [...prev.AWAIT, task]
+    }))
+  }
+
   const handleSetActiveTask = (task: Task | null) => {
     setActiveTask(task);
   };
@@ -102,6 +110,7 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
       value={{
         tasks,
         setTasks: handleSetTasks,
+        addTask: handleAddTask,
         updateTaskStatus,
         updateTaskFromServer,
         resetTasks,

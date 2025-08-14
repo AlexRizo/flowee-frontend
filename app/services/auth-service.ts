@@ -22,6 +22,7 @@ export const login = async (
 export const checkAuth = async (cookie?: string) => {
   return await api.get('auth/check-auth', { cookie })
   .then((res: LoginResponse) => {
+    console.log(res);
     if (res.error || !res.user) {
       return {
         message: getErrorMessage(res.message),
@@ -35,7 +36,7 @@ export const checkAuth = async (cookie?: string) => {
 };
 
 export const logout = async () => {
-  return await api.post('auth/logout', {}, {
+  return await api.post('auth/logout', {
     withCredentials: true,
   })
   .then((res: LoginResponse) => {

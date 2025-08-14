@@ -13,14 +13,13 @@ export function meta() {
 }
 
 const TaskDone = () => {
-  const { specialTask, digitalTask, printTask, ecommerceTask, handleReset } =
-    useCreateTaskContext();
+  const { isReset, handleReset } = useCreateTaskContext();
 
   useEffect(() => {
     return () => handleReset();
   }, []);
 
-  if (!specialTask && !digitalTask && !printTask && !ecommerceTask) {
+  if (isReset) {
     return <Navigate to="/centro-de-asignaciones" />;
   }
 
