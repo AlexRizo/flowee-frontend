@@ -50,7 +50,7 @@ export const TaskCard: FC<Props> = ({
       {activeTaskId === id ? (
         <BlankCard />
       ) : (
-        <div className="flex flex-col justify-between rounded-lg h-37.5 bg-white border border-gray-200">
+        <div className="flex flex-col justify-between rounded-lg h-37.5 bg-white border border-gray-200 shadow-xs">
           <header className="flex border-b border-gray-200 p-2 gap-1">
             <CardTooltip text={board.name} tooltipColor={board.color}>
               <span className="font-semibold text-white">{board.prefix}</span>

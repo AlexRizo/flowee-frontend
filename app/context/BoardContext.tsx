@@ -34,7 +34,7 @@ export const BoardProvider = ({children, initialBoards = []}: BoardProviderProps
   }
 
   useEffect(() => {
-    if (pathname.includes("solicitudes")) {
+    if (pathname.includes("solicitudes") || pathname.includes("centro-de-asignaciones")) {
       setAllow(true);
       return;
     }

@@ -10,7 +10,12 @@ export default [
   layout('routes/dashboard/_layout.tsx', [
     index('routes/dashboard/_index.tsx'),
     route('autoasignaciones', 'routes/dashboard/autoasignaciones.tsx'),
-    route('centro-de-asignaciones', 'routes/dashboard/centro-de-asignaciones.tsx'),
+
+    ...prefix('centro-de-asignaciones', [
+      layout('routes/dashboard/assignment-center/_layout.tsx', [
+        index('routes/dashboard/assignment-center/_index.tsx'),
+      ]),
+    ]),
     
     ...prefix('tableros', [
       route(':slug', 'routes/dashboard/boards/board.tsx'),

@@ -15,6 +15,8 @@ export const TaskCardOverlay: FC<Props> = ({
   type,
   board,
   dueDate,
+  assignedTo,
+  author,
 }) => {
   return (
     <div
@@ -30,7 +32,7 @@ export const TaskCardOverlay: FC<Props> = ({
         </CardTooltip>
         <CardTooltip text={''}>
           <img
-            src={"/images/default-user.webp"}
+            src={author?.avatar || "/images/default-user.webp"}
             alt={"Avatar"}
             className="size-5 rounded"
           />
@@ -49,14 +51,14 @@ export const TaskCardOverlay: FC<Props> = ({
       </header>
 
       <div role="definition" className="p-2">
-        <h3 className="text-xs font-semibold">{title}</h3>
-        <p className="text-xs">{description}</p>
+      <h3 className="text-xs font-semibold">{title.length > 40 ? title.slice(0, 40) + '...' : title}</h3>
+      <p className="text-xs">{description.length > 80 ? description.slice(0, 80) + '...' : description}</p>
       </div>
       
       <footer className="flex p-2 border-t border-gray-200 gap-1">
         <CardTooltip text={''}>
           <img
-            src={"/images/default-user.webp"}
+            src={ assignedTo?.avatar || "/images/default-user.webp"}
             alt={"Avatar"}
             className="size-5 rounded"
           />

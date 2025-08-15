@@ -5,9 +5,9 @@ import type {
   Task,
 } from "./interfaces/tasks-service.interface";
 
-export const getTasksByBoard = async (boardTerm: string) => {
+export const getTasksByBoard = async (board: string) => {
   return await api
-    .get(`tasks/board/${boardTerm}`)
+    .get(`tasks/board/${board}`)
     .then((response: RestResponse) => {
       if ("error" in response) {
         return {
@@ -47,3 +47,19 @@ export const createSpecialTask = async (task: FormData) => {
       }
     );
 };
+
+export const getPendingTasksByBoard = async (board: string) => {
+  return await api
+  .get(`tasks/board/${board}/pending`)
+  .then((response: RestResponse) => {
+    if ("error" in response) {
+      return {
+        message: getErrorMessage(response.message),
+        error: response.error,
+        statusCode: response.statusCode,
+      };
+    }
+
+    return { tasks: response as Task[] };
+  });
+}

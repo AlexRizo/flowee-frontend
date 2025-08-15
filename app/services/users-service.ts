@@ -118,3 +118,19 @@ export const uploadAvatar = async (userId: string, file: File) => {
       }
     });
 }
+
+export const getDesignersByBoardWithTasks = async (boardId: string) => {
+  return await api.get(`users/designers/board/${boardId}`).then((res: any) => {
+    if (res.error) {
+      return {
+        message: getErrorMessage(res.message),
+        error: res.error,
+        statusCode: res.statusCode,
+      };
+    }
+
+    return {
+      designers: res.designers,
+    }
+  });
+}
