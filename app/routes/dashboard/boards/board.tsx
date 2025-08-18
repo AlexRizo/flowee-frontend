@@ -24,9 +24,9 @@ const board = ({ params }: Route.ComponentProps) => {
   const { slug } = params;
 
   return <div role="grid" className="grid grid-cols-5 h-min max-h-full gap-4">
-    {columns.map((column) => (
+    {/* {columns.map((column) => (
       <Column key={column.id} { ...column } tasks={[]} activeTaskId={""} allowNewTask={false} />
-    ))}
+    ))} */}
   </div>;
 };
 

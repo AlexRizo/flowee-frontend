@@ -66,12 +66,12 @@ export const getTaskStatus = (status: Status) => {
     case Status.AWAIT:
       return "En espera";
     case Status.ATTENTION:
-      return "Requiere atención";
+      return "Atención";
     case Status.IN_PROGRESS:
       return "En proceso";
     case Status.REVIEW:
-      return "En revisión";
+      return "Revisión";
     case Status.DONE:
-      return "Completada";
+      return "Finalizada";
   }
 }

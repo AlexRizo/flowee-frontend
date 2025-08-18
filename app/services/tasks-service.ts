@@ -3,6 +3,8 @@ import type {
   CreateSpecialTaskResponse,
   RestResponse,
   Task,
+  TaskFile,
+  TaskFiles,
 } from "./interfaces/tasks-service.interface";
 
 export const getTasksByBoard = async (board: string) => {
@@ -50,16 +52,31 @@ export const createSpecialTask = async (task: FormData) => {
 
 export const getPendingTasksByBoard = async (board: string) => {
   return await api
-  .get(`tasks/board/${board}/pending`)
-  .then((response: RestResponse) => {
+    .get(`tasks/board/${board}/pending`)
+    .then((response: RestResponse) => {
+      if ("error" in response) {
+        return {
+          message: getErrorMessage(response.message),
+          error: response.error,
+          statusCode: response.statusCode,
+        };
+      }
+
+      return { tasks: response as Task[] };
+    });
+};
+
+export const getTaskFiles = async (taskId: string) => {
+  return await api.get(`files/task/${taskId}`).then((response: TaskFiles) => {
     if ("error" in response) {
       return {
         message: getErrorMessage(response.message),
-        error: response.error,
-        statusCode: response.statusCode,
       };
     }
 
-    return { tasks: response as Task[] };
+    return {
+      includeFiles: response.includeFiles as TaskFile[],
+      referenceFiles: response.referenceFiles as TaskFile[],
+    };
   });
-}
+};

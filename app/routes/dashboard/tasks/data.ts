@@ -15,17 +15,17 @@ export const columns: Column[] = [
   {
     id: Status.ATTENTION,
     name: "En atención",
-    color: "blue",
+    color: "yellow",
   },
   {
     id: Status.IN_PROGRESS,
     name: "En proceso",
-    color: "purple",
+    color: "blue",
   },
   {
     id: Status.REVIEW,
     name: "En revisión",
-    color: "yellow",
+    color: "purple",
   },
   {
     id: Status.DONE,  

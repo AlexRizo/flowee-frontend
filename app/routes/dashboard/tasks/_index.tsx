@@ -101,7 +101,6 @@ const Home = () => {
     );
 
     socket.on("unassigned-task-created", (task: Task) => {
-      console.log("unassigned-task-created", task);
       addTask(task);
     });
 

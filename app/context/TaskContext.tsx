@@ -48,7 +48,6 @@ export const TaskProvider: FC<TaskProviderProps> = ({ children }) => {
     if (!originColumn || !taskId) return;
 
     const task = tasks[originColumn].find((t) => t.id === taskId);
-    // console.log({task, originColumn})
 
     setTasks((prev) => {
       return {

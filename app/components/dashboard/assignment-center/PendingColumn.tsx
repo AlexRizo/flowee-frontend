@@ -1,11 +1,11 @@
 import { useDroppable } from "@dnd-kit/core";
-import { TaskCard } from "../boards/TaskCard";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Clock } from "lucide-react";
 import type { Task } from "~/services/interfaces/tasks-service.interface";
+import { AwaitTaskCard } from "../boards/AwaitTaskCard";
 
 interface Props {
   pendingTasks: Task[];
@@ -34,7 +34,7 @@ export const PendingColumn = ({ pendingTasks, activeId }: Props) => {
       >
         <div className="flex flex-col gap-2 max-h-[calc(100vh-10rem)] [scrollbar-width:none] overflow-y-auto p-3 rounded-b-md bg-white">
           {pendingTasks.map((task) => (
-            <TaskCard key={task.id} {...task} activeTaskId={activeId} />
+            <AwaitTaskCard key={task.id} task={task} activeTaskId={activeId} />
           ))}
         </div>
       </SortableContext>

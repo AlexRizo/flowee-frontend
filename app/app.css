@@ -147,15 +147,15 @@ body {
 }
 
 .status-attention {
-  @apply bg-blue-500;
+  @apply bg-yellow-500;
 }
 
 .status-in-progress {
-  @apply bg-violet-500;
+  @apply bg-blue-500;
 }
 
 .status-review {
-  @apply bg-yellow-500;
+  @apply bg-purple-500;
 }
 
 .status-done {

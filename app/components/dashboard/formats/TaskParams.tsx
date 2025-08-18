@@ -40,7 +40,7 @@ const TaskParamItem = ({
   type = "string",
   tooltip,
 }: TaskParamItemProps) => {
-  if (type === "avatar" && !value) throw new Error("tooltip is required for avatar type");
+  if (type === "avatar" && !tooltip) throw new Error("tooltip is required for avatar type");
   
   return (
     <div role="listitem" className="text-sm flex items-center">

@@ -70,3 +70,18 @@ export interface CreateSpecialTaskResponse {
     message: string;
   }
 }
+
+export interface TaskFile {
+  id: string;
+  name: string;
+  public_id: string;
+  url: string;
+  type: 'reference' | 'include';
+  task: Task;
+}
+
+export interface TaskFiles {
+  referenceFiles?: TaskFile[];
+  includeFiles?: TaskFile[];
+  message?: string;
+}
