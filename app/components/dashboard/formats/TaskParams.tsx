@@ -89,7 +89,7 @@ const TaskParamItem = ({
 
 export const TaskParams = ({ task }: { task: Task }) => {
   return (
-    <div className="flex gap-20">
+    <div className="flex justify-between">
       <div role="list" className="flex flex-col gap-3">
         <TaskParamItem
           icon="Calendar"

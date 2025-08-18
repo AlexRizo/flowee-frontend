@@ -8,55 +8,58 @@ export const getFileName = (file: TaskFile): string => {
 };
 
 const documentExtensions: string[] = [
-  'pdf',
-  'doc',
-  'docx',
-  'xls',
-  'xlsx',
-  'ppt',
-  'pptx',
-  'txt',
-  'csv',
-  'md',
-  'markdown',
-  'mdx',
-  'mdx',
-  'mdx',
-  'mdx',
-  'mdx',
-]
+  "pdf",
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+  "ppt",
+  "pptx",
+  "txt",
+  "csv",
+  "md",
+  "markdown",
+  "mdx",
+  "mdx",
+  "mdx",
+  "mdx",
+  "mdx",
+];
 
 const imageExtensions: string[] = [
-  'jpg',
-  'jpeg',
-  'png',
-  'gif',
-  'bmp',
-  'webp',
-  'svg',
-  'ico',
-  'tiff',
-  'heic',
-  'heif',
-]
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "bmp",
+  "webp",
+  "svg",
+  "ico",
+  "tiff",
+  "heic",
+  "heif",
+];
 
 export const getFileIcon = (url: string): IconName => {
-  const file = url.split('/');
-  const fileExtension = file[file.length - 1].split('.').pop()?.toLowerCase();
+  const file = url.split("/");
+  const fileExtension = file[file.length - 1].split(".").pop()?.toLowerCase();
 
   if (fileExtension && documentExtensions.includes(fileExtension)) {
-    return 'FileText';
+    return "FileText";
   } else if (fileExtension && imageExtensions.includes(fileExtension)) {
-    return 'Image';
+    return "Image";
   } else {
-    return 'File';
+    return "File";
   }
 };
 
 export const getFlAttachmentUrl = (url: string): string => {
   const newUrl = new URL(url);
 
-  newUrl.pathname = newUrl.pathname.replace(/\/upload\/(?!fl_attachment)/, `/upload/fl_attachment/`)
+  newUrl.pathname = newUrl.pathname.replace(
+    /\/upload\/(?!fl_attachment)/,
+    `/upload/fl_attachment/`
+  );
 
   return newUrl.toString();
-}
+};
