@@ -1,6 +1,12 @@
 import type { Task } from "~/services/interfaces/tasks-service.interface";
 import { CardTooltip } from "./CardTooltip";
-import { CalendarCheck, CalendarPlus, Flag, ListEnd } from "lucide-react";
+import {
+  CalendarCheck,
+  CalendarPlus,
+  ClipboardPaste,
+  Flag,
+  ListEnd,
+} from "lucide-react";
 import { TaskTypeIcon } from "./TaskTypeIcon";
 import {
   getTaskDate,
@@ -13,26 +19,19 @@ import { CSS } from "@dnd-kit/utilities";
 import { BlankCard } from "./BlankCard";
 import type { FC } from "react";
 
-interface Props extends Task {
+interface Props {
+  task: Task
   activeTaskId?: string;
+  setPreviewTask: (task: Task) => void;
 }
 
 export const TaskCard: FC<Props> = ({
-  id,
-  title,
-  description,
-  priority,
-  type,
-  status,
-  author,
-  assignedTo,
-  board,
-  dueDate,
-  createdAt,
+  task,
   activeTaskId,
+  setPreviewTask,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+    useSortable({ id: task.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -41,49 +40,59 @@ export const TaskCard: FC<Props> = ({
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
-      {activeTaskId === id ? (
+    <div ref={setNodeRef} style={style}>
+      {activeTaskId === task.id ? (
         <BlankCard />
       ) : (
         <div className="flex flex-col justify-between rounded-lg h-37.5 bg-white border border-gray-200 shadow-xs">
           <header className="flex border-b border-gray-200 p-2 gap-1">
-            <CardTooltip text={board.name} tooltipColor={board.color}>
-              <span className="font-semibold text-white">{board.prefix}</span>
+            <CardTooltip text={task.board.name} tooltipColor={task.board.color}>
+              <span className="font-semibold text-white">{task.board.prefix}</span>
             </CardTooltip>
-            <CardTooltip text={author.name}>
+            <CardTooltip text={task.author.name}>
               <img
-                src={author.avatar || "/images/default-user.webp"}
+                src={task.author.avatar || "/images/default-user.webp"}
                 alt={"Avatar"}
                 className="size-5 rounded"
               />
             </CardTooltip>
-            <CardTooltip text={`Creada: ${ getTaskDate(createdAt) }`}>
+            <CardTooltip text={`Creada: ${getTaskDate(task.createdAt)}`}>
               <CalendarPlus size={17} />
             </CardTooltip>
-            <CardTooltip text={getTaskType(type)}>
-              <TaskTypeIcon name={type} size={17} />
+            <CardTooltip text={getTaskType(task.type)}>
+              <TaskTypeIcon name={task.type} size={17} />
             </CardTooltip>
 
             <span className="text-xs place-objects-center ml-auto gap-0.5">
-              <Flag size={14} className={getTaskPriorityColor(priority)} />
-              {getTaskPriority(priority)}
+              <Flag size={14} className={getTaskPriorityColor(task.priority)} />
+              {getTaskPriority(task.priority)}
             </span>
+
+            <button
+              className="text-xs place-objects-center bg-gray-100 rounded size-5 cursor-pointer"
+              onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => setPreviewTask(task)}
+            >
+              <ClipboardPaste size={14} />
+            </button>
           </header>
 
-          <div role="definition" className="p-2">
-            <h3 className="text-xs font-semibold">{title.length > 40 ? title.slice(0, 40) + '...' : title}</h3>
-            <p className="text-xs">{description.length > 80 ? description.slice(0, 80) + '...' : description}</p>
+          <div className="p-2" {...attributes} {...listeners}>
+            <h3 className="text-xs font-semibold">
+              {task.title.length > 40 ? task.title.slice(0, 40) + "..." : task.title}
+            </h3>
+            <p className="text-xs">
+              {task.description.length > 80
+                ? task.description.slice(0, 80) + "..."
+                : task.description}
+            </p>
           </div>
 
           <footer className="flex p-2 border-t border-gray-200 gap-1">
-            <CardTooltip text={assignedTo?.name || "Sin asignar"}>
+            <CardTooltip text={task.assignedTo?.name || "Sin asignar"}>
               <img
-                src={assignedTo?.avatar || "/images/default-user.webp"}
+                src={task.assignedTo?.avatar || "/images/default-user.webp"}
                 alt={"Avatar"}
                 className="size-5 rounded"
               />
@@ -94,7 +103,7 @@ export const TaskCard: FC<Props> = ({
             </span>
             <span className="place-objects-center gap-1 text-xs ml-auto">
               <CalendarCheck size={17} />
-              {getTaskDate(dueDate, 'dd/MM hh:mm aaaa')}
+              {getTaskDate(task.dueDate, "dd/MM hh:mm aaaa")}
             </span>
           </footer>
         </div>

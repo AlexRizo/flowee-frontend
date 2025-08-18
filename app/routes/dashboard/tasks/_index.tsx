@@ -22,7 +22,7 @@ import { useTaskContext } from "~/context/TaskContext";
 import { useSocket } from "~/context/SocketContext";
 import { PageLoader } from "~/components/dashboard/PageLoader";
 import { useAuthContext } from "~/context/AuthContext";
-import { Roles } from "~/services/interfaces/users-service.interface";
+import { TaskSidebar } from "~/components/dashboard/formats/TaskSidebar";
 
 export function meta() {
   return [
@@ -50,6 +50,8 @@ const Home = () => {
 
   const { currentBoard } = useBoardContext();
   const { user } = useAuthContext();
+
+  const [previewTask, setPreviewTask] = useState<Task | null>(null);
 
   const { mutate: getTasksMutation, isPending } = useMutation({
     mutationFn: async (term: string): Promise<void> => {
@@ -106,7 +108,6 @@ const Home = () => {
     socket.on(
       "task-assigned",
       ({ message, task }: { message: string; task?: Task }) => {
-
         if (!task) {
           toast.error(message);
           return;
@@ -211,28 +212,33 @@ const Home = () => {
   };
 
   return (
-    <div className="grid grid-cols-5 max-h-full gap-4">
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
-      >
-        {columns.map((column, index) => (
-          <Column
-            key={column.id}
-            {...column}
-            tasks={tasksState[column.id]}
-            activeTask={activeTask}
-            allowNewTask={index === 0}
-            over={overState}
-          />
-        ))}
-        <DragOverlay>
-          {activeTask && <TaskCardOverlay {...activeTask} />}
-        </DragOverlay>
-      </DndContext>
-    </div>
+    <>
+      <TaskSidebar task={previewTask} setPreviewTask={setPreviewTask} />
+
+      <div className="grid grid-cols-5 max-h-full gap-4">
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+        >
+          {columns.map((column, index) => (
+            <Column
+              key={column.id}
+              {...column}
+              tasks={tasksState[column.id]}
+              activeTask={activeTask}
+              allowNewTask={index === 0}
+              over={overState}
+              setPreviewTask={setPreviewTask}
+            />
+          ))}
+          <DragOverlay>
+            {activeTask && <TaskCardOverlay {...activeTask} />}
+          </DragOverlay>
+        </DndContext>
+      </div>
+    </>
   );
 };
 

@@ -1,25 +1,30 @@
 import { useLoaderData, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/_index";
+import { TaskSidebar } from "~/components/dashboard/formats/TaskSidebar";
 
 export function meta() {
   return [
     {
-      title: 'Inicio | Flowee',
-    }
-  ]
+      title: "Inicio | Flowee",
+    },
+  ];
 }
 
 export async function clientAction({}: Route.ClientActionArgs) {
-  alert('logout');
+  alert("logout");
   return null;
 }
 
 const Home = () => {
-  const { user } = useRouteLoaderData('routes/dashboard/_layout')
+  const { user } = useRouteLoaderData("routes/dashboard/_layout");
 
   return (
-    <div>Home, {user?.name}</div>
-  )
-}
+    <div>
+      <h1>Home, {user?.name}</h1>
 
-export default Home
+      <TaskSidebar task={null} />
+    </div>
+  );
+};
+
+export default Home;

@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Priority, Type } from "~/services/interfaces/tasks-service.interface";
+import { Priority, Status, Type } from "~/services/interfaces/tasks-service.interface";
 
 export const getTaskPriorityColor = (priority: Priority) => {
   switch (priority) {
@@ -14,6 +14,21 @@ export const getTaskPriorityColor = (priority: Priority) => {
       return "urgent-flag";
   }
 };
+
+export const getTaskStatusColor = (status: Status) => {
+  switch (status) {
+    case Status.AWAIT:
+      return "status-await";
+    case Status.ATTENTION:
+      return "status-attention";
+    case Status.IN_PROGRESS:
+      return "status-in-progress";
+    case Status.REVIEW:
+      return "status-review";
+    case Status.DONE:
+      return "status-done";
+  }
+}
 
 export const getTaskDate = (date: string, formatDate?: string) => {
   const newDate = new Date(date);
@@ -43,5 +58,20 @@ export const getTaskPriority = (priority: Priority) => {
       return "Alta";
     case Priority.URGENT:
       return "Urgente";
+  }
+}
+
+export const getTaskStatus = (status: Status) => {
+  switch (status) {
+    case Status.AWAIT:
+      return "En espera";
+    case Status.ATTENTION:
+      return "Requiere atención";
+    case Status.IN_PROGRESS:
+      return "En proceso";
+    case Status.REVIEW:
+      return "En revisión";
+    case Status.DONE:
+      return "Completada";
   }
 }

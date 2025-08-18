@@ -24,6 +24,7 @@ interface Props {
   activeTask: Task | null;
   allowNewTask: boolean;
   over: any;
+  setPreviewTask: (task: Task) => void;
 }
 
 const colors = {
@@ -70,6 +71,7 @@ export const Column = ({
   activeTask,
   allowNewTask = false,
   over,
+  setPreviewTask,
 }: Props) => {
   const columnColor = useMemo(() => {
     return colors[color as keyof typeof colors];
@@ -89,7 +91,7 @@ export const Column = ({
   return (
     <div
       ref={setNodeRef}
-      role="columnheader"
+      role="contentinfo"
       id={id}
       className={cn(columnColor, "flex flex-col rounded-lg p-3 h-min")}
     >
@@ -126,7 +128,7 @@ export const Column = ({
         </header>
         <div className="flex flex-col gap-2 max-h-[calc(100vh-10rem)] [scrollbar-width:none] overflow-y-auto">
           {tasks.map((task) => (
-            <TaskCard key={task.id} {...task} activeTaskId={activeTask?.id} />
+            <TaskCard key={task.id} task={task} activeTaskId={activeTask?.id} setPreviewTask={setPreviewTask} />
           ))}
           {over?.active && over.column === id && <BlankCard />}
         </div>

@@ -141,3 +141,23 @@ body {
 .urgent-flag {
   @apply fill-red-500 text-red-500;
 }
+
+.status-await {
+  @apply bg-gray-500;
+}
+
+.status-attention {
+  @apply bg-blue-500;
+}
+
+.status-in-progress {
+  @apply bg-violet-500;
+}
+
+.status-review {
+  @apply bg-yellow-500;
+}
+
+.status-done {
+  @apply bg-green-500;
+}
