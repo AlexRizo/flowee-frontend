@@ -1,4 +1,7 @@
-import { Status, type Task } from "~/services/interfaces/tasks-service.interface";
+import {
+  Status,
+  type Task,
+} from "~/services/interfaces/tasks-service.interface";
 import { Column } from "~/components/dashboard/boards/Column";
 import { useEffect, useState } from "react";
 import {
@@ -76,7 +79,10 @@ const Home = () => {
     getTasksMutation(currentBoard.id);
 
     if (!socket || !user) return;
-    socket.emit("join-board", { boardId: currentBoard.id, role: user.highestRole });
+    socket.emit("join-board", {
+      boardId: currentBoard.id,
+      role: user.highestRole,
+    });
 
     return () => {
       socket.emit("leave-board", { boardId: currentBoard.id });
@@ -85,18 +91,39 @@ const Home = () => {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("task-status-updated", ({ taskId, status }) => {
-      updateTaskFromServer(taskId, status);
+    socket.on(
+      "task-status-updated",
+      ({ taskId, status }: { taskId: string; status: Status }) => {
+        updateTaskFromServer(taskId, status);
+      }
+    );
+
+    socket.on("unassigned-task-created", (task: Task) => {
+      console.log("unassigned-task-created", task);
+      addTask(task);
     });
 
-    socket.on('unassigned-task-created', (task: Task) => {
-      console.log('unassigned-task-created', task);
-      addTask(task);
-    })
+    socket.on(
+      "task-assigned",
+      ({ message, task }: { message: string; task?: Task }) => {
+
+        if (!task) {
+          toast.error(message);
+          return;
+        }
+
+        addTask(task);
+
+        toast.info("Se te ha asignado una tarea", {
+          description: task.title,
+        });
+      }
+    );
 
     return () => {
       socket.off("task-status-updated");
-      socket.off('unassigned-task-created');
+      socket.off("unassigned-task-created");
+      socket.off("task-assigned");
     };
   }, [tasksState, updateTaskFromServer, socket]);
 
