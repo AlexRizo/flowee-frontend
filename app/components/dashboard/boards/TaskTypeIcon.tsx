@@ -4,7 +4,7 @@ import { type IconName, LucideDynamicIcon } from "~/components/LucideDynamicIcon
 interface Props {
   name: TaskType;
   size?: number;
-  color?: string;
+  className?: string;
 }
 
 type Icons = 'Smartphone' | 'ScrollText' | 'Store' | 'Sparkles';
@@ -17,6 +17,6 @@ const icons : Record<TaskType, Icons> = {
   'SPECIAL': 'Sparkles',
 }
 
-export const TaskTypeIcon: FC<Props> = ({ name, size = 16, color = 'black' }) => {
-  return <LucideDynamicIcon name={ icons[name as TaskType] as IconName } size={size} color={color} />;
+export const TaskTypeIcon: FC<Props> = ({ name, size = 16, className = 'text-black' }) => {
+  return <LucideDynamicIcon name={ icons[name as TaskType] as IconName } size={size} className={className} />;
 };

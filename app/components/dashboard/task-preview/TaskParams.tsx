@@ -45,7 +45,7 @@ const TaskParamItem = ({
   return (
     <div role="listitem" className="text-sm flex items-center">
       <span className="flex items-center gap-1 font-medium w-28">
-        <LucideDynamicIcon name={icon} size={16} color="gray" /> {label} &nbsp;
+        <LucideDynamicIcon name={icon} size={16} className="text-gray-500" /> {label} &nbsp;
       </span>
       <span className="flex items-center gap-1">
         {type === "string" && value}

@@ -22,7 +22,7 @@ import { useTaskContext } from "~/context/TaskContext";
 import { useSocket } from "~/context/SocketContext";
 import { PageLoader } from "~/components/dashboard/PageLoader";
 import { useAuthContext } from "~/context/AuthContext";
-import { TaskSidebar } from "~/components/dashboard/formats/TaskSidebar";
+import { TaskSidebar } from "~/components/dashboard/task-preview/TaskSidebar";
 
 export function meta() {
   return [

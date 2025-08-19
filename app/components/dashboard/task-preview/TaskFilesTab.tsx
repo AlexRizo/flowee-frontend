@@ -1,6 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 import { FilesTable } from "./FilesTable";
-import { useEffect } from "react";
 import type { TaskFile } from "~/services/interfaces/tasks-service.interface";
 
 export const TaskFilesTab = ({

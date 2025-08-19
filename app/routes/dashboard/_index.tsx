@@ -1,6 +1,6 @@
 import { useLoaderData, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/_index";
-import { TaskSidebar } from "~/components/dashboard/formats/TaskSidebar";
+import { TaskSidebar } from "~/components/dashboard/task-preview/TaskSidebar";
 
 export function meta() {
   return [
