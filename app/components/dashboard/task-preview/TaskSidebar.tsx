@@ -56,7 +56,7 @@ export const TaskSidebar = ({
           <SheetTitle>{tab}</SheetTitle>
           <SheetDescription></SheetDescription>
         </SheetHeader>
-        <div role="contentinfo" className="flex h-full">
+        <div role="contentinfo" className="flex size-full">
           {tab === "Detalles" && <Details task={task} taskFiles={taskFiles} />}
           {tab === "Chat" && <Chat />}
           {tab === "Entregables" && <Formats />}
