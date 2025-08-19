@@ -58,7 +58,7 @@ export const TaskSidebar = ({
         </SheetHeader>
         <div role="contentinfo" className="flex size-full">
           {tab === "Detalles" && <Details task={task} taskFiles={taskFiles} />}
-          {tab === "Chat" && <Chat />}
+          {tab === "Chat" && <Chat taskId={task?.id || null} />}
           {tab === "Entregables" && <Formats />}
           <TaskTabMenu tab={tab} setTab={setTab} />
         </div>

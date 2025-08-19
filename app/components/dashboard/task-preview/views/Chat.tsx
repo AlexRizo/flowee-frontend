@@ -1,8 +1,10 @@
 import { CirclePlus, FileImage, Paperclip, ThumbsUp } from "lucide-react";
 import { ChatBubble } from "../ChatBubble";
 import { Input } from "~/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "~/context/AuthContext";
+import { useSocket } from "~/context/SocketContext";
+import { toast } from "sonner";
 
 interface Message {
   user: {
@@ -15,10 +17,36 @@ interface Message {
   id: string;
 }
 
-export const Chat = () => {
+interface Props {
+  taskId: string | null;
+}
+
+export const Chat = ({ taskId }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { user } = useAuthContext();
 
+  const socket = useSocket()
+
+  useEffect(() => {
+    if (!socket || !taskId) return;
+
+    socket.emit('join-chat', { taskId })
+
+    socket.on('new-message', (message: Message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+      console.log(message)
+    })
+
+    socket.on('error-message', (response: { message: string }) => {
+      toast.error(response.message)
+    })
+    
+    return () => {
+      socket.off('new-message')
+      socket.emit('leave-chat-room', taskId)
+    }
+  }, [socket, taskId]);
+  
   return (
     <div role="group" className="px-4 size-full flex flex-col pb-4">
       <h1 className="font-bold mb-8 mt-4">Conversación</h1>
