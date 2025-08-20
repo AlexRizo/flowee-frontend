@@ -1,7 +1,7 @@
 import { CirclePlus, FileImage, Paperclip, ThumbsUp } from "lucide-react";
 import { ChatBubble } from "../ChatBubble";
 import { Input } from "~/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthContext } from "~/context/AuthContext";
 import { useSocket } from "~/context/SocketContext";
 import { toast } from "sonner";
@@ -26,9 +26,19 @@ interface Props {
 }
 
 export const Chat = ({ taskId }: Props) => {
+  const chatRef = useRef<HTMLDivElement>(null);
+  const [inputValue, setInputValue] = useState("");
+  
   const { user } = useAuthContext();
 
   const socket = useSocket();
+
+  const scrollToBottom = () => {
+    chatRef.current?.scrollTo({
+      top: chatRef.current?.scrollHeight,
+      behavior: "smooth",
+    });
+  };
 
   const updateMessages = (message: Message) => {
     queryClient.setQueryData(
@@ -36,24 +46,6 @@ export const Chat = ({ taskId }: Props) => {
       (oldData: Message[]) => [...oldData, message]
     );
   };
-
-  if (!taskId) return <PageLoader />;
-
-  const { data: messages } = useQuery({
-    queryKey: ["chat-messages", taskId],
-    queryFn: async () => {
-      const response = await getChatMessages(taskId);
-      if (!response.messages) {
-        toast.error(response.message, {
-          position: "top-center",
-        });
-        return [];
-      }
-
-      return response.messages;
-    },
-    enabled: !!taskId,
-  });
 
   useEffect(() => {
     if (!socket || !taskId) return;
@@ -71,10 +63,33 @@ export const Chat = ({ taskId }: Props) => {
     return () => {
       socket.off("new-message");
       socket.emit("leave-chat-room", taskId);
+      queryClient.invalidateQueries({ queryKey: ["chat-messages", taskId] });
     };
   }, [socket, taskId]);
 
-  const [inputValue, setInputValue] = useState("");
+  const { data: messages } = useQuery({
+    queryKey: ["chat-messages", taskId],
+    queryFn: async () => {
+      if (!taskId) return [];
+
+      const response = await getChatMessages(taskId);
+      if (!response.messages) {
+        toast.error(response.message, {
+          position: "top-center",
+        });
+        return [];
+      }
+
+      return response.messages;
+    },
+    enabled: !!taskId,
+  });
+
+  useEffect(() => {
+    if (messages) {
+      scrollToBottom();
+    }
+  }, [messages]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -94,9 +109,9 @@ export const Chat = ({ taskId }: Props) => {
   };
 
   return (
-    <div role="group" className="px-4 size-full flex flex-col pb-4">
+    <div role="group" className="pl-4 size-full flex flex-col pb-4">
       <h1 className="font-bold mb-8 mt-4">Conversación</h1>
-      <div role="textbox" className="flex flex-col gap-5 overflow-y-auto h-[calc(100vh-220px)]">
+      <div ref={chatRef} role="textbox" className="flex flex-col gap-5 overflow-y-auto h-[calc(100vh-220px)] pr-4">
         {messages?.map((message) => (
           <ChatBubble
             key={message.id}
@@ -107,7 +122,7 @@ export const Chat = ({ taskId }: Props) => {
           />
         ))}
       </div>
-      <div className="flex items-center gap-2 mt-auto">
+      <div className="flex items-center gap-2 mt-auto pr-4">
         <CirclePlus strokeWidth={1.5} />
         <FileImage strokeWidth={1.5} />
         <Paperclip strokeWidth={1.5} />

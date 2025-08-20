@@ -34,7 +34,7 @@ export const ChatBubble: FC<Props> = ({ user, message, createdAt, isUser, showDa
           />
         </CardTooltip>
         <p
-          className={`py-1.5 pl-3.5 pr-5 rounded-2xl ${
+          className={`py-1.5 pl-3.5 pr-5 rounded-2xl w-fit ${
             isUser
               ? "rounded-br-none bg-black text-white"
               : "rounded-bl-none bg-gray-200"
