@@ -23,6 +23,7 @@ import { useSocket } from "~/context/SocketContext";
 import { PageLoader } from "~/components/dashboard/PageLoader";
 import { useAuthContext } from "~/context/AuthContext";
 import { TaskSidebar } from "~/components/dashboard/task-preview/TaskSidebar";
+import { useTaskPreview } from "~/context/TaskPreviewContext";
 
 export function meta() {
   return [
@@ -51,7 +52,14 @@ const Home = () => {
   const { currentBoard } = useBoardContext();
   const { user } = useAuthContext();
 
-  const [previewTask, setPreviewTask] = useState<Task | null>(null);
+  const { setPreviewTask } = useTaskPreview();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenSidebar = (task: Task) => {
+    setIsOpen(true);
+    setPreviewTask(task);
+  };
 
   const { mutate: getTasksMutation, isPending } = useMutation({
     mutationFn: async (term: string): Promise<void> => {
@@ -212,7 +220,7 @@ const Home = () => {
 
   return (
     <>
-      <TaskSidebar task={previewTask} setPreviewTask={setPreviewTask} />
+      <TaskSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
       <div className="grid grid-cols-5 max-h-full gap-4">
         <DndContext
@@ -229,7 +237,7 @@ const Home = () => {
               activeTask={activeTask}
               allowNewTask={index === 0}
               over={overState}
-              setPreviewTask={setPreviewTask}
+              setPreviewTask={handleOpenSidebar}
             />
           ))}
           <DragOverlay>

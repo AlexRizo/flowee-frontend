@@ -1,6 +1,5 @@
-import { useLoaderData, useRouteLoaderData } from "react-router";
+import { useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/_index";
-import { TaskSidebar } from "~/components/dashboard/task-preview/TaskSidebar";
 
 export function meta() {
   return [
@@ -21,8 +20,6 @@ const Home = () => {
   return (
     <div>
       <h1>Home, {user?.name}</h1>
-
-      <TaskSidebar task={null} />
     </div>
   );
 };

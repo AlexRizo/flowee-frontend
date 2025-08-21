@@ -1,10 +1,13 @@
 import { api, getErrorMessage } from "./api";
 import type {
+  CreateFormatResponse,
   CreateSpecialTaskResponse,
+  Format,
   RestResponse,
   Task,
   TaskFile,
   TaskFiles,
+  TaskFormats,
 } from "./interfaces/tasks-service.interface";
 
 export const getTasksByBoard = async (board: string) => {
@@ -77,6 +80,39 @@ export const getTaskFiles = async (taskId: string) => {
     return {
       includeFiles: response.includeFiles as TaskFile[],
       referenceFiles: response.referenceFiles as TaskFile[],
+    };
+  });
+};
+
+export const getTaskFormats = async (taskId: string) => {
+  return await api
+    .get(`formats/task/${taskId}`)
+    .then((response: TaskFormats) => {
+      if ("error" in response) {
+        return {
+          message: getErrorMessage(response.message),
+        };
+      }
+      return {
+        formats: response.formats as Format[],
+      };
+    });
+};
+
+export const createFormat = async (format: {
+  description: string;
+  taskId: string;
+}) => {
+  return await api.post("formats", format).then((response: CreateFormatResponse) => {
+    if ("error" in response) {
+      return {
+        message: getErrorMessage(response.message),
+      };
+    }
+
+    return {
+      message: response.message,
+      format: response.format as Format,
     };
   });
 };

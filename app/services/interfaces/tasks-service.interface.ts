@@ -85,3 +85,39 @@ export interface TaskFiles {
   includeFiles?: TaskFile[];
   message?: string;
 }
+
+export enum DeliveryStatus {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+}
+
+export interface FormatDelivery {
+  id: string;
+  description: string;
+  name: string;
+  public_id: string;
+  url: string;
+  status: DeliveryStatus;
+  createdAt: string;
+}
+
+export interface Format {
+  id: string;
+  description: string;
+  deliveries: FormatDelivery[];
+  createdAt: string;
+}
+
+export interface TaskFormats {
+  formats: Format[];
+  message?: string;
+  error?: string;
+}
+
+export interface CreateFormatResponse {
+  message: string;
+  error?: string;
+  statusCode: number;
+  format?: Format;
+}

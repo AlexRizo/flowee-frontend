@@ -27,7 +27,9 @@ export default [
 
     ...prefix('solicitudes', [
       layout('routes/dashboard/tasks/layouts/_layout.tsx', [
-        index('routes/dashboard/tasks/_index.tsx'),
+        layout('routes/dashboard/tasks/layouts/task-preview-layout.tsx', [
+          index('routes/dashboard/tasks/_index.tsx'),
+        ]),
         
         layout('routes/dashboard/tasks/layouts/create-task-layout.tsx', [
           route('nueva-solicitud', 'routes/dashboard/tasks/create-task.tsx'),
