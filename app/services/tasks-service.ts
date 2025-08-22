@@ -1,8 +1,12 @@
 import { api, getErrorMessage } from "./api";
 import type {
+  CreateDelivery,
+  CreateDeliveryResponse,
   CreateFormatResponse,
   CreateSpecialTaskResponse,
+  DownloadFileResponse,
   Format,
+  FormatDelivery,
   RestResponse,
   Task,
   TaskFile,
@@ -84,6 +88,22 @@ export const getTaskFiles = async (taskId: string) => {
   });
 };
 
+export const downloadFile = async (id: string) => {
+  return await api
+    .get(`files/task/download/${id}`)
+    .then((response: DownloadFileResponse) => {
+      if ("error" in response) {
+        return {
+          message: getErrorMessage(response.message),
+        };
+      }
+
+      return {
+        signedUrl: response.signedUrl,
+      };
+    });
+};
+
 export const getTaskFormats = async (taskId: string) => {
   return await api
     .get(`formats/task/${taskId}`)
@@ -103,16 +123,35 @@ export const createFormat = async (format: {
   description: string;
   taskId: string;
 }) => {
-  return await api.post("formats", format).then((response: CreateFormatResponse) => {
-    if ("error" in response) {
-      return {
-        message: getErrorMessage(response.message),
-      };
-    }
+  return await api
+    .post("formats", format)
+    .then((response: CreateFormatResponse) => {
+      if ("error" in response) {
+        return {
+          message: getErrorMessage(response.message),
+        };
+      }
 
-    return {
-      message: response.message,
-      format: response.format as Format,
-    };
-  });
+      return {
+        message: response.message,
+        format: response.format as Format,
+      };
+    });
+};
+
+export const createDelivery = async (delivery: CreateDelivery) => {
+  return await api
+    .post("deliveries", delivery, {}, true)
+    .then((response: CreateDeliveryResponse) => {
+      if ("error" in response) {
+        return {
+          message: getErrorMessage(response.message),
+        };
+      }
+
+      return {
+        message: response.message,
+        delivery: response.delivery as FormatDelivery,
+      };
+    });
 };

@@ -74,7 +74,7 @@ export interface CreateSpecialTaskResponse {
 export interface TaskFile {
   id: string;
   name: string;
-  public_id: string;
+  key: string;
   url: string;
   type: 'reference' | 'include';
   task: Task;
@@ -92,11 +92,18 @@ export enum DeliveryStatus {
   REJECTED = 'rejected',
 }
 
+export interface CreateDelivery {
+  description: string;
+  formatId: string;
+  file: File;
+}
+
 export interface FormatDelivery {
   id: string;
+  formatId: string;
   description: string;
   name: string;
-  public_id: string;
+  key: string;
   url: string;
   status: DeliveryStatus;
   createdAt: string;
@@ -120,4 +127,18 @@ export interface CreateFormatResponse {
   error?: string;
   statusCode: number;
   format?: Format;
+}
+
+export interface CreateDeliveryResponse {
+  message: string;
+  error?: string;
+  statusCode?: number;
+  delivery?: FormatDelivery;
+}
+
+export interface DownloadFileResponse {
+  message?: string;
+  error?: string;
+  statusCode?: number;
+  signedUrl?: string;
 }

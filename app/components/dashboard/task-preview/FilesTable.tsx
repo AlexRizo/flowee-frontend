@@ -1,15 +1,43 @@
+import { useMutation } from "@tanstack/react-query";
 import {
   Download,
   EllipsisVertical,
   ExternalLink,
-  File,
+  Loader2,
   Plus,
 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { LucideDynamicIcon } from "~/components/LucideDynamicIcon";
-import { getFileIcon, getFileName, getFlAttachmentUrl } from "~/helpers/fileHelper";
+import { getFileIcon } from "~/helpers/fileHelper";
 import type { TaskFile } from "~/services/interfaces/tasks-service.interface";
+import { downloadFile } from "~/services/tasks-service";
 
 const FileRow = ({ file }: { file: TaskFile }) => {
+  const [idDownload, setIdDownload] = useState<string | null>(null);
+
+  const { isPending, mutate: downloadFileMutate } = useMutation({
+    mutationFn: async (id: string) => {
+      const { signedUrl, message } = await downloadFile(id);
+
+      if (message) {
+        toast.error(message);
+      }
+
+      if (signedUrl) {
+        window.open(signedUrl);
+      }
+    },
+    onSettled() {
+      setIdDownload(null);
+    },
+  });
+
+  const handleDownload = (id: string) => {
+    setIdDownload(id);
+    downloadFileMutate(id);
+  };
+
   return (
     <div
       key={file.id}
@@ -18,15 +46,27 @@ const FileRow = ({ file }: { file: TaskFile }) => {
     >
       <span className="flex items-center gap-1 text-xs">
         <LucideDynamicIcon name={getFileIcon(file.url)} size={16} />
-        {getFileName(file)}
+        {file.name}
       </span>
       <aside className="flex items-center gap-5">
         <a href={file.url} target="_blank">
           <ExternalLink size={17} strokeWidth={1.5} />
         </a>
-        <a href={getFlAttachmentUrl(file.url)} download target="_blank">
-          <Download size={17} strokeWidth={1.5} />
-        </a>
+        <button
+          onClick={() => handleDownload(file.id)}
+          className="cursor-pointer disabled:opacity-50"
+          disabled={isPending && idDownload === file.id}
+        >
+          {isPending && idDownload === file.id ? (
+            <Loader2
+              size={17}
+              strokeWidth={1.5}
+              className="animate-spin-clockwise repeat-infinite"
+            />
+          ) : (
+            <Download size={17} strokeWidth={1.5} />
+          )}
+        </button>
         <EllipsisVertical size={17} strokeWidth={1.5} />
       </aside>
     </div>
