@@ -3,13 +3,13 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import { toast } from "sonner";
 import type {
   CreateDelivery,
   Format,
+  FormatDelivery,
   Task,
   TaskFiles,
 } from "~/services/interfaces/tasks-service.interface";
@@ -31,6 +31,9 @@ interface TaskPreviewContextType {
   handleGetTaskFormats: () => void;
   isLoadingCreateFormat: boolean;
   handleCreateFormat: ({ description }: { description: string }) => void;
+  isLoadingCreateDelivery: boolean;
+  handleCreateDelivery: ({ description, formatId, file }: CreateDelivery) => void;
+  deliveryData?: FormatDelivery;
 }
 
 const TaskPreviewContext = createContext<TaskPreviewContextType>({
@@ -44,6 +47,9 @@ const TaskPreviewContext = createContext<TaskPreviewContextType>({
   handleGetTaskFormats: (): void => {},
   isLoadingCreateFormat: false,
   handleCreateFormat: (): void => {},
+  isLoadingCreateDelivery: false,
+  handleCreateDelivery: (): void => {},
+  deliveryData: undefined,
 });
 
 export const TaskPreviewProvider = ({
@@ -124,14 +130,16 @@ export const TaskPreviewProvider = ({
 
             if (formatIndex === -1) return prev;
 
-            return {
-              ...prev,
-              [formatIndex]: {
-                ...prev[formatIndex],
-                deliveries: [...prev[formatIndex].deliveries, createdDelivery],
-              },
-            }
+            return prev.map((format, index) => 
+              index === formatIndex 
+                ? {
+                    ...format,
+                    deliveries: [...format.deliveries, createdDelivery],
+                  }
+                : format
+            );
           })
+          return createdDelivery;
         }
       },
     }); 
@@ -178,6 +186,9 @@ export const TaskPreviewProvider = ({
         handleGetTaskFormats,
         isLoadingCreateFormat,
         handleCreateFormat,
+        isLoadingCreateDelivery,
+        handleCreateDelivery,
+        deliveryData: createDeliveryData,
       }}
     >
       {children}

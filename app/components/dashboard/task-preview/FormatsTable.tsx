@@ -24,6 +24,7 @@ import type {
   FormatDelivery,
   TaskFile,
 } from "~/services/interfaces/tasks-service.interface";
+import { CreateDelivery } from "./formats/CreateDelivery";
 
 const FormatRow = ({ delivery }: { delivery: FormatDelivery }) => {
   return (
@@ -53,17 +54,25 @@ export const FormatsTable = ({ format }: { format: Format }) => {
       collapsible
       className="border border-gray-200 rounded bg-gray-50"
     >
-      <AccordionItem
-        value={format.id}
-        role="heading"
-        className="py-2 px-4"
-      >
-        <AccordionPrimitive.Header className="text-xs flex justify-between">
+      <AccordionItem value={format.id} role="heading" className="py-2 px-4">
+        <AccordionPrimitive.Header className="text-xs flex">
           <AccordionPrimitive.Trigger className="group flex items-center gap-2 w-full">
-            <ChevronRight size={16} strokeWidth={1.5} className="transition-transform group-data-[state=open]:rotate-90"/>
+            <ChevronRight
+              size={16}
+              strokeWidth={1.5}
+              className="transition-transform group-data-[state=open]:rotate-90"
+            />
             {format.description}
           </AccordionPrimitive.Trigger>
-          <Plus size={16} strokeWidth={1.5} className="cursor-pointer" />
+          <CreateDelivery
+            formatId={format.id}
+            formatDescription={format.description}
+          >
+            <div className="flex items-center gap-2 w-36">
+              Nueva versión
+              <Plus size={16} strokeWidth={1.5} className="cursor-pointer" />
+            </div>
+          </CreateDelivery>
         </AccordionPrimitive.Header>
         <AccordionContent className="divide-y divide-gray-200">
           {format?.deliveries && format.deliveries.length ? (

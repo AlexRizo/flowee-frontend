@@ -11,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
   Form as ShadcnForm,
+  FormDescription,
 } from "~/components/ui/form";
 import { useForm } from "react-hook-form";
 import { FormField } from "~/components/ui/form";
@@ -20,11 +21,30 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTaskPreview } from "~/context/TaskPreviewContext";
 import { Loader2 } from "lucide-react";
+import { FileUpload } from "~/components/FileUpload";
+import { Input } from "~/components/ui/input";
 
 interface Props {
   children: React.ReactNode;
   formatId: string;
+  formatDescription: string;
 }
+
+const MAX_FILE_SIZE = 50;
+const ACCEPTED_FILES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+  "image/bmp",
+  "image/tiff",
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
+];
 
 const schema = z.object({
   description: z
@@ -32,23 +52,36 @@ const schema = z.object({
     .min(1, { message: "La descripción es requerida" })
     .max(35, { message: "La descripción no puede tener más de 35 caracteres" }),
   formatId: z.string().min(1, { message: "El formato es requerido" }),
+  file: z
+    .instanceof(File, { message: "El archivo es requerido" })
+    .refine((file) => file.size <= MAX_FILE_SIZE * 1024 * 1024, {
+      message: `Los archivos son demasiado grandes, el tamaño máximo es de ${MAX_FILE_SIZE}MB`,
+    })
+    .refine((file) => ACCEPTED_FILES.includes(file.type), {
+      message:
+        "Los archivos no son válidos. Solo se permiten imágenes",
+    }),
 });
 
-export const CreateDelivery: FC<Props> = ({ children, formatId = "" }) => {
-  const { handleCreateFormat, isLoadingCreateFormat } = useTaskPreview();
+export const CreateDelivery: FC<Props> = ({
+  children,
+  formatId = "",
+  formatDescription,
+}) => {
+  const { handleCreateDelivery, isLoadingCreateDelivery } = useTaskPreview();
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       description: "",
       formatId,
+      file: undefined,
     },
     resolver: zodResolver(schema),
   });
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    handleCreateFormat(data);
-    setIsOpen(false);
+    handleCreateDelivery(data);
     form.reset();
   };
 
@@ -57,9 +90,10 @@ export const CreateDelivery: FC<Props> = ({ children, formatId = "" }) => {
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Solicitar otro Formato</SheetTitle>
+          <SheetTitle>Nuevo entregable</SheetTitle>
           <SheetDescription>
-            Agrega los detalles del formato que deseas solicitar.
+            Agrega un entregable para el formato:{" "}
+            <span className="font-bold">{formatDescription}</span>
           </SheetDescription>
         </SheetHeader>
         <ShadcnForm {...form}>
@@ -85,15 +119,37 @@ export const CreateDelivery: FC<Props> = ({ children, formatId = "" }) => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Entregable</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept={ACCEPTED_FILES.join(", ")}
+                      onChange={(e) => {
+                        field.onChange(e.target.files?.[0]);
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Sube un archivo de previsualización
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button
-              disabled={isLoadingCreateFormat}
+              disabled={isLoadingCreateDelivery}
               type="submit"
               className="ml-auto"
             >
-              {isLoadingCreateFormat ? (
+              {isLoadingCreateDelivery ? (
                 <Loader2 className="animate-spin repeat-infinite" />
               ) : (
-                "Crear formato"
+                "Crear entregable"
               )}
             </Button>
           </form>
