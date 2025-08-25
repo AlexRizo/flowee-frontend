@@ -1,15 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { toast } from "sonner";
 import type {
   CreateDelivery,
-  Format,
   Delivery,
+  DeliveryStatus,
+} from "~/services/interfaces/deliveries-interface";
+import type {
+  Format,
   Task,
   TaskFiles,
 } from "~/services/interfaces/tasks-service.interface";
@@ -33,8 +31,18 @@ interface TaskPreviewContextType {
   isLoadingCreateFormat: boolean;
   handleCreateFormat: ({ description }: { description: string }) => void;
   isLoadingCreateDelivery: boolean;
-  handleCreateDelivery: ({ description, formatId, file }: CreateDelivery) => void;
+  handleCreateDelivery: ({
+    description,
+    formatId,
+    file,
+  }: CreateDelivery) => void;
   deliveryData?: Delivery;
+  handleUpdateDeliveryStatus: (
+    formatId: string,
+    deliveryId: string,
+    status: DeliveryStatus,
+    comments?: string
+  ) => void;
 }
 
 const TaskPreviewContext = createContext<TaskPreviewContextType>({
@@ -52,6 +60,7 @@ const TaskPreviewContext = createContext<TaskPreviewContextType>({
   isLoadingCreateDelivery: false,
   handleCreateDelivery: (): void => {},
   deliveryData: undefined,
+  handleUpdateDeliveryStatus: (): void => {},
 });
 
 export const TaskPreviewProvider = ({
@@ -82,21 +91,24 @@ export const TaskPreviewProvider = ({
     },
   });
 
-  const { mutate: getTaskFormatsMutation, isPending: isLoadingTaskFormats, reset: resetTaskFormats } =
-    useMutation({
-      mutationFn: async (taskId: string) => {
-        const { formats, message } = await getTaskFormats(taskId);
+  const {
+    mutate: getTaskFormatsMutation,
+    isPending: isLoadingTaskFormats,
+    reset: resetTaskFormats,
+  } = useMutation({
+    mutationFn: async (taskId: string) => {
+      const { formats, message } = await getTaskFormats(taskId);
 
-        if (message) {
-          toast.error(message, {
-            position: "top-center",
-          });
-          return;
-        }
+      if (message) {
+        toast.error(message, {
+          position: "top-center",
+        });
+        return;
+      }
 
-        setTaskFormats(formats);
-      },
-    });
+      setTaskFormats(formats);
+    },
+  });
 
   const { mutate: createFormatMutation, isPending: isLoadingCreateFormat } =
     useMutation({
@@ -115,36 +127,43 @@ export const TaskPreviewProvider = ({
       },
     });
 
-  const { mutate: createDeliveryMutation, isPending: isLoadingCreateDelivery, data: createDeliveryData } =
-    useMutation({
-      mutationFn: async (delivery: CreateDelivery) => {
-        const { message, delivery: createdDelivery } = await createDelivery(delivery);
+  const {
+    mutate: createDeliveryMutation,
+    isPending: isLoadingCreateDelivery,
+    data: createDeliveryData,
+  } = useMutation({
+    mutationFn: async (delivery: CreateDelivery) => {
+      const { message, delivery: createdDelivery } = await createDelivery(
+        delivery
+      );
 
-        if (message) {
-          toast.info(message);
-        }
+      if (message) {
+        toast.info(message);
+      }
 
-        if (createdDelivery) {
-          setTaskFormats(prev => {
-            if (!prev) return [];
+      if (createdDelivery) {
+        setTaskFormats((prev) => {
+          if (!prev) return [];
 
-            const formatIndex = prev.findIndex(format => format.id === createdDelivery.formatId);
+          const formatIndex = prev.findIndex(
+            (format) => format.id === createdDelivery.formatId
+          );
 
-            if (formatIndex === -1) return prev;
+          if (formatIndex === -1) return prev;
 
-            return prev.map((format, index) => 
-              index === formatIndex 
-                ? {
-                    ...format,
-                    deliveries: [createdDelivery, ...(format.deliveries || [])],
-                  }
-                : format
-            );
-          })
-          return createdDelivery;
-        }
-      },
-    }); 
+          return prev.map((format, index) =>
+            index === formatIndex
+              ? {
+                  ...format,
+                  deliveries: [createdDelivery, ...(format.deliveries || [])],
+                }
+              : format
+          );
+        });
+        return createdDelivery;
+      }
+    },
+  });
 
   const handleGetTaskFiles = useCallback(() => {
     if (!previewTask) return;
@@ -175,6 +194,39 @@ export const TaskPreviewProvider = ({
     [previewTask]
   );
 
+  const handleUpdateDeliveryStatus = useCallback(
+    (
+      formatId: string,
+      deliveryId: string,
+      status: DeliveryStatus,
+      comments?: string
+    ) => {
+      if (!previewTask) return;
+      setTaskFormats((prev) => {
+        if (!prev) return;
+
+        const formatIndex = prev.findIndex((format) => format.id === formatId);
+
+        if (formatIndex === -1) return prev;
+
+        return prev.map((format) => {
+          if (format.id === formatId) {
+            return {
+              ...format,
+              deliveries: format.deliveries?.map((delivery) =>
+                delivery.id === deliveryId
+                  ? { ...delivery, status, comments: comments || null }
+                  : delivery
+              ),
+            };
+          }
+          return format;
+        });
+      });
+    },
+    [previewTask]
+  );
+
   return (
     <TaskPreviewContext.Provider
       value={{
@@ -192,6 +244,7 @@ export const TaskPreviewProvider = ({
         isLoadingCreateDelivery,
         handleCreateDelivery,
         deliveryData: createDeliveryData,
+        handleUpdateDeliveryStatus,
       }}
     >
       {children}

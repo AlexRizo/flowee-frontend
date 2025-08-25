@@ -17,7 +17,10 @@ import {
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { getFileIcon } from "~/helpers/fileHelper";
 import type { Format } from "~/services/interfaces/tasks-service.interface";
-import { type Delivery, DeliveryStatus } from "~/services/interfaces/deliveries-interface";
+import {
+  type Delivery,
+  DeliveryStatus,
+} from "~/services/interfaces/deliveries-interface";
 import { CreateDelivery } from "./formats/CreateDelivery";
 import { AddToTableTooltip } from "./tooltips/AddToTableTooltip";
 import { useMutation } from "@tanstack/react-query";
@@ -125,14 +128,16 @@ export const FormatsTable = ({ format }: { format: Format }) => {
     downloadFileMutate(id);
   };
 
+  const [delivery, setDelivery] = useState<Delivery | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setDelivery(null);
     }
     setIsOpen(open);
   };
-  const [delivery, setDelivery] = useState<Delivery | null>(null);
+  
 
   return (
     <>

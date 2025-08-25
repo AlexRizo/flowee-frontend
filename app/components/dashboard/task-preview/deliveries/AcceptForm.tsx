@@ -34,11 +34,12 @@ const formSchema = z.object({
 });
 
 interface Props {
+  formatId: string;
   deliveryId: string;
   children: React.ReactNode;
 }
 
-export const AcceptForm: FC<Props> = ({ deliveryId, children }) => {
+export const AcceptForm: FC<Props> = ({ formatId, deliveryId, children }) => {
   const { toggleDelivery, isPending, message, reset } = useToggleDelivery();
 
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
@@ -53,6 +54,7 @@ export const AcceptForm: FC<Props> = ({ deliveryId, children }) => {
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     toggleDelivery({
+      formatId,
       delivertId: data.deliveryId,
       status: DeliveryStatus.ACCEPTED,
       comments: data.comments,

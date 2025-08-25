@@ -68,7 +68,7 @@ export const DeliveryPreview = ({
         <SheetFooter>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <AcceptForm deliveryId={delivery?.id ?? ""}>
+              <AcceptForm formatId={delivery?.formatId ?? ""} deliveryId={delivery?.id ?? ""}>
                 <Button
                   className="bg-violet-500 hover:bg-violet-600 w-full"
                   disabled={delivery?.status === DeliveryStatus.ACCEPTED}
@@ -77,7 +77,7 @@ export const DeliveryPreview = ({
                 </Button>
               </AcceptForm>
             </div>
-            <RejectForm deliveryId={delivery?.id ?? ""}>
+            <RejectForm formatId={delivery?.formatId ?? ""} deliveryId={delivery?.id ?? ""}>
               <Button
                 variant="destructive"
                 disabled={delivery?.status === DeliveryStatus.REJECTED}
