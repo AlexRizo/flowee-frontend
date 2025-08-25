@@ -1,26 +1,27 @@
 import type { Board } from "./boards-service.interface";
+import type { Delivery } from "./deliveries-interface";
 import type { User } from "./users-service.interface";
 
 export enum Priority {
-  LOW = 'LOW',
-  NORMAL = 'NORMAL',
-  HIGH = 'HIGH',
-  URGENT = 'URGENT',
+  LOW = "LOW",
+  NORMAL = "NORMAL",
+  HIGH = "HIGH",
+  URGENT = "URGENT",
 }
 
 export enum Type {
-  PRINT = 'PRINT',
-  DIGITAL = 'DIGITAL',
-  ECOMMERCE = 'ECOMMERCE',
-  SPECIAL = 'SPECIAL',
+  PRINT = "PRINT",
+  DIGITAL = "DIGITAL",
+  ECOMMERCE = "ECOMMERCE",
+  SPECIAL = "SPECIAL",
 }
 
 export enum Status {
-  AWAIT = 'AWAIT',
-  ATTENTION = 'ATTENTION',
-  IN_PROGRESS = 'IN_PROGRESS',
-  REVIEW = 'REVIEW',
-  DONE = 'DONE',
+  AWAIT = "AWAIT",
+  ATTENTION = "ATTENTION",
+  IN_PROGRESS = "IN_PROGRESS",
+  REVIEW = "REVIEW",
+  DONE = "DONE",
 }
 
 export type RestResponse = Task[] | RestErrorResponse;
@@ -40,7 +41,6 @@ export interface SpecialTask {
 export interface DigitalTask {}
 export interface PrintTask {}
 export interface EcommerceTask {}
-
 
 export interface Task {
   id: string;
@@ -68,7 +68,7 @@ export interface CreateSpecialTaskResponse {
   task: Task | null;
   filesResponse?: {
     message: string;
-  }
+  };
 }
 
 export interface TaskFile {
@@ -76,7 +76,7 @@ export interface TaskFile {
   name: string;
   key: string;
   url: string;
-  type: 'reference' | 'include';
+  type: "reference" | "include";
   task: Task;
 }
 
@@ -86,33 +86,10 @@ export interface TaskFiles {
   message?: string;
 }
 
-export enum DeliveryStatus {
-  PENDING = 'pending',
-  ACCEPTED = 'accepted',
-  REJECTED = 'rejected',
-}
-
-export interface CreateDelivery {
-  description: string;
-  formatId: string;
-  file: File;
-}
-
-export interface FormatDelivery {
-  id: string;
-  filename: string;
-  formatId: string;
-  description: string;
-  key: string;
-  url: string;
-  status: DeliveryStatus;
-  createdAt: string;
-}
-
 export interface Format {
   id: string;
   description: string;
-  deliveries: FormatDelivery[] | undefined;
+  deliveries: Delivery[] | undefined;
   createdAt: string;
 }
 
@@ -133,7 +110,7 @@ export interface CreateDeliveryResponse {
   message: string;
   error?: string;
   statusCode?: number;
-  delivery?: FormatDelivery;
+  delivery?: Delivery;
 }
 
 export interface DownloadFileResponse {

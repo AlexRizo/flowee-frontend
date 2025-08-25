@@ -1,18 +1,17 @@
 import { api, getErrorMessage } from "./api";
 import type {
-  CreateDelivery,
   CreateDeliveryResponse,
   CreateFormatResponse,
   CreateSpecialTaskResponse,
   DownloadFileResponse,
   Format,
-  FormatDelivery,
   RestResponse,
   Task,
   TaskFile,
   TaskFiles,
   TaskFormats,
 } from "./interfaces/tasks-service.interface";
+import type { CreateDelivery, Delivery } from "./interfaces/deliveries-interface";
 
 export const getTasksByBoard = async (board: string) => {
   return await api
@@ -173,7 +172,7 @@ export const createDelivery = async (delivery: CreateDelivery) => {
 
       return {
         message: response.message,
-        delivery: response.delivery as FormatDelivery,
+        delivery: response.delivery as Delivery,
       };
     });
 };

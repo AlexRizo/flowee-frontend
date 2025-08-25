@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import type {
   CreateDelivery,
   Format,
-  FormatDelivery,
+  Delivery,
   Task,
   TaskFiles,
 } from "~/services/interfaces/tasks-service.interface";
@@ -34,7 +34,7 @@ interface TaskPreviewContextType {
   handleCreateFormat: ({ description }: { description: string }) => void;
   isLoadingCreateDelivery: boolean;
   handleCreateDelivery: ({ description, formatId, file }: CreateDelivery) => void;
-  deliveryData?: FormatDelivery;
+  deliveryData?: Delivery;
 }
 
 const TaskPreviewContext = createContext<TaskPreviewContextType>({
@@ -136,7 +136,7 @@ export const TaskPreviewProvider = ({
               index === formatIndex 
                 ? {
                     ...format,
-                    deliveries: [...(format.deliveries || []), createdDelivery],
+                    deliveries: [createdDelivery, ...(format.deliveries || [])],
                   }
                 : format
             );
@@ -170,7 +170,6 @@ export const TaskPreviewProvider = ({
   const handleCreateDelivery = useCallback(
     ({ description, formatId, file }: CreateDelivery) => {
       if (!previewTask) return;
-      console.log(description, formatId, file);
       createDeliveryMutation({ description, formatId, file });
     },
     [previewTask]
