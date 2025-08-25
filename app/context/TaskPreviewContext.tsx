@@ -28,6 +28,7 @@ interface TaskPreviewContextType {
   handleGetTaskFiles: () => void;
   taskFormats?: Format[];
   isLoadingTaskFormats: boolean;
+  resetTaskFormats: () => void;
   handleGetTaskFormats: () => void;
   isLoadingCreateFormat: boolean;
   handleCreateFormat: ({ description }: { description: string }) => void;
@@ -44,6 +45,7 @@ const TaskPreviewContext = createContext<TaskPreviewContextType>({
   handleGetTaskFiles: (): void => {},
   taskFormats: undefined,
   isLoadingTaskFormats: false,
+  resetTaskFormats: (): void => {},
   handleGetTaskFormats: (): void => {},
   isLoadingCreateFormat: false,
   handleCreateFormat: (): void => {},
@@ -80,7 +82,7 @@ export const TaskPreviewProvider = ({
     },
   });
 
-  const { mutate: getTaskFormatsMutation, isPending: isLoadingTaskFormats } =
+  const { mutate: getTaskFormatsMutation, isPending: isLoadingTaskFormats, reset: resetTaskFormats } =
     useMutation({
       mutationFn: async (taskId: string) => {
         const { formats, message } = await getTaskFormats(taskId);
@@ -134,7 +136,7 @@ export const TaskPreviewProvider = ({
               index === formatIndex 
                 ? {
                     ...format,
-                    deliveries: [...format.deliveries, createdDelivery],
+                    deliveries: [...(format.deliveries || []), createdDelivery],
                   }
                 : format
             );
@@ -168,6 +170,7 @@ export const TaskPreviewProvider = ({
   const handleCreateDelivery = useCallback(
     ({ description, formatId, file }: CreateDelivery) => {
       if (!previewTask) return;
+      console.log(description, formatId, file);
       createDeliveryMutation({ description, formatId, file });
     },
     [previewTask]
@@ -183,6 +186,7 @@ export const TaskPreviewProvider = ({
         handleGetTaskFiles,
         taskFormats,
         isLoadingTaskFormats,
+        resetTaskFormats,
         handleGetTaskFormats,
         isLoadingCreateFormat,
         handleCreateFormat,

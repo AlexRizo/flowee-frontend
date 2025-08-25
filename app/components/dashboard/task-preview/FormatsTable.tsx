@@ -1,61 +1,126 @@
 import {
+  Ban,
   ChevronRight,
+  Clock,
   Download,
-  EllipsisVertical,
-  ExternalLink,
-  File,
+  Loader2,
+  MessageSquare,
   Plus,
+  SquareCheckBig,
 } from "lucide-react";
 import { LucideDynamicIcon } from "~/components/LucideDynamicIcon";
 import {
   Accordion,
   AccordionItem,
-  AccordionTrigger,
   AccordionContent,
 } from "~/components/ui/accordion";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { getFileIcon, getFlAttachmentUrl } from "~/helpers/fileHelper";
 import {
-  getFileIcon,
-  getFileName,
-  getFlAttachmentUrl,
-} from "~/helpers/fileHelper";
-import type {
-  Format,
-  FormatDelivery,
-  TaskFile,
+  DeliveryStatus,
+  type Format,
+  type FormatDelivery,
 } from "~/services/interfaces/tasks-service.interface";
 import { CreateDelivery } from "./formats/CreateDelivery";
+import { AddToTableTooltip } from "./tooltips/AddToTableTooltip";
+import { useMutation } from "@tanstack/react-query";
+import { downloadDelivery, downloadFile } from "~/services/tasks-service";
+import { toast } from "sonner";
+import { useState } from "react";
 
-const FormatRow = ({ delivery }: { delivery: FormatDelivery }) => {
+const FormatRow = ({
+  delivery,
+  version,
+  handleDownload,
+  isPending,
+  idDownload,
+}: {
+  delivery: FormatDelivery;
+  version: number;
+  handleDownload: (id: string) => void;
+  isPending: boolean;
+  idDownload: string | null;
+}) => {
   return (
-    <div role="row" className="flex items-center justify-between py-2 px-4">
-      {/* <span className="flex items-center gap-1 text-xs">
-        <LucideDynamicIcon name={getFileIcon(format.url)} size={16} />
-        {getFileName(format)}
+    <div
+      role="row"
+      className={`flex items-center justify-between py-2 px-4 ${
+        delivery.status === DeliveryStatus.REJECTED && "opacity-50"
+      }`}
+    >
+      <span className="flex items-center gap-1 text-xs">
+        <LucideDynamicIcon name={getFileIcon(delivery.filename)} size={16} />
+        {`Versión ${version}: ${delivery.description}`}
       </span>
       <aside className="flex items-center gap-5">
-        <a href={format.url} target="_blank">
-          <ExternalLink size={17} strokeWidth={1.5} />
-        </a>
-        <a href={getFlAttachmentUrl(format.url)} download target="_blank">
-          <Download size={17} strokeWidth={1.5} />
-        </a>
-        <EllipsisVertical size={17} strokeWidth={1.5} />
-      </aside> */}
-      <pre>{JSON.stringify(delivery, null, 2)}</pre>
+        <button
+          onClick={() => handleDownload(delivery.id)}
+          className="cursor-pointer disabled:opacity-50"
+        >
+          {isPending && idDownload === delivery.id ? (
+            <Loader2
+              size={17}
+              strokeWidth={1.5}
+              className="animate-spin-clockwise repeat-infinite"
+            />
+          ) : (
+            <Download size={17} strokeWidth={1.5} />
+          )}
+        </button>
+        <button>
+          {delivery.status === DeliveryStatus.ACCEPTED ? (
+            <SquareCheckBig size={17} strokeWidth={1.5} />
+          ) : delivery.status === DeliveryStatus.PENDING ? (
+            <Clock size={17} strokeWidth={1.5} />
+          ) : (
+            <Ban size={17} strokeWidth={1.5} />
+          )}
+        </button>
+        <MessageSquare size={17} strokeWidth={1.5} />
+      </aside>
     </div>
   );
 };
 
 export const FormatsTable = ({ format }: { format: Format }) => {
+  const disabledButton = () => {
+    return format.deliveries?.some(
+      (delivery) => delivery.status === DeliveryStatus.PENDING
+    );
+  };
+
+  const [idDownload, setIdDownload] = useState<string | null>(null);
+
+  const { isPending, mutate: downloadFileMutate } = useMutation({
+    mutationFn: async (id: string) => {
+      const { signedUrl, message } = await downloadDelivery(id);
+
+      if (message) {
+        toast.error(message);
+      }
+
+      if (signedUrl) {
+        window.open(signedUrl);
+      }
+    },
+    onSettled() {
+      setIdDownload(null);
+    },
+  });
+
+  const handleDownload = (id: string) => {
+    setIdDownload(id);
+    downloadFileMutate(id);
+  };
+
   return (
     <Accordion
       type="single"
       collapsible
       className="border border-gray-200 rounded bg-gray-50"
     >
-      <AccordionItem value={format.id} role="heading" className="py-2 px-4">
-        <AccordionPrimitive.Header className="text-xs flex">
+      <AccordionItem value={format.id} role="heading">
+        <AccordionPrimitive.Header className="text-xs flex px-4 py-2 bg-purple-100">
           <AccordionPrimitive.Trigger className="group flex items-center gap-2 w-full">
             <ChevronRight
               size={16}
@@ -68,17 +133,41 @@ export const FormatsTable = ({ format }: { format: Format }) => {
             formatId={format.id}
             formatDescription={format.description}
           >
-            <div className="flex items-center gap-2 w-36">
-              Nueva versión
-              <Plus size={16} strokeWidth={1.5} className="cursor-pointer" />
-            </div>
+            <button
+              className="flex items-center gap-2 w-36 cursor-pointer font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={disabledButton()}
+            >
+              <AddToTableTooltip
+                content={
+                  disabledButton()
+                    ? "Espera a que se acepte o rechace la versión actual"
+                    : "Agrega una nueva versión"
+                }
+              >
+                <div className="flex items-center gap-2">
+                  Nueva versión
+                  <Plus size={16} strokeWidth={2} />
+                </div>
+              </AddToTableTooltip>
+            </button>
           </CreateDelivery>
         </AccordionPrimitive.Header>
-        <AccordionContent className="divide-y divide-gray-200">
+        <AccordionContent className="pb-0 divide-y divide-gray-200 border-t border-gray-200">
           {format?.deliveries && format.deliveries.length ? (
-            format.deliveries.map((delivery) => (
-              <FormatRow key={delivery.id} delivery={delivery} />
-            ))
+            format.deliveries
+              .map((d) => d)
+              .reverse()
+              .map((delivery, index) => (
+                <FormatRow
+                  key={delivery.id}
+                  delivery={delivery}
+                  version={index + 1}
+                  handleDownload={handleDownload}
+                  isPending={isPending}
+                  idDownload={idDownload}
+                />
+              ))
+              .reverse()
           ) : (
             <div
               role="row"

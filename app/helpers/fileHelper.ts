@@ -40,9 +40,8 @@ const imageExtensions: string[] = [
   "heif",
 ];
 
-export const getFileIcon = (url: string): IconName => {
-  const file = url.split("/");
-  const fileExtension = file[file.length - 1].split(".").pop()?.toLowerCase();
+export const getFileIcon = (filename: string): IconName => {
+  const fileExtension = filename.split(".").pop()?.toLowerCase();
 
   if (fileExtension && documentExtensions.includes(fileExtension)) {
     return "FileText";

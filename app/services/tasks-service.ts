@@ -104,6 +104,22 @@ export const downloadFile = async (id: string) => {
     });
 };
 
+export const downloadDelivery = async (id: string) => {
+  return await api
+    .get(`files/task/deliveries/download/${id}`)
+    .then((response: DownloadFileResponse) => {
+      if ("error" in response) {
+        return {
+          message: getErrorMessage(response.message),
+        };
+      }
+
+      return {
+        signedUrl: response.signedUrl,
+      };
+    });
+};
+
 export const getTaskFormats = async (taskId: string) => {
   return await api
     .get(`formats/task/${taskId}`)
@@ -140,8 +156,14 @@ export const createFormat = async (format: {
 };
 
 export const createDelivery = async (delivery: CreateDelivery) => {
+  const formData = new FormData();
+
+  formData.append("description", delivery.description);
+  formData.append("formatId", delivery.formatId);
+  formData.append("file", delivery.file);
+  
   return await api
-    .post("deliveries", delivery, {}, true)
+    .post("deliveries", formData, {}, true)
     .then((response: CreateDeliveryResponse) => {
       if ("error" in response) {
         return {

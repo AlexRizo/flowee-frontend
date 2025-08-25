@@ -1,8 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { FormatsTable } from "../FormatsTable";
-import { useQuery } from "@tanstack/react-query";
-import { getTaskFormats } from "~/services/tasks-service";
-import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateFormat } from "../formats/CreateFormat";
@@ -10,13 +7,26 @@ import { useTaskPreview } from "~/context/TaskPreviewContext";
 import { useEffect } from "react";
 import { ProtectedItem } from "../../auth/ProtectedItem";
 import { Roles } from "~/services/interfaces/users-service.interface";
+import { FormatSkeleton } from "../skeletons/FormatSkeleton";
 
 export const Formats = () => {
-  const { taskFormats, handleGetTaskFormats, previewTask } = useTaskPreview();
+  const {
+    taskFormats,
+    handleGetTaskFormats,
+    isLoadingTaskFormats,
+    previewTask,
+    resetTaskFormats,
+  } = useTaskPreview();
 
   useEffect(() => {
     handleGetTaskFormats();
   }, [previewTask]);
+
+  useEffect(() => {
+    return () => {
+      resetTaskFormats();
+    };
+  }, []);
 
   return (
     <div role="group" className="px-4 size-full flex flex-col">
@@ -50,7 +60,9 @@ export const Formats = () => {
         </AlertDescription>
       </Alert>
       <div className="flex flex-col gap-4 mt-5">
-        {taskFormats ? (
+        {isLoadingTaskFormats && !taskFormats ? (
+          <FormatSkeleton />
+        ) : taskFormats ? (
           taskFormats?.map((format) => (
             <FormatsTable key={format.id} format={format} />
           ))

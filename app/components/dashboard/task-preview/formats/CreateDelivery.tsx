@@ -71,6 +71,11 @@ export const CreateDelivery: FC<Props> = ({
   const { handleCreateDelivery, isLoadingCreateDelivery } = useTaskPreview();
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    form.reset();
+  };
+
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       description: "",
@@ -82,11 +87,10 @@ export const CreateDelivery: FC<Props> = ({
 
   const onSubmit = (data: z.infer<typeof schema>) => {
     handleCreateDelivery(data);
-    form.reset();
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent>
         <SheetHeader>

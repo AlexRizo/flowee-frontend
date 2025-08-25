@@ -100,9 +100,9 @@ export interface CreateDelivery {
 
 export interface FormatDelivery {
   id: string;
+  filename: string;
   formatId: string;
   description: string;
-  name: string;
   key: string;
   url: string;
   status: DeliveryStatus;
@@ -112,7 +112,7 @@ export interface FormatDelivery {
 export interface Format {
   id: string;
   description: string;
-  deliveries: FormatDelivery[];
+  deliveries: FormatDelivery[] | undefined;
   createdAt: string;
 }
 
