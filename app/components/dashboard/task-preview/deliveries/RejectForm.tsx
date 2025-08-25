@@ -20,8 +20,10 @@ import {
   DialogFooter,
   DialogClose,
 } from "~/components/ui/dialog";
-import type { FC } from "react";
+import { useEffect, useRef, type FC } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useToggleDelivery } from "~/hooks/useToggleDelivery";
+import { DeliveryStatus } from "~/services/interfaces/deliveries-interface";
 
 const formSchema = z.object({
   comments: z
@@ -37,6 +39,10 @@ interface Props {
 }
 
 export const RejectForm: FC<Props> = ({ deliveryId, children }) => {
+  const { toggleDelivery, isPending, message, reset } = useToggleDelivery();
+
+  const dialogCloseRef = useRef<HTMLButtonElement>(null);
+  
   const form = useForm({
     defaultValues: {
       comments: "",
@@ -46,11 +52,28 @@ export const RejectForm: FC<Props> = ({ deliveryId, children }) => {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    toggleDelivery({
+      delivertId: data.deliveryId,
+      status: DeliveryStatus.REJECTED,
+      comments: data.comments,
+    });
   };
 
+  const watchForDialogToggle = (open: boolean) => {
+    if (!open) {
+      form.reset();
+      reset();
+    }
+  };
+
+  useEffect(() => {
+    if (!isPending && message && dialogCloseRef.current) {
+      dialogCloseRef.current.click();
+    }
+  }, [dialogCloseRef, isPending, message]);
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={watchForDialogToggle}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -82,10 +105,12 @@ export const RejectForm: FC<Props> = ({ deliveryId, children }) => {
               )}
             />
             <DialogFooter>
-              <DialogClose asChild>
+              <DialogClose asChild ref={dialogCloseRef}>
                 <Button variant="outline">Cancelar</Button>
               </DialogClose>
-              <Button type="submit">Marcar como rechazada</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Espera..." : "Marcar como rechazada"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

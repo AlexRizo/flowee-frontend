@@ -95,7 +95,9 @@ const FormatRow = ({
 export const FormatsTable = ({ format }: { format: Format }) => {
   const disabledButton = () => {
     return format.deliveries?.some(
-      (delivery) => delivery.status === DeliveryStatus.PENDING
+      (delivery) =>
+        delivery.status === DeliveryStatus.PENDING ||
+        delivery.status === DeliveryStatus.ACCEPTED
     );
   };
 
@@ -168,7 +170,7 @@ export const FormatsTable = ({ format }: { format: Format }) => {
                   <AddToTableTooltip
                     content={
                       disabledButton()
-                        ? "Espera a que se acepte o rechace la versión actual"
+                        ? "Este formato tiene una versión pendiente o aceptada"
                         : "Agrega una nueva versión"
                     }
                   >
