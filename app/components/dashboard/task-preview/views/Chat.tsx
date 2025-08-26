@@ -63,7 +63,6 @@ export const Chat = ({ taskId }: Props) => {
     return () => {
       socket.off("new-message");
       socket.emit("leave-chat-room", taskId);
-      queryClient.invalidateQueries({ queryKey: ["chat-messages", taskId] });
     };
   }, [socket, taskId]);
 
@@ -71,6 +70,8 @@ export const Chat = ({ taskId }: Props) => {
     queryKey: ["chat-messages", taskId],
     queryFn: async () => {
       if (!taskId) return [];
+
+      console.log("taskId", taskId);
 
       const response = await getChatMessages(taskId);
       if (!response.messages) {
@@ -83,6 +84,8 @@ export const Chat = ({ taskId }: Props) => {
       return response.messages;
     },
     enabled: !!taskId,
+    retry: false,
+    refetchOnMount: true,
   });
 
   useEffect(() => {
