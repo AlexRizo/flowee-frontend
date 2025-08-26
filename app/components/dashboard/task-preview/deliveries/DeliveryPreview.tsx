@@ -15,6 +15,8 @@ import type { Delivery } from "~/services/interfaces/deliveries-interface";
 import { DeliveryStatus } from "~/services/interfaces/deliveries-interface";
 import { AcceptForm } from "./AcceptForm";
 import { RejectForm } from "./RejectForm";
+import { ProtectedItem } from "../../auth/ProtectedItem";
+import { Roles } from "~/services/interfaces/users-service.interface";
 
 export const DeliveryPreview = ({
   delivery,
@@ -66,26 +68,42 @@ export const DeliveryPreview = ({
           )}
         </div>
         <SheetFooter>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <AcceptForm formatId={delivery?.formatId ?? ""} deliveryId={delivery?.id ?? ""}>
-                <Button
-                  className="bg-violet-500 hover:bg-violet-600 w-full"
-                  disabled={delivery?.status === DeliveryStatus.ACCEPTED}
+          <ProtectedItem
+            allowedRoles={[
+              Roles.ADMIN,
+              Roles.PUBLISHER,
+              Roles.DESIGN_MANAGER,
+              Roles.SUPER_ADMIN,
+              Roles.PUBLISHER_MANAGER,
+            ]}
+          >
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <AcceptForm
+                  formatId={delivery?.formatId ?? ""}
+                  deliveryId={delivery?.id ?? ""}
                 >
-                  Aceptar
-                </Button>
-              </AcceptForm>
-            </div>
-            <RejectForm formatId={delivery?.formatId ?? ""} deliveryId={delivery?.id ?? ""}>
-              <Button
-                variant="destructive"
-                disabled={delivery?.status === DeliveryStatus.REJECTED}
+                  <Button
+                    className="bg-violet-500 hover:bg-violet-600 w-full"
+                    disabled={delivery?.status === DeliveryStatus.ACCEPTED}
+                  >
+                    Aceptar
+                  </Button>
+                </AcceptForm>
+              </div>
+              <RejectForm
+                formatId={delivery?.formatId ?? ""}
+                deliveryId={delivery?.id ?? ""}
               >
-                Rechazar
-              </Button>
-            </RejectForm>
-          </div>
+                <Button
+                  variant="destructive"
+                  disabled={delivery?.status === DeliveryStatus.REJECTED}
+                >
+                  Rechazar
+                </Button>
+              </RejectForm>
+            </div>
+          </ProtectedItem>
           <SheetClose asChild>
             <Button>Cerrar</Button>
           </SheetClose>

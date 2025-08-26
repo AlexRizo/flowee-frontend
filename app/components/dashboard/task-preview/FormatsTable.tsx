@@ -30,6 +30,7 @@ import { useState } from "react";
 import { ProtectedItem } from "../auth/ProtectedItem";
 import { Roles } from "~/services/interfaces/users-service.interface";
 import { DeliveryPreview } from "./deliveries/DeliveryPreview";
+import { DeliveryOptionsTooltip } from "./tooltips/DeliveryOptionsTooltip";
 
 const FormatRow = ({
   delivery,
@@ -55,13 +56,7 @@ const FormatRow = ({
         delivery.status === DeliveryStatus.REJECTED && "opacity-50"
       }`}
     >
-      <span
-        className="flex items-center gap-1 text-xs hover:underline cursor-pointer"
-        onClick={() => {
-          setDelivery(delivery);
-          handleOpenChange(true);
-        }}
-      >
+      <span className="flex items-center gap-1 text-xs">
         <LucideDynamicIcon name={getFileIcon(delivery.filename)} size={16} />
         {`Versión ${version}: ${delivery.description}`}
       </span>
@@ -82,14 +77,28 @@ const FormatRow = ({
         </button>
         <button>
           {delivery.status === DeliveryStatus.ACCEPTED ? (
-            <SquareCheckBig size={17} strokeWidth={1.5} />
+            <DeliveryOptionsTooltip content="Aceptado">
+              <SquareCheckBig size={17} strokeWidth={1.5} />
+            </DeliveryOptionsTooltip>
           ) : delivery.status === DeliveryStatus.PENDING ? (
-            <Clock size={17} strokeWidth={1.5} />
+            <DeliveryOptionsTooltip content="Pendiente">
+              <Clock size={17} strokeWidth={1.5} />
+            </DeliveryOptionsTooltip>
           ) : (
-            <Ban size={17} strokeWidth={1.5} />
+            <DeliveryOptionsTooltip content="Rechazado">
+              <Ban size={17} strokeWidth={1.5} />
+            </DeliveryOptionsTooltip>
           )}
         </button>
-        <MessageSquare size={17} strokeWidth={1.5} />
+        <MessageSquare
+          size={17}
+          strokeWidth={1.5}
+          className="cursor-pointer"
+          onClick={() => {
+            setDelivery(delivery);
+            handleOpenChange(true);
+          }}
+        />
       </aside>
     </div>
   );
@@ -130,14 +139,13 @@ export const FormatsTable = ({ format }: { format: Format }) => {
 
   const [delivery, setDelivery] = useState<Delivery | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setDelivery(null);
     }
     setIsOpen(open);
   };
-  
 
   return (
     <>

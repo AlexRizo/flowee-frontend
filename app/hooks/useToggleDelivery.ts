@@ -6,7 +6,7 @@ import { useTaskPreview } from "~/context/TaskPreviewContext";
 
 export const useToggleDelivery = () => {
   const { handleUpdateDeliveryStatus } = useTaskPreview();
-  
+
   const {
     mutate: toggleDelivery,
     isPending,

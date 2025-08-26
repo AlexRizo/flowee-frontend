@@ -43,7 +43,7 @@ export const RejectForm: FC<Props> = ({ formatId, deliveryId, children }) => {
   const { toggleDelivery, isPending, message, reset } = useToggleDelivery();
 
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
-  
+
   const form = useForm({
     defaultValues: {
       comments: "",
