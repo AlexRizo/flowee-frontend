@@ -39,11 +39,20 @@ const centroDeAsignaciones = () => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
+    let designerId: string | undefined;
+
+    if (!socket) {
+      toast.error("No se pudo asignar la tarea");
+      return;
+    }
+
     if (!over) return;
 
-    const designer = designers.find((d) => d.id === over.id);
+    designerId = designers.find((d) => d.id === over.id)?.id;
 
-    if (!designer) {
+    if (!designerId && over.id === user?.id) designerId = user?.id;
+
+    if (!designerId) {
       setActiveTask(null);
       return;
     }
@@ -55,14 +64,9 @@ const centroDeAsignaciones = () => {
       return;
     }
 
-    if (!socket) {
-      toast.error("No se pudo asignar la tarea");
-      return;
-    }
-
     socket.emit("assign-task", {
       taskId: task.id,
-      designerId: designer.id,
+      designerId,
     });
 
     removeTask(task.id);
