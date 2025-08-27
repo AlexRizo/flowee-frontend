@@ -9,7 +9,9 @@ export default [
 
   layout('routes/dashboard/_layout.tsx', [
     index('routes/dashboard/_index.tsx'),
-    route('autoasignaciones', 'routes/dashboard/autoasignaciones.tsx'),
+    layout('routes/dashboard/my-tasks/_layout.tsx', [
+      route('mis-tareas', 'routes/dashboard/my-tasks/_index.tsx'),
+    ]),
 
     ...prefix('centro-de-asignaciones', [
       layout('routes/dashboard/assignment-center/_layout.tsx', [

@@ -25,11 +25,11 @@ export const Sidebar = () => {
             </SidebarMenuItem>
           </ProtectedItem>
           <ProtectedItem allowedRoles={[Roles.ADMIN, Roles.SUPER_ADMIN, Roles.PUBLISHER_MANAGER, Roles.DESIGN_MANAGER]}>
-            <SidebarMenuItem to="/autoasignaciones" label="Autoasignaciones">
+            <SidebarMenuItem to="/mis-tareas" label="Mis tareas">
               <Rocket size={16} strokeWidth={1.5}/>
             </SidebarMenuItem>
           </ProtectedItem>
-          <SidebarMenuItem to="/solicitudes" label="Mis Solicitudes">
+          <SidebarMenuItem to="/solicitudes" label="Solicitudes">
             <ListStart size={16} strokeWidth={1.5}/>
           </SidebarMenuItem>
         </div>

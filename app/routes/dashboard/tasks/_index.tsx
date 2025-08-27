@@ -222,7 +222,7 @@ const Home = () => {
     <>
       <TaskSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      <div className="grid grid-cols-5 max-h-full gap-4">
+      <div className="grid grid-cols-5 min-w-7xl max-h-full gap-4">
         <DndContext
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}

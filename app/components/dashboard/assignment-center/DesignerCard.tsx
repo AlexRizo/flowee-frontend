@@ -1,29 +1,39 @@
 import { useDroppable } from "@dnd-kit/core";
 import { CardTooltip } from "../boards/CardTooltip";
-import { ClipboardPaste, Rocket } from "lucide-react";
+import { AlertCircle, ClipboardPaste, Rocket } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Designer } from "~/context/AssignmentContext";
 import { Status } from "~/services/interfaces/tasks-service.interface";
 import { cn } from "~/lib/utils";
+import { AlertTooltip } from "./AlertTooltip";
 
 interface Props {
   designer: Designer;
 }
 
+interface DesignerTasks {
+  AWAIT: number;
+  IN_PROGRESS: number;
+  REVIEW: number;
+  TOTAL: number;
+}
+
 export const DesignerCard = ({ designer }: Props) => {
-  const [designerTasks, setDesignerTasks] = useState<Record<string, number> | null>(null);
+  const [designerTasks, setDesignerTasks] = useState<DesignerTasks | null>(null);
 
   const handleDesignerTasks = () => {
     const counter = {
       AWAIT: 0,
       IN_PROGRESS: 0,
       REVIEW: 0,
+      TOTAL: 1,
     };
 
     designer.tasks.forEach((task) => {
       if (task.status === Status.AWAIT) counter.AWAIT++;
       if (task.status === Status.IN_PROGRESS) counter.IN_PROGRESS++;
       if (task.status === Status.REVIEW) counter.REVIEW++;
+      counter.TOTAL++;
     });
 
     setDesignerTasks(counter);
@@ -37,7 +47,11 @@ export const DesignerCard = ({ designer }: Props) => {
 
   return (
     <div className="w-63 h-max" ref={setNodeRef}>
-      <header className="border-2 border-green-400 bg-gray-900 p-2 rounded-t-md flex items-center text-white">
+      <header className={cn('border-2 bg-gray-900 p-2 rounded-t-md flex items-center text-white', {
+        'border-green-400': designerTasks?.TOTAL && designerTasks.TOTAL <= 5,
+        'border-yellow-400': designerTasks?.TOTAL && (designerTasks.TOTAL > 5 && designerTasks.TOTAL <= 10),
+        'border-red-400': designerTasks?.TOTAL && designerTasks.TOTAL > 10,
+      })}>
         <CardTooltip text={designer.name}>
           <img
             src={designer.avatar || "/images/default-user.webp"}
@@ -47,6 +61,9 @@ export const DesignerCard = ({ designer }: Props) => {
         </CardTooltip>
         <p className="ml-2 text-sm font-semibold">@{designer.nickname}</p>
         <span className="ml-1 text-xs">({designer.tasks.length})</span>
+        {designerTasks?.TOTAL && designerTasks.TOTAL > 5 && (
+          <AlertTooltip total={designerTasks?.TOTAL || 0} />
+        )}
         <ClipboardPaste size={16} className="ml-auto" />
       </header>
       <div className="flex justify-between p-2 rounded-b-md border-1 border-gray-200">

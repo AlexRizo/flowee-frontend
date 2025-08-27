@@ -17,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   
   const authStatus = await checkAuth(access_token);
 
-  if (!authStatus.user) {
+  if (!authStatus.user || !access_token) {
     request.headers.delete('Cookie');
     return redirect('/auth');
   }
@@ -40,12 +40,12 @@ const DashboardLayout = ({ loaderData }: Route.ComponentProps) => {
       <AuthProvider authUser={user}>
         <SocketProvider>
           <BoardProvider initialBoards={boards}>
-            <main className="flex bg-gray-50">
+            <main className="flex flex-row bg-gray-50 max-w-screen max-h-screen">
               <Toaster />
               <Sidebar/>
-              <div className="w-full flex flex-col">
+              <div className="flex flex-col flex-1 min-w-0 min-h-0">
                 <Navbar />
-                <div className="p-6 h-full">
+                <div className="p-6 h-full overflow-auto w-full">
                   <Outlet />
                 </div>
               </div>

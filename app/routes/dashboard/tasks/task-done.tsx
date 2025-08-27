@@ -29,7 +29,7 @@ const TaskDone = () => {
       <p className="text-2xl font-bold text-center">
         El equipo revisará tu solicitud y le asignará un diseñador
       </p>
-      <Link to="/centro-de-asignaciones">
+      <Link to="/solicitudes">
         <Button>
           Ver en mis solicitudes
           <FileInput />

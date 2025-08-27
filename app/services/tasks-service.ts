@@ -5,6 +5,7 @@ import type {
   CreateSpecialTaskResponse,
   DownloadFileResponse,
   Format,
+  GetMyTasksResponse,
   RestResponse,
   Task,
   TaskFile,
@@ -175,4 +176,19 @@ export const createDelivery = async (delivery: CreateDelivery) => {
         delivery: response.delivery as Delivery,
       };
     });
+};
+
+export const getMyTasks = async () => {
+  return await api.get("tasks/user").then((response: GetMyTasksResponse) => {
+    if ("error" in response) {
+      return {
+        message: getErrorMessage(response.message),
+      };
+    }
+
+    return {
+      pendingTasks: response.pendingTasks as Task[],
+      doneTasks: response.doneTasks as Task[],
+    };
+  });
 };

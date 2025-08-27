@@ -119,3 +119,11 @@ export interface DownloadFileResponse {
   statusCode?: number;
   signedUrl?: string;
 }
+
+export interface GetMyTasksResponse {
+  message?: string;
+  error?: string;
+  statusCode?: number;
+  pendingTasks?: Task[]
+  doneTasks?: Task[]
+}
