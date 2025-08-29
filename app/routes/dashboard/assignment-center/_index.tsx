@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/core";
 import { PendingColumn } from "~/components/dashboard/assignment-center/PendingColumn";
 import { TaskCardOverlay } from "~/components/dashboard/boards/TaskCardOverlay";
-import { useAssignmentContext, type Designer } from "~/context/AssignmentContext";
+import { useAssignmentContext } from "~/context/AssignmentContext";
 import { DesignerCard } from "~/components/dashboard/assignment-center/DesignerCard";
 import { useSocket } from "~/context/SocketContext";
 import { toast } from "sonner";

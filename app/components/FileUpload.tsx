@@ -1,4 +1,4 @@
-import React, { useRef, useState, type FC } from "react";
+import { useRef, useState, type FC } from "react";
 import { useFormContext, type Control } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";

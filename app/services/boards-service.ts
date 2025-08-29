@@ -30,19 +30,3 @@ export const getBoard = async (slug: string, cookie?: string) => {
       return { board: res.board };
     });
 };
-
-// export const getBoardTasks = async (slug: string, cookie?: string) => {
-//   return await api
-//     .get(`tasks/board/${slug}`, { cookie })
-//     .then((res: BoardTasksResponse) => {
-//       if (res.error) {
-//         return {
-//           message: getErrorMessage(res.message),
-//           error: res.error,
-//           statusCode: res.statusCode,
-//         };
-//       }
-
-//       return { tasks: res.tasks };
-//     });
-// };

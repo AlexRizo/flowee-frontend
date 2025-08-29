@@ -7,7 +7,6 @@ import { useSocket } from "~/context/SocketContext";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { getChatMessages } from "~/services/chat-service";
-import { PageLoader } from "../../PageLoader";
 import { queryClient } from "~/services/queryClient";
 
 interface Message {

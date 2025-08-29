@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type FC } from "react";
+import { createContext, useContext, useState, type FC } from "react";
 import {
   Status,
   type Task,

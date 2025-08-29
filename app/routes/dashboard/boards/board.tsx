@@ -1,8 +1,5 @@
 import { getSanitizedSlug, getTitle } from "~/lib/utils";
 import type { Route } from "./+types/board";
-// import { getBoardTasks } from "~/services/boards-service";
-import { Column } from "~/components/dashboard/boards/Column";
-import { columns } from "./helpers/board.data";
 
 export function meta({ params }: Route.ComponentProps) {
   const { slug } = params;
@@ -15,7 +12,6 @@ export function meta({ params }: Route.ComponentProps) {
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { slug } = params;
-  // const { tasks } = await getBoardTasks(slug);
 
   console.log('tasks');
 }

@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import type { Task } from "~/services/interfaces/tasks-service.interface";
 import { CardTooltip } from "./CardTooltip";
-import { CalendarCheck, CalendarPlus, Flag, ListEnd, User } from "lucide-react";
+import { CalendarCheck, CalendarPlus, Flag, ListEnd } from "lucide-react";
 import { TaskTypeIcon } from "./TaskTypeIcon";
 import { getTaskDate, getTaskPriority, getTaskPriorityColor } from "~/helpers/taskHelpers";
 

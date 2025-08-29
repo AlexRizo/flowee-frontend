@@ -1,6 +1,5 @@
-import { Eye, Pencil, Trash } from "lucide-react"
+import { Eye } from "lucide-react"
 import { Link } from "react-router"
-import { Button } from "~/components/ui/button"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 import { Roles, type User } from "~/services/interfaces/users-service.interface"
 

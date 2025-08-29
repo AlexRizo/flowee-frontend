@@ -1,4 +1,4 @@
-import { Circle, CircleCheck, X } from "lucide-react";
+import { Circle, CircleCheck } from "lucide-react";
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 

@@ -1,6 +1,6 @@
 import { FileInput, Rocket } from "lucide-react";
 import { useEffect } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Link, Navigate } from "react-router";
 import { Button } from "~/components/ui/button";
 import { useCreateTaskContext } from "~/context/CreateTaskContext";
 

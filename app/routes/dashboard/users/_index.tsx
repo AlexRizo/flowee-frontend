@@ -9,7 +9,6 @@ import { Navigate, useSubmit } from "react-router";
 import { Roles } from "~/services/interfaces/users-service.interface";
 import { PageLoader } from "~/components/dashboard/PageLoader";
 import { useAuthContext } from "~/context/AuthContext";
-import { useEffect } from "react";
 
 export function meta() {
   return [

@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { useAuthContext } from "~/context/AuthContext";
 import { createFormData } from "~/helpers/formDataHelper";
 
 interface Props {

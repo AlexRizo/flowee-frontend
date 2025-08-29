@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, useActionData, useLoaderData, useSubmit, type SubmitFunction } from "react-router";
+import { Form, useActionData, useLoaderData, useSubmit } from "react-router";
 import {
   Dialog,
   DialogHeader,

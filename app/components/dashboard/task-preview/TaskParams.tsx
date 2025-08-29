@@ -1,10 +1,5 @@
 import {
-  Calendar,
   Flag,
-  RefreshCcwDot,
-  Rocket,
-  SquareUser,
-  User,
 } from "lucide-react";
 import {
   LucideDynamicIcon,

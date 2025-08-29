@@ -1,4 +1,4 @@
-import React, { useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { Sheet } from "~/components/ui/sheet";
 import { SheetTrigger } from "~/components/ui/sheet";
 import { SheetContent } from "~/components/ui/sheet";

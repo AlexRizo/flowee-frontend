@@ -20,7 +20,6 @@ import type { Route } from "./+types/_index";
 import { getMyTasks } from "~/services/tasks-service";
 import { toast } from "sonner";
 import { PageLoader } from "~/components/dashboard/PageLoader";
-import { useBoardContext } from "~/context/BoardContext";
 import { useSocket } from "~/context/SocketContext";
 import { useTaskPreview } from "~/context/TaskPreviewContext";
 

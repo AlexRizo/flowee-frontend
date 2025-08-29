@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import { CardTooltip } from "../boards/CardTooltip";
-import { AlertCircle, ClipboardPaste, Rocket } from "lucide-react";
+import { ClipboardPaste, Rocket } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Designer } from "~/context/AssignmentContext";
 import { Status } from "~/services/interfaces/tasks-service.interface";
