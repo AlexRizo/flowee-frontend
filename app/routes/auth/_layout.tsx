@@ -13,7 +13,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const requestHeaders = parse(request.headers.get("cookie") || "");
 
   if (authStatus.user) {
-    return redirect("/");
+    // return redirect("/");
   }
 
   return { authStatus, cookie, requestHeaders };
@@ -22,6 +22,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 const AuthLayout = ({ loaderData }: Route.ComponentProps) => {
   useEffect(() => {
     console.log({ loaderData });
+    alert(JSON.stringify(loaderData));
   }, [loaderData]);
   return (
     <main className="h-screen w-screen">

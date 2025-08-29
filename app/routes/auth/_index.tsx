@@ -31,7 +31,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     }
   }
 
-  return redirect('/');
+  // return redirect('/');
 };
 
 const Auth = ({ actionData }: Route.ComponentProps) => {
