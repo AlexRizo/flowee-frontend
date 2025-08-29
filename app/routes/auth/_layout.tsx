@@ -7,13 +7,13 @@ import { useEffect } from 'react';
 export async function loader({ request }: Route.LoaderArgs) {
   const authStatus = await checkAuth(getCookie(request));
 
-  console.log({authStatus, request: request.headers});
-  
+  const requestHeaders = request.headers;
+
   if (authStatus.user) {
     return redirect("/");
   }
 
-  return { authStatus, request: request.headers };
+  return { authStatus, requestHeaders };
 }
 
 const AuthLayout = ({ loaderData }: Route.ComponentProps) => {
