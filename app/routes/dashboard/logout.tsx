@@ -1,25 +1,17 @@
-import { Navigate } from "react-router";
+import { Navigate, redirect } from "react-router";
 import { logout } from "~/services/auth-service";
 import type { Route } from "./+types/logout";
 import { queryClient } from "~/services/queryClient";
 
-
-export async function clientAction({ request }: Route.ClientActionArgs) {  
+export async function clientAction() {
   await logout();
-
   queryClient.clear();
-
-  return null;
-}
-
-export async function loader({ request }: Route.LoaderArgs) {
-  await logout();
-  
-  request.headers.delete('Cookie');
-  
-  queryClient.clear();
-
-  return null;
+  return redirect("/auth", {
+    headers: {
+      "Set-Cookie":
+        "access_token=; Max-Age=0; Path=/; Domain=.alowee.com; HttpOnly; Secure; SameSite=Lax",
+    },
+  });
 }
 
 const Logout = () => <Navigate to="/auth" />;

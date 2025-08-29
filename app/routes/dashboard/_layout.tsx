@@ -18,7 +18,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const authStatus = await checkAuth(access_token);
 
   if (!authStatus.user || !access_token) {
-    return redirect('/logout');
+    return redirect('/auth');
   }
   
   const { boards } = await getBoards(access_token || '');
