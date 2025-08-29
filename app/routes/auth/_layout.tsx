@@ -2,6 +2,7 @@ import { Outlet, redirect } from 'react-router'
 import type { Route } from './+types/_layout';
 import { checkAuth } from '~/services/auth-service';
 import { getCookie } from '~/lib/cookies';
+import { useEffect } from 'react';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const authStatus = await checkAuth(getCookie(request));
@@ -12,10 +13,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/");
   }
 
-  return null;
+  return { authStatus, request: request.headers };
 }
 
-const AuthLayout = () => {
+const AuthLayout = ({ loaderData }: Route.ComponentProps) => {
+  useEffect(() => {
+    console.log({loaderData});
+  }, [loaderData]);
   return (
     <main className='h-screen w-screen'>
       <Outlet />
