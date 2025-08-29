@@ -4,8 +4,19 @@ import type { Route } from "./+types/logout";
 import { queryClient } from "~/services/queryClient";
 
 
-export async function clientAction({}: Route.ClientActionArgs) {  
+export async function clientAction({ request }: Route.ClientActionArgs) {  
   await logout();
+
+  queryClient.clear();
+
+  return null;
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  await logout();
+  
+  request.headers.delete('Cookie');
+  
   queryClient.clear();
 
   return null;
