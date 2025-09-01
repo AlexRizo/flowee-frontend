@@ -51,6 +51,8 @@
   # RR7 framework genera /build (server + client)
   RUN pnpm run build
   
+  RUN pnpm run build && ls -la build && ls -la build/server || true
+  
   # -------------------------
   # 3) Runtime (ligero)
   # -------------------------
