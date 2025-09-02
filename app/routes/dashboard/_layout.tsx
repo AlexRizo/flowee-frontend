@@ -14,6 +14,8 @@ import { getCookie } from "~/lib/cookies";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const access_token = getCookie(request);
+
+  console.log({process:process.env})
   
   const authStatus = await checkAuth(access_token);
 
