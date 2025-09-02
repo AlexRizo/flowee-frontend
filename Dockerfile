@@ -25,40 +25,32 @@
 # WORKDIR /app
 # CMD ["pnpm", "run", "start"]
 
-# 1) Dependencias
+# 1) Instala deps (para reusar la caché)
 FROM node:20-alpine AS deps
-ENV PNPM_HOME=/root/.local/share/pnpm
-ENV PATH=$PNPM_HOME:$PATH
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm i -g pnpm
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 
-# 2) Build
+# 2) Build de producción de React Router 7 (modo framework)
 FROM node:20-alpine AS build
-ENV PNPM_HOME=/root/.local/share/pnpm
-ENV PATH=$PNPM_HOME:$PATH
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm i -g pnpm
 WORKDIR /app
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
-RUN pnpm run build \
- && echo "=== LISTANDO BUILD ===" \
- && ls -la build \
- && ls -la build/server || true
+# ➜ Debe ejecutar el build de RR7 (no sólo vite)
+RUN pnpm run build
 
-# 3) Runtime
+# 3) Runner liviano que sirve el build
 FROM node:20-alpine AS runner
-ENV NODE_ENV=production
-ENV PNPM_HOME=/root/.local/share/pnpm
-ENV PATH=$PNPM_HOME:$PATH
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm i -g pnpm
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile
-# Copiamos TODO el build (client + server)
-COPY --from=build /app/build ./build
-ENV HOST=0.0.0.0
+ENV NODE_ENV=production
 ENV PORT=3000
+# Copiamos deps de prod y el build ✅
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-lock.yaml ./
+COPY --from=build /app/build ./build
 EXPOSE 3000
-CMD ["pnpm","run","start"]
+# Arranca el server bundler generado por RR7
+CMD ["pnpm","exec","react-router-serve","./build/server/index.js","--port","3000"]
