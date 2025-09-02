@@ -8,6 +8,8 @@ export const login = async (
 ): Promise<LoginResponse> => {
   return await api.post('auth/login', { email, password })
   .then((res: LoginResponse) => {
+    console.log({res})
+    
     if (res.error) {
       return {
         message: getErrorMessage(res.message),

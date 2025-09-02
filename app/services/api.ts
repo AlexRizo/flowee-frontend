@@ -13,6 +13,8 @@ interface CreateRequestOptions {
 const createRequest = async ({ method, endpoint, body, headers = {}, isFormData }: CreateRequestOptions) => {
   if (!API_URL) throw new Error('La URL de la API no está definida');
 
+  console.log(API_URL)
+  
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method,
@@ -28,6 +30,7 @@ const createRequest = async ({ method, endpoint, body, headers = {}, isFormData 
 
     return response.json();
   } catch (error) {
+    console.log({error})
     console.error(new Error('Ha ocurrido un error al intentar hacer fetching a la API:', { cause: error }));
     return {
       message: 'Error al procesar la solicitud. Intenta nuevamente. Si el problema persiste, contacta al administrador.',
