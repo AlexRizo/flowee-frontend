@@ -37,6 +37,12 @@ FROM node:20-alpine AS build
 RUN npm i -g pnpm
 WORKDIR /app
 COPY . .
+# 🔴 IMPORTANTE: declarar y exportar VITE_* antes del build
+ARG VITE_API_URL
+ARG VITE_SOCKET_URL
+ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_SOCKET_URL=${VITE_SOCKET_URL}
+
 COPY --from=deps /app/node_modules ./node_modules
 # ➜ Debe ejecutar el build de RR7 (no sólo vite)
 RUN pnpm run build
