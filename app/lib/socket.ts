@@ -5,12 +5,7 @@ let socket: Socket | null = null;
 
 const socketUrl = clientEnv.SOCKET_URL;
 
-// console.log({
-//   vite: import.meta.env.VITE_SOCKET_URL,
-//   process: process.env.VITE_SOCKET_URL,
-// })
-
-// if (!socketUrl) throw new Error("Socket URL is not defined:" + socketUrl);
+if (!socketUrl) throw new Error("Socket URL is not defined:" + socketUrl);
 
 export const getSocket = () => {
   if (!socket) {
