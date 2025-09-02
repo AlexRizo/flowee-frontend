@@ -11,6 +11,7 @@ interface CreateRequestOptions {
 }
 
 const createRequest = async ({ method, endpoint, body, headers = {}, isFormData }: CreateRequestOptions) => {
+  console.log({API_URL, process: process.env.API_URL})
   if (!API_URL) throw new Error('La URL de la API no está definida');
 
   try {
@@ -25,7 +26,7 @@ const createRequest = async ({ method, endpoint, body, headers = {}, isFormData 
       },  
       credentials: 'include',
     });
-    console.log({response})
+    console.log({response: await response.json()})
 
     return response.json();
   } catch (error) {
