@@ -18,11 +18,13 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-
+  
   const loginResponse = await login(
     email,
     password
   );
+
+  console.log({loginResponse})
 
   if (loginResponse.error) {
     console.error(loginResponse);
