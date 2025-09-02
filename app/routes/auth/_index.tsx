@@ -15,7 +15,6 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  console.log({request, ok: 'request'})
   const formData = await request.formData();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
