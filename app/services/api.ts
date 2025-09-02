@@ -26,9 +26,11 @@ const createRequest = async ({ method, endpoint, body, headers = {}, isFormData 
       },  
       credentials: 'include',
     });
-    console.log({response: await response.json()})
 
-    return response.json();
+    const json = await response.json();
+    console.log({response: json})
+
+    return json;
   } catch (error) {
     console.error(new Error('Ha ocurrido un error al intentar hacer fetching a la API:', { cause: error }));
     return {
