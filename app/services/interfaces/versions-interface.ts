@@ -1,23 +1,23 @@
-export enum DeliveryStatus {
+export enum VersionStatus {
   PENDING = "pending",
   ACCEPTED = "accepted",
   REJECTED = "rejected",
 }
 
-export interface CreateDelivery {
+export interface CreateVersion {
   description: string;
-  formatId: string;
+  deliveryId: string;
   file: File;
 }
 
-export interface Delivery {
+export interface Version {
   id: string;
   filename: string;
-  formatId: string;
+  deliveryId: string;
   description: string;
   comments: string | null;
   key: string;
   url: string;
-  status: DeliveryStatus;
+  status: VersionStatus;
   createdAt: string;
 }

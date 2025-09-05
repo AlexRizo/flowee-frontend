@@ -1,5 +1,5 @@
 import type { Board } from "./boards-service.interface";
-import type { Delivery } from "./deliveries-interface";
+import type { Version } from "./versions-interface";
 import type { User } from "./users-service.interface";
 
 export enum Priority {
@@ -86,31 +86,31 @@ export interface TaskFiles {
   message?: string;
 }
 
-export interface Format {
+export interface Delivery {
   id: string;
   description: string;
-  deliveries: Delivery[] | undefined;
+  versions: Version[] | undefined;
   createdAt: string;
 }
 
-export interface TaskFormats {
-  formats: Format[];
+export interface TaskDeliveries {
+  deliveries: Delivery[];
   message?: string;
   error?: string;
-}
-
-export interface CreateFormatResponse {
-  message: string;
-  error?: string;
-  statusCode: number;
-  format?: Format;
 }
 
 export interface CreateDeliveryResponse {
   message: string;
   error?: string;
-  statusCode?: number;
+  statusCode: number;
   delivery?: Delivery;
+}
+
+export interface CreateVersionResponse {
+  message: string;
+  error?: string;
+  statusCode?: number;
+  version?: Version;
 }
 
 export interface DownloadFileResponse {

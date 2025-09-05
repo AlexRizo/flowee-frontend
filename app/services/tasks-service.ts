@@ -1,18 +1,18 @@
 import { api, getErrorMessage } from "./api";
 import type {
   CreateDeliveryResponse,
-  CreateFormatResponse,
   CreateSpecialTaskResponse,
   DownloadFileResponse,
-  Format,
+  Delivery,
   GetMyTasksResponse,
   RestResponse,
   Task,
   TaskFile,
   TaskFiles,
-  TaskFormats,
+  TaskDeliveries,
+  CreateVersionResponse,
 } from "./interfaces/tasks-service.interface";
-import type { CreateDelivery, Delivery } from "./interfaces/deliveries-interface";
+import type { CreateVersion, Version } from "./interfaces/versions-interface";
 
 export const getTasksByBoard = async (board: string) => {
   return await api
@@ -104,9 +104,9 @@ export const downloadFile = async (id: string) => {
     });
 };
 
-export const downloadDelivery = async (id: string) => {
+export const downloadVersion = async (id: string) => {
   return await api
-    .get(`files/task/deliveries/download/${id}`)
+    .get(`files/task/versions/download/${id}`)
     .then((response: DownloadFileResponse) => {
       if ("error" in response) {
         return {
@@ -120,50 +120,27 @@ export const downloadDelivery = async (id: string) => {
     });
 };
 
-export const getTaskFormats = async (taskId: string) => {
+export const getTaskDeliveries = async (taskId: string) => {
   return await api
-    .get(`formats/task/${taskId}`)
-    .then((response: TaskFormats) => {
+    .get(`deliveries/task/${taskId}`)
+    .then((response: TaskDeliveries) => {
       if ("error" in response) {
         return {
           message: getErrorMessage(response.message),
         };
       }
       return {
-        formats: response.formats as Format[],
+        deliveries: response.deliveries as Delivery[],
       };
     });
 };
 
-export const createFormat = async (format: {
+export const createDelivery = async (delivery: {
   description: string;
   taskId: string;
 }) => {
   return await api
-    .post("formats", format)
-    .then((response: CreateFormatResponse) => {
-      if ("error" in response) {
-        return {
-          message: getErrorMessage(response.message),
-        };
-      }
-
-      return {
-        message: response.message,
-        format: response.format as Format,
-      };
-    });
-};
-
-export const createDelivery = async (delivery: CreateDelivery) => {
-  const formData = new FormData();
-
-  formData.append("description", delivery.description);
-  formData.append("formatId", delivery.formatId);
-  formData.append("file", delivery.file);
-  
-  return await api
-    .post("deliveries", formData, {}, true)
+    .post("deliveries", delivery)
     .then((response: CreateDeliveryResponse) => {
       if ("error" in response) {
         return {
@@ -174,6 +151,29 @@ export const createDelivery = async (delivery: CreateDelivery) => {
       return {
         message: response.message,
         delivery: response.delivery as Delivery,
+      };
+    });
+};
+
+export const createVersion = async (version: CreateVersion) => {
+  const formData = new FormData();
+
+  formData.append("description", version.description);
+  formData.append("deliveryId", version.deliveryId);
+  formData.append("file", version.file);
+
+  return await api
+    .post("versions", formData, {}, true)
+    .then((response: CreateVersionResponse) => {
+      if ("error" in response) {
+        return {
+          message: getErrorMessage(response.message),
+        };
+      }
+
+      return {
+        message: response.message,
+        version: response.version as Version,
       };
     });
 };

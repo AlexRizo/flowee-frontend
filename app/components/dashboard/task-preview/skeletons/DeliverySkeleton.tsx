@@ -1,6 +1,6 @@
 import { Skeleton } from "~/components/ui/skeleton"
 
-export const FormatSkeleton = () => {
+export const DeliverySkeleton = () => {
 
   const getIterations = () => {
     const i = Math.floor(Math.random() * 4) + 1;

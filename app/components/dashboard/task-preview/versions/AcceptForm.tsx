@@ -22,41 +22,41 @@ import {
 } from "~/components/ui/dialog";
 import { useEffect, useRef, type FC } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToggleDelivery } from "~/hooks/useToggleDelivery";
-import { DeliveryStatus } from "~/services/interfaces/deliveries-interface";
+import { useToggleVersion } from "~/hooks/useToggleDelivery";
+import { VersionStatus } from "~/services/interfaces/versions-interface";
 
 const formSchema = z.object({
   comments: z
     .string()
-    .min(1, { message: "Los comentarios son requeridos" })
-    .max(100, { message: "Solo se permiten 100 caracteres" }),
-  deliveryId: z.string(),
+    .max(100, { message: "Solo se permiten 100 caracteres" })
+    .optional(),
+    versionId: z.string(),
 });
 
 interface Props {
-  formatId: string;
   deliveryId: string;
+  versionId: string;
   children: React.ReactNode;
 }
 
-export const RejectForm: FC<Props> = ({ formatId, deliveryId, children }) => {
-  const { toggleDelivery, isPending, message, reset } = useToggleDelivery();
+export const AcceptForm: FC<Props> = ({ deliveryId, versionId, children }) => {
+  const { toggleVersion, isPending, message, reset } = useToggleVersion();
 
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
 
   const form = useForm({
     defaultValues: {
       comments: "",
-      deliveryId,
+      versionId,
     },
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    toggleDelivery({
-      formatId,
-      delivertId: data.deliveryId,
-      status: DeliveryStatus.REJECTED,
+    toggleVersion({
+      deliveryId,
+      versionId: data.versionId,
+      status: VersionStatus.ACCEPTED,
       comments: data.comments,
     });
   };
@@ -79,9 +79,9 @@ export const RejectForm: FC<Props> = ({ formatId, deliveryId, children }) => {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Rechazar entrega</DialogTitle>
+          <DialogTitle>Aceptar versión</DialogTitle>
           <DialogDescription>
-            Escribe el motivo por el cual rechazas esta entrega.
+            Opcionalmente, puedes escribir un comentario para esta versión.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -111,7 +111,7 @@ export const RejectForm: FC<Props> = ({ formatId, deliveryId, children }) => {
                 <Button variant="outline">Cancelar</Button>
               </DialogClose>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Espera..." : "Marcar como rechazada"}
+                {isPending ? "Espera..." : "Marcar como aceptada"}
               </Button>
             </DialogFooter>
           </form>

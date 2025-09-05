@@ -1,30 +1,30 @@
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { FormatsTable } from "../FormatsTable";
+import { DeliveriesTable } from "../DeliveriesTable";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
-import { CreateFormat } from "../formats/CreateFormat";
+import { CreateDelivery } from "../deliveries/CreateDelivery";
 import { useTaskPreview } from "~/context/TaskPreviewContext";
 import { useEffect } from "react";
 import { ProtectedItem } from "../../auth/ProtectedItem";
 import { Roles } from "~/services/interfaces/users-service.interface";
-import { FormatSkeleton } from "../skeletons/FormatSkeleton";
+import { DeliverySkeleton } from "../skeletons/DeliverySkeleton";
 
-export const Formats = () => {
+export const Deliveries = () => {
   const {
-    taskFormats,
-    handleGetTaskFormats,
-    isLoadingTaskFormats,
+    taskDeliveries,
+    handleGetTaskDeliveries,
+    isLoadingTaskDeliveries,
     previewTask,
-    resetTaskFormats,
+    resetTaskDeliveries,
   } = useTaskPreview();
 
   useEffect(() => {
-    handleGetTaskFormats();
+    handleGetTaskDeliveries();
   }, [previewTask]);
 
   useEffect(() => {
     return () => {
-      resetTaskFormats();
+      resetTaskDeliveries();
     };
   }, []);
 
@@ -42,12 +42,12 @@ export const Formats = () => {
               Roles.SUPER_ADMIN,
             ]}
           >
-            <CreateFormat taskId={previewTask.id}>
+            <CreateDelivery taskId={previewTask.id}>
               <Button size="sm" className="bg-violet-700 hover:bg-violet-800">
                 <Plus />
-                Agregar Formato
+                Agregar Entrega
               </Button>
-            </CreateFormat>
+            </CreateDelivery>
           </ProtectedItem>
         )}
       </header>
@@ -60,11 +60,11 @@ export const Formats = () => {
         </AlertDescription>
       </Alert>
       <div className="flex flex-col gap-4 mt-5">
-        {isLoadingTaskFormats && !taskFormats ? (
-          <FormatSkeleton />
-        ) : taskFormats ? (
-          taskFormats?.map((format) => (
-            <FormatsTable key={format.id} format={format} />
+        {isLoadingTaskDeliveries && !taskDeliveries ? (
+          <DeliverySkeleton />
+        ) : taskDeliveries ? (
+          taskDeliveries?.map((delivery) => (
+            <DeliveriesTable key={delivery.id} delivery={delivery} />
           ))
         ) : (
           <div className="flex items-center justify-center py-2 px-4">

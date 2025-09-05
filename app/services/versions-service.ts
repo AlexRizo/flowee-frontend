@@ -1,17 +1,17 @@
 import { api, getErrorMessage } from "./api";
-import type { DeliveryStatus } from "./interfaces/deliveries-interface";
+import type { VersionStatus } from "./interfaces/versions-interface";
 
-interface UpdateDeliveryStatus {
-  status: DeliveryStatus.ACCEPTED | DeliveryStatus.REJECTED;
+interface UpdateVersionStatus {
+  status: VersionStatus.ACCEPTED | VersionStatus.REJECTED;
   comments?: string;
 }
 
-export const updateDeliveryStatus = async (
-  deliveryId: string,
-  data: UpdateDeliveryStatus
+export const updateVersionStatus = async (
+  versionId: string,
+  data: UpdateVersionStatus
 ) => {
   return await api
-    .patch(`deliveries/${deliveryId}/status`, data)
+    .patch(`versions/${versionId}/status`, data)
     .then((response) => {
       if ("error" in response) {
         return {

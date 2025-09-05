@@ -70,8 +70,6 @@ export const Chat = ({ taskId }: Props) => {
     queryFn: async () => {
       if (!taskId) return [];
 
-      console.log("taskId", taskId);
-
       const response = await getChatMessages(taskId);
       if (!response.messages) {
         toast.error(response.message, {

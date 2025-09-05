@@ -25,8 +25,8 @@ import { Input } from "~/components/ui/input";
 
 interface Props {
   children: React.ReactNode;
-  formatId: string;
-  formatDescription: string;
+  deliveryId: string;
+  deliveryDescription: string;
 }
 
 const MAX_FILE_SIZE = 50;
@@ -50,7 +50,7 @@ const schema = z.object({
     .string()
     .min(1, { message: "La descripción es requerida" })
     .max(35, { message: "La descripción no puede tener más de 35 caracteres" }),
-  formatId: z.string().min(1, { message: "El formato es requerido" }),
+  deliveryId: z.string().min(1, { message: "La entrega es requerida" }),
   file: z
     .instanceof(File, { message: "El archivo es requerido" })
     .refine((file) => file.size <= MAX_FILE_SIZE * 1024 * 1024, {
@@ -62,12 +62,12 @@ const schema = z.object({
     }),
 });
 
-export const CreateDelivery: FC<Props> = ({
+export const CreateVersion: FC<Props> = ({
   children,
-  formatId = "",
-  formatDescription,
+  deliveryId = "",
+  deliveryDescription,
 }) => {
-  const { handleCreateDelivery, isLoadingCreateDelivery } = useTaskPreview();
+  const { handleCreateVersion, isLoadingCreateVersion } = useTaskPreview();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
@@ -78,14 +78,14 @@ export const CreateDelivery: FC<Props> = ({
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       description: "",
-      formatId,
+      deliveryId,
       file: undefined,
     },
     resolver: zodResolver(schema),
   });
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    handleCreateDelivery(data);
+    handleCreateVersion(data);
   };
 
   return (
@@ -96,7 +96,7 @@ export const CreateDelivery: FC<Props> = ({
           <SheetTitle>Nuevo entregable</SheetTitle>
           <SheetDescription>
             Agrega un entregable para el formato:{" "}
-            <span className="font-bold">{formatDescription}</span>
+            <span className="font-bold">{deliveryDescription}</span>
           </SheetDescription>
         </SheetHeader>
         <ShadcnForm {...form}>
@@ -114,7 +114,7 @@ export const CreateDelivery: FC<Props> = ({
                     <Textarea
                       {...field}
                       maxLength={50}
-                      placeholder="Describe el formato que deseas solicitar"
+                      placeholder="Describe la versión"
                       className="resize-none"
                     />
                   </FormControl>
@@ -127,7 +127,7 @@ export const CreateDelivery: FC<Props> = ({
               name="file"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Entregable</FormLabel>
+                  <FormLabel>Diseño</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -138,21 +138,21 @@ export const CreateDelivery: FC<Props> = ({
                     />
                   </FormControl>
                   <FormDescription>
-                    Sube un archivo de previsualización
+                    Sube el diseño de la versión
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <Button
-              disabled={isLoadingCreateDelivery}
+              disabled={isLoadingCreateVersion}
               type="submit"
               className="ml-auto"
             >
-              {isLoadingCreateDelivery ? (
+              {isLoadingCreateVersion ? (
                 <Loader2 className="animate-spin repeat-infinite" />
               ) : (
-                "Crear entregable"
+                "Crear versión"
               )}
             </Button>
           </form>

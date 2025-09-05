@@ -1,41 +1,43 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateDeliveryStatus } from "~/services/deliveries-service";
-import { DeliveryStatus } from "~/services/interfaces/deliveries-interface";
+import { updateVersionStatus } from "~/services/versions-service";
+import { VersionStatus } from "~/services/interfaces/versions-interface";
 import { toast } from "sonner";
 import { useTaskPreview } from "~/context/TaskPreviewContext";
 
-export const useToggleDelivery = () => {
-  const { handleUpdateDeliveryStatus } = useTaskPreview();
+interface ToggleVersionProps {
+  deliveryId: string;
+  versionId: string;
+  comments?: string;
+  status: VersionStatus.ACCEPTED | VersionStatus.REJECTED;
+}
+
+export const useToggleVersion = () => {
+  const { handleUpdateVersionStatus } = useTaskPreview();
 
   const {
-    mutate: toggleDelivery,
+    mutate: toggleVersion,
     isPending,
     data: message,
     reset,
   } = useMutation({
     mutationFn: async ({
-      formatId,
-      delivertId,
+      deliveryId,
+      versionId,
       status,
       comments,
-    }: {
-      formatId: string;
-      delivertId: string;
-      comments?: string;
-      status: DeliveryStatus.ACCEPTED | DeliveryStatus.REJECTED;
-    }) => {
-      const { message } = await updateDeliveryStatus(delivertId, {
+    }: ToggleVersionProps) => {
+      const { message } = await updateVersionStatus(versionId, {
         status,
         comments,
       });
 
       toast.info(message);
 
-      handleUpdateDeliveryStatus(formatId, delivertId, status, comments);
+      handleUpdateVersionStatus(deliveryId, versionId, status, comments);
 
       return message;
     },
   });
 
-  return { toggleDelivery, isPending, message, reset };
+  return { toggleVersion, isPending, message, reset };
 };

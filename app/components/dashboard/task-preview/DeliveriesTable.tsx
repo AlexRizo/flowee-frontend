@@ -16,56 +16,58 @@ import {
 } from "~/components/ui/accordion";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { getFileIcon } from "~/helpers/fileHelper";
-import type { Format } from "~/services/interfaces/tasks-service.interface";
+import type { Delivery } from "~/services/interfaces/tasks-service.interface";
 import {
-  type Delivery,
-  DeliveryStatus,
-} from "~/services/interfaces/deliveries-interface";
-import { CreateDelivery } from "./formats/CreateDelivery";
+  type Version,
+  VersionStatus,
+} from "~/services/interfaces/versions-interface";
 import { AddToTableTooltip } from "./tooltips/AddToTableTooltip";
 import { useMutation } from "@tanstack/react-query";
-import { downloadDelivery } from "~/services/tasks-service";
+import { downloadVersion } from "~/services/tasks-service";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useMemo, useState, type FC } from "react";
 import { ProtectedItem } from "../auth/ProtectedItem";
 import { Roles } from "~/services/interfaces/users-service.interface";
-import { DeliveryPreview } from "./deliveries/DeliveryPreview";
+import { VersionPreview } from "./versions/VersionPreview";
 import { DeliveryOptionsTooltip } from "./tooltips/DeliveryOptionsTooltip";
+import { CreateVersion } from "./deliveries/CreateVersion";
 
-const FormatRow = ({
-  delivery,
-  version,
-  handleDownload,
-  isPending,
-  idDownload,
-  setDelivery,
-  handleOpenChange,
-}: {
-  delivery: Delivery;
-  version: number;
+interface FormatRowProps {
+  version: Version;
+  number: number;
   handleDownload: (id: string) => void;
   isPending: boolean;
   idDownload: string | null;
-  setDelivery: (delivery: Delivery) => void;
+  setVersion: (version: Version) => void;
   handleOpenChange: (open: boolean) => void;
+}
+
+const FormatRow: FC<FormatRowProps> = ({
+  version,
+  number,
+  handleDownload,
+  isPending,
+  idDownload,
+  setVersion,
+  handleOpenChange,
 }) => {
   return (
     <div
       role="row"
       className={`flex items-center justify-between py-2 px-4 ${
-        delivery.status === DeliveryStatus.REJECTED && "opacity-50"
+        version.status === VersionStatus.REJECTED && "opacity-50"
       }`}
     >
       <span className="flex items-center gap-1 text-xs">
-        <LucideDynamicIcon name={getFileIcon(delivery.filename)} size={16} />
-        {`Versión ${version}: ${delivery.description}`}
+        <LucideDynamicIcon name={getFileIcon(version.filename)} size={16} />
+        {`Versión ${number}: ${version.description}`}
       </span>
       <aside className="flex items-center gap-5">
         <button
-          onClick={() => handleDownload(delivery.id)}
+          onClick={() => handleDownload(version.id)}
           className="cursor-pointer disabled:opacity-50"
         >
-          {isPending && idDownload === delivery.id ? (
+          {isPending && idDownload === version.id ? (
             <Loader2
               size={17}
               strokeWidth={1.5}
@@ -76,16 +78,16 @@ const FormatRow = ({
           )}
         </button>
         <button>
-          {delivery.status === DeliveryStatus.ACCEPTED ? (
-            <DeliveryOptionsTooltip content="Aceptado">
+          {version.status === VersionStatus.ACCEPTED ? (
+            <DeliveryOptionsTooltip content="Aceptada">
               <SquareCheckBig size={17} strokeWidth={1.5} />
             </DeliveryOptionsTooltip>
-          ) : delivery.status === DeliveryStatus.PENDING ? (
+          ) : version.status === VersionStatus.PENDING ? (
             <DeliveryOptionsTooltip content="Pendiente">
               <Clock size={17} strokeWidth={1.5} />
             </DeliveryOptionsTooltip>
           ) : (
-            <DeliveryOptionsTooltip content="Rechazado">
+            <DeliveryOptionsTooltip content="Rechazada">
               <Ban size={17} strokeWidth={1.5} />
             </DeliveryOptionsTooltip>
           )}
@@ -95,7 +97,7 @@ const FormatRow = ({
           strokeWidth={1.5}
           className="cursor-pointer"
           onClick={() => {
-            setDelivery(delivery);
+            setVersion(version);
             handleOpenChange(true);
           }}
         />
@@ -104,12 +106,12 @@ const FormatRow = ({
   );
 };
 
-export const FormatsTable = ({ format }: { format: Format }) => {
+export const DeliveriesTable = ({ delivery }: { delivery: Delivery }) => {
   const disabledButton = () => {
-    return format.deliveries?.some(
-      (delivery) =>
-        delivery.status === DeliveryStatus.PENDING ||
-        delivery.status === DeliveryStatus.ACCEPTED
+    return delivery.versions?.some(
+      (version) =>
+        version.status === VersionStatus.PENDING ||
+        version.status === VersionStatus.ACCEPTED
     );
   };
 
@@ -117,7 +119,7 @@ export const FormatsTable = ({ format }: { format: Format }) => {
 
   const { isPending, mutate: downloadFileMutate } = useMutation({
     mutationFn: async (id: string) => {
-      const { signedUrl, message } = await downloadDelivery(id);
+      const { signedUrl, message } = await downloadVersion(id);
 
       if (message) {
         toast.error(message);
@@ -137,12 +139,14 @@ export const FormatsTable = ({ format }: { format: Format }) => {
     downloadFileMutate(id);
   };
 
-  const [delivery, setDelivery] = useState<Delivery | null>(null);
+  const [version, setVersion] = useState<Version | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      setDelivery(null);
+      setTimeout(() => {
+        setVersion(null);
+      }, 500);
     }
     setIsOpen(open);
   };
@@ -154,7 +158,7 @@ export const FormatsTable = ({ format }: { format: Format }) => {
         collapsible
         className="border border-gray-200 rounded bg-gray-50"
       >
-        <AccordionItem value={format.id} role="heading">
+        <AccordionItem value={delivery.id} role="heading">
           <AccordionPrimitive.Header className="text-xs flex px-4 py-2 bg-purple-100">
             <AccordionPrimitive.Trigger className="group flex items-center gap-2 w-full">
               <ChevronRight
@@ -162,7 +166,7 @@ export const FormatsTable = ({ format }: { format: Format }) => {
                 strokeWidth={1.5}
                 className="transition-transform group-data-[state=open]:rotate-90"
               />
-              {format.description}
+              {delivery.description}
             </AccordionPrimitive.Trigger>
             <ProtectedItem
               allowedRoles={[
@@ -172,9 +176,9 @@ export const FormatsTable = ({ format }: { format: Format }) => {
                 Roles.DESIGNER,
               ]}
             >
-              <CreateDelivery
-                formatId={format.id}
-                formatDescription={format.description}
+              <CreateVersion
+                deliveryId={delivery.id}
+                deliveryDescription={delivery.description}
               >
                 <button
                   className="flex items-center gap-2 w-36 cursor-pointer font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
@@ -183,7 +187,7 @@ export const FormatsTable = ({ format }: { format: Format }) => {
                   <AddToTableTooltip
                     content={
                       disabledButton()
-                        ? "Este formato tiene una versión pendiente o aceptada"
+                        ? "Esta entrega tiene una versión pendiente o aceptada"
                         : "Agrega una nueva versión"
                     }
                   >
@@ -193,23 +197,23 @@ export const FormatsTable = ({ format }: { format: Format }) => {
                     </div>
                   </AddToTableTooltip>
                 </button>
-              </CreateDelivery>
+              </CreateVersion>
             </ProtectedItem>
           </AccordionPrimitive.Header>
           <AccordionContent className="pb-0 divide-y divide-gray-200 border-t border-gray-200">
-            {format?.deliveries && format.deliveries.length ? (
-              format.deliveries
+            {delivery?.versions && delivery.versions.length ? (
+              delivery.versions
                 .map((d) => d)
                 .reverse()
-                .map((delivery, index) => (
+                .map((version, index) => (
                   <FormatRow
-                    key={delivery.id}
-                    delivery={delivery}
-                    version={index + 1}
+                    key={version.id}
+                    version={version}
+                    number={index + 1}
                     handleDownload={handleDownload}
                     isPending={isPending}
                     idDownload={idDownload}
-                    setDelivery={setDelivery}
+                    setVersion={setVersion}
                     handleOpenChange={handleOpenChange}
                   />
                 ))
@@ -219,17 +223,15 @@ export const FormatsTable = ({ format }: { format: Format }) => {
                 role="row"
                 className="flex items-center justify-center py-2 px-4"
               >
-                <span className="text-xs text-gray-500">
-                  No hay entregables
-                </span>
+                <span className="text-xs text-gray-500">No hay versiones</span>
               </div>
             )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      <DeliveryPreview
-        delivery={delivery}
+      <VersionPreview
+        version={version}
         isOpen={isOpen}
         onOpenChange={handleOpenChange}
       />

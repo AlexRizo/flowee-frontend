@@ -9,7 +9,7 @@ import {
 import { TaskTabMenu } from "./TaskTabMenu";
 import { Details } from "./views/Details";
 import { Chat } from "./views/Chat";
-import { Formats } from "./views/Formats";
+import { Deliveries } from "./views/Deliveries";
 import { useTaskPreview } from "~/context/TaskPreviewContext";
 
 interface TaskSidebarProps {
@@ -26,6 +26,9 @@ export const TaskSidebar = ({ isOpen, setIsOpen }: TaskSidebarProps) => {
 
   useEffect(() => {
     handleGetTaskFiles();
+    return () => {
+      setTab("Detalles");
+    }
   }, [previewTask]);
 
   return (
@@ -40,7 +43,7 @@ export const TaskSidebar = ({ isOpen, setIsOpen }: TaskSidebarProps) => {
             <Details task={previewTask} taskFiles={taskFiles} />
           )}
           {tab === "Chat" && <Chat taskId={previewTask?.id || null} />}
-          {tab === "Entregables" && <Formats />}
+          {tab === "Entregables" && <Deliveries />}
           <TaskTabMenu tab={tab} setTab={setTab} />
         </div>
       </SheetContent>

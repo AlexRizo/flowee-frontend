@@ -33,8 +33,8 @@ const schema = z.object({
     .max(35, { message: "La descripción no puede tener más de 35 caracteres" }),
 });
 
-export const CreateFormat: FC<Props> = ({ children, taskId }) => {
-  const { handleCreateFormat, isLoadingCreateFormat } = useTaskPreview();
+export const CreateDelivery: FC<Props> = ({ children, taskId }) => {
+  const { handleCreateDelivery, isLoadingCreateDelivery } = useTaskPreview();
   const [isOpen, setIsOpen] = useState(false);
   
   const form = useForm<z.infer<typeof schema>>({
@@ -45,7 +45,7 @@ export const CreateFormat: FC<Props> = ({ children, taskId }) => {
   });
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    handleCreateFormat(data);
+    handleCreateDelivery(data);
     setIsOpen(false);
     form.reset();
   };
@@ -55,9 +55,9 @@ export const CreateFormat: FC<Props> = ({ children, taskId }) => {
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Solicitar otro Formato</SheetTitle>
+          <SheetTitle>Solicitar otro Entregable</SheetTitle>
           <SheetDescription>
-            Agrega los detalles del formato que deseas solicitar.
+            Agrega los detalles del entregable que deseas solicitar.
           </SheetDescription>
         </SheetHeader>
         <ShadcnForm {...form}>
@@ -75,7 +75,7 @@ export const CreateFormat: FC<Props> = ({ children, taskId }) => {
                     <Textarea
                       {...field}
                       maxLength={50}
-                      placeholder="Describe el formato que deseas solicitar"
+                      placeholder="Describe el entregable que deseas solicitar"
                       className="resize-none"
                     />
                   </FormControl>
@@ -84,14 +84,14 @@ export const CreateFormat: FC<Props> = ({ children, taskId }) => {
               )}
             />
             <Button
-              disabled={isLoadingCreateFormat}
+              disabled={isLoadingCreateDelivery}
               type="submit"
               className="ml-auto"
             >
-              {isLoadingCreateFormat ? (
+              {isLoadingCreateDelivery ? (
                 <Loader2 className="animate-spin repeat-infinite" />
               ) : (
-                "Crear formato"
+                "Crear entregable"
               )}
             </Button>
           </form>

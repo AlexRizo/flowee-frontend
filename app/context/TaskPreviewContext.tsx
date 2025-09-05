@@ -2,20 +2,20 @@ import { useMutation } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useState } from "react";
 import { toast } from "sonner";
 import type {
-  CreateDelivery,
-  Delivery,
-  DeliveryStatus,
-} from "~/services/interfaces/deliveries-interface";
+  CreateVersion,
+  Version,
+  VersionStatus,
+} from "~/services/interfaces/versions-interface";
 import type {
-  Format,
+  Delivery,
   Task,
   TaskFiles,
 } from "~/services/interfaces/tasks-service.interface";
 import {
   createDelivery,
-  createFormat,
+  createVersion,
   getTaskFiles,
-  getTaskFormats,
+  getTaskDeliveries,
 } from "~/services/tasks-service";
 
 interface TaskPreviewContextType {
@@ -24,23 +24,23 @@ interface TaskPreviewContextType {
   isLoadingTaskFiles: boolean;
   setPreviewTask: (task: Task | null) => void;
   handleGetTaskFiles: () => void;
-  taskFormats?: Format[];
-  isLoadingTaskFormats: boolean;
-  resetTaskFormats: () => void;
-  handleGetTaskFormats: () => void;
-  isLoadingCreateFormat: boolean;
-  handleCreateFormat: ({ description }: { description: string }) => void;
+  taskDeliveries?: Delivery[];
+  isLoadingTaskDeliveries: boolean;
+  resetTaskDeliveries: () => void;
+  handleGetTaskDeliveries: () => void;
   isLoadingCreateDelivery: boolean;
-  handleCreateDelivery: ({
+  handleCreateDelivery: ({ description }: { description: string }) => void;
+  isLoadingCreateVersion: boolean;
+  handleCreateVersion: ({
     description,
-    formatId,
+    deliveryId,
     file,
-  }: CreateDelivery) => void;
-  deliveryData?: Delivery;
-  handleUpdateDeliveryStatus: (
-    formatId: string,
+  }: CreateVersion) => void;
+  versionData?: Version;
+  handleUpdateVersionStatus: (
     deliveryId: string,
-    status: DeliveryStatus,
+    versionId: string,
+    status: VersionStatus,
     comments?: string
   ) => void;
 }
@@ -51,16 +51,16 @@ const TaskPreviewContext = createContext<TaskPreviewContextType>({
   isLoadingTaskFiles: false,
   setPreviewTask: (): void => {},
   handleGetTaskFiles: (): void => {},
-  taskFormats: undefined,
-  isLoadingTaskFormats: false,
-  resetTaskFormats: (): void => {},
-  handleGetTaskFormats: (): void => {},
-  isLoadingCreateFormat: false,
-  handleCreateFormat: (): void => {},
+  taskDeliveries: undefined,
+  isLoadingTaskDeliveries: false,
+  resetTaskDeliveries: (): void => {},
+  handleGetTaskDeliveries: (): void => {},
   isLoadingCreateDelivery: false,
   handleCreateDelivery: (): void => {},
-  deliveryData: undefined,
-  handleUpdateDeliveryStatus: (): void => {},
+  isLoadingCreateVersion: false,
+  handleCreateVersion: (): void => {},
+  versionData: undefined,
+  handleUpdateVersionStatus: (): void => {},
 });
 
 export const TaskPreviewProvider = ({
@@ -69,7 +69,7 @@ export const TaskPreviewProvider = ({
   children: React.ReactNode;
 }) => {
   const [previewTask, setPreviewTask] = useState<Task | null>(null);
-  const [taskFormats, setTaskFormats] = useState<Format[] | undefined>(
+  const [taskDeliveries, setTaskDeliveries] = useState<Delivery[] | undefined>(
     undefined
   );
 
@@ -92,12 +92,12 @@ export const TaskPreviewProvider = ({
   });
 
   const {
-    mutate: getTaskFormatsMutation,
-    isPending: isLoadingTaskFormats,
-    reset: resetTaskFormats,
+    mutate: getTaskDeliveriesMutation,
+    isPending: isLoadingTaskDeliveries,
+    reset: resetTaskDeliveriesMutation,
   } = useMutation({
     mutationFn: async (taskId: string) => {
-      const { formats, message } = await getTaskFormats(taskId);
+      const { deliveries, message } = await getTaskDeliveries(taskId);
 
       if (message) {
         toast.error(message, {
@@ -106,61 +106,66 @@ export const TaskPreviewProvider = ({
         return;
       }
 
-      setTaskFormats(formats);
+      setTaskDeliveries(deliveries);
     },
   });
 
-  const { mutate: createFormatMutation, isPending: isLoadingCreateFormat } =
-    useMutation({
-      mutationFn: async (format: { description: string; taskId: string }) => {
-        const { message, format: createdFormat } = await createFormat(format);
+  const resetTaskDeliveries = useCallback(() => {
+    resetTaskDeliveriesMutation();
+    setTaskDeliveries(undefined);
+  }, [resetTaskDeliveriesMutation]);
 
-        console.log("createdFormat", createdFormat, message);
+  const { mutate: createDeliveryMutation, isPending: isLoadingCreateDelivery } =
+    useMutation({
+      mutationFn: async (delivery: { description: string; taskId: string }) => {
+        const { message, delivery: createdDelivery } = await createDelivery(
+          delivery
+        );
+
+        console.log(createdDelivery);
 
         if (message) {
           toast.info(message);
         }
 
-        if (createdFormat) {
-          setTaskFormats([...(taskFormats || []), createdFormat]);
+        if (createdDelivery) {
+          setTaskDeliveries([...(taskDeliveries || []), createdDelivery]);
         }
       },
     });
 
   const {
-    mutate: createDeliveryMutation,
-    isPending: isLoadingCreateDelivery,
-    data: createDeliveryData,
+    mutate: createVersionMutation,
+    isPending: isLoadingCreateVersion,
+    data: createVersionData,
   } = useMutation({
-    mutationFn: async (delivery: CreateDelivery) => {
-      const { message, delivery: createdDelivery } = await createDelivery(
-        delivery
-      );
+    mutationFn: async (version: CreateVersion) => {
+      const { message, version: createdVersion } = await createVersion(version);
 
       if (message) {
         toast.info(message);
       }
 
-      if (createdDelivery) {
-        setTaskFormats((prev) => {
+      if (createdVersion) {
+        setTaskDeliveries((prev) => {
           if (!prev) return [];
 
-          const formatIndex = prev.findIndex(
-            (format) => format.id === createdDelivery.formatId
+          const deliveryIndex = prev.findIndex(
+            (delivery) => delivery.id === createdVersion.deliveryId
           );
 
-          if (formatIndex === -1) return prev;
+          if (deliveryIndex === -1) return prev;
 
-          return prev.map((format, index) =>
-            index === formatIndex
+          return prev.map((delivery, index) =>
+            index === deliveryIndex
               ? {
-                  ...format,
-                  deliveries: [createdDelivery, ...(format.deliveries || [])],
+                  ...delivery,
+                  versions: [createdVersion, ...(delivery.versions || [])],
                 }
-              : format
+              : delivery
           );
         });
-        return createdDelivery;
+        return createdVersion;
       }
     },
   });
@@ -170,15 +175,15 @@ export const TaskPreviewProvider = ({
     getTaskFilesMutation(previewTask.id);
   }, [previewTask]);
 
-  const handleGetTaskFormats = useCallback(() => {
+  const handleGetTaskDeliveries = useCallback(() => {
     if (!previewTask) return;
-    getTaskFormatsMutation(previewTask.id);
+    getTaskDeliveriesMutation(previewTask.id);
   }, [previewTask]);
 
-  const handleCreateFormat = useCallback(
+  const handleCreateDelivery = useCallback(
     ({ description }: { description: string }) => {
       if (!previewTask) return;
-      createFormatMutation({
+      createDeliveryMutation({
         description,
         taskId: previewTask.id,
       });
@@ -186,45 +191,46 @@ export const TaskPreviewProvider = ({
     [previewTask]
   );
 
-  const handleCreateDelivery = useCallback(
-    ({ description, formatId, file }: CreateDelivery) => {
+  const handleCreateVersion = useCallback(
+    ({ description, deliveryId, file }: CreateVersion) => {
       if (!previewTask) return;
-      createDeliveryMutation({ description, formatId, file });
+      createVersionMutation({ description, deliveryId, file });
     },
     [previewTask]
   );
 
-  const handleUpdateDeliveryStatus = useCallback(
+  const handleUpdateVersionStatus = useCallback(
     (
-      formatId: string,
       deliveryId: string,
-      status: DeliveryStatus,
+      versionId: string,
+      status: VersionStatus,
       comments?: string
     ) => {
-      if (!previewTask) return;
-      setTaskFormats((prev) => {
-        if (!prev) return;
+      setTaskDeliveries((prev) => {
+        if (!prev) return prev;
 
-        const formatIndex = prev.findIndex((format) => format.id === formatId);
+        const deliveryIndex = prev.findIndex(
+          (delivery) => delivery.id === deliveryId
+        );
+        
+        if (deliveryIndex === -1) return prev;
 
-        if (formatIndex === -1) return prev;
-
-        return prev.map((format) => {
-          if (format.id === formatId) {
+        return prev.map((delivery) => {
+          if (delivery.id === deliveryId) {
             return {
-              ...format,
-              deliveries: format.deliveries?.map((delivery) =>
-                delivery.id === deliveryId
-                  ? { ...delivery, status, comments: comments || null }
-                  : delivery
+              ...delivery,
+              versions: delivery.versions?.map((version) =>
+                version.id === versionId
+                  ? { ...version, status, comments: comments || null }
+                  : version
               ),
             };
           }
-          return format;
+          return delivery;
         });
       });
     },
-    [previewTask]
+    []
   );
 
   return (
@@ -235,16 +241,16 @@ export const TaskPreviewProvider = ({
         taskFiles,
         isLoadingTaskFiles,
         handleGetTaskFiles,
-        taskFormats,
-        isLoadingTaskFormats,
-        resetTaskFormats,
-        handleGetTaskFormats,
-        isLoadingCreateFormat,
-        handleCreateFormat,
+        taskDeliveries,
+        isLoadingTaskDeliveries,
+        resetTaskDeliveries,
+        handleGetTaskDeliveries,
         isLoadingCreateDelivery,
         handleCreateDelivery,
-        deliveryData: createDeliveryData,
-        handleUpdateDeliveryStatus,
+        isLoadingCreateVersion,
+        handleCreateVersion,
+        versionData: createVersionData,
+        handleUpdateVersionStatus,
       }}
     >
       {children}
