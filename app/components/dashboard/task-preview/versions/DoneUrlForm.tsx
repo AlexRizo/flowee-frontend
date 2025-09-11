@@ -34,7 +34,7 @@ const checkForDesigner = (role?: Roles) => {
   return false;
 };
 
-export const DoneUrlForm = ({ versionId }: { versionId: string }) => {
+export const DoneUrlForm = ({ versionId, doneUrl }: { versionId: string, doneUrl: string | null }) => {
   const { mutate, isPending } = useMutation({
     mutationFn: async ({
       versionId,
@@ -51,7 +51,7 @@ export const DoneUrlForm = ({ versionId }: { versionId: string }) => {
 
   const form = useForm({
     defaultValues: {
-      doneUrl: "",
+      doneUrl: doneUrl ?? "",
     },
     resolver: zodResolver(formSchema),
   });
@@ -66,14 +66,14 @@ export const DoneUrlForm = ({ versionId }: { versionId: string }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-4 p-4"
       >
         <FormField
           control={form.control}
           name="doneUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Comentarios</FormLabel>
+              <FormLabel>URL de la entrega</FormLabel>
               <FormControl>
                 <Input {...field} maxLength={100} disabled={!checkForDesigner(user.highestRole)} />
               </FormControl>

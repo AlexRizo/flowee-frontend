@@ -91,7 +91,7 @@ export const VersionPreview = ({
         </div>
         {
           version?.status === VersionStatus.ACCEPTED && (
-            <DoneUrlForm versionId={version?.id ?? ""} />
+            <DoneUrlForm versionId={version?.id ?? ""} doneUrl={version?.doneUrl} />
           )
         }
         <SheetFooter>

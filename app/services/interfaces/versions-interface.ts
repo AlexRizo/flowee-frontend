@@ -17,6 +17,7 @@ export interface Version {
   description: string;
   comments: string | null;
   key: string;
+  doneUrl: string | null;
   url: string;
   status: VersionStatus;
   createdAt: string;
