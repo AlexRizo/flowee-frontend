@@ -18,6 +18,7 @@ import { RejectForm } from "./RejectForm";
 import { ProtectedItem } from "../../auth/ProtectedItem";
 import { Roles } from "~/services/interfaces/users-service.interface";
 import { useTaskPreview } from "~/context/TaskPreviewContext";
+import { DoneUrlForm } from "./DoneUrlForm";
 
 export const VersionPreview = ({
   version,
@@ -88,6 +89,11 @@ export const VersionPreview = ({
             </span>
           )}
         </div>
+        {
+          version?.status === VersionStatus.ACCEPTED && (
+            <DoneUrlForm versionId={version?.id ?? ""} />
+          )
+        }
         <SheetFooter>
           <ProtectedItem
             allowedRoles={[

@@ -24,3 +24,13 @@ export const updateVersionStatus = async (
       };
     });
 };
+
+export const updateDoneUrl = async (versionId: string, doneUrl: string) => {
+  return await api
+    .patch(`versions/${versionId}/done-url`, { doneUrl })
+    .then((response: { message: string; error: string }) => {
+      return {
+        message: response.message,
+      };
+    });
+};

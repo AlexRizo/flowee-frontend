@@ -124,7 +124,7 @@ export const EditUserForm = ({
             <FormItem>
               <FormLabel>Usuario</FormLabel>
               <FormControl>
-                <Input placeholder="Juan_perez" {...field} maxLength={15} />
+                <Input placeholder="Juan_perez" {...field} maxLength={50} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -140,7 +140,7 @@ export const EditUserForm = ({
                 <Input
                   placeholder="juan.perez@email.com"
                   {...field}
-                  maxLength={20}
+                  maxLength={50}
                 />
               </FormControl>
               <FormMessage />
