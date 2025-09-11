@@ -15,7 +15,7 @@ import { useCreateTaskContext } from "~/context/CreateTaskContext";
 import { Textarea } from "~/components/ui/textarea";
 import { FileUpload } from "~/components/FileUpload";
 
-const MAX_FILE_SIZE = 20;
+const MAX_FILE_SIZE = 10;
 const ACCEPTED_FILES = [
   // ? Imágenes
   "image/jpeg",
